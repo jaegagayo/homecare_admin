@@ -7,6 +7,9 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 
+import { Theme } from "@radix-ui/themes";
+import "@radix-ui/themes/styles.css";
+
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -41,5 +44,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <Theme appearance="dark" accentColor="indigo" grayColor="gray">
+      <Outlet />
+    </Theme>
+  );
 }
