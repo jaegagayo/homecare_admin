@@ -91,43 +91,144 @@ export default function DashboardPage() {
         <Card className="dashboard-card" style={{ flex: 1 }}>
           <Heading size="4" mb="4">근무 현황</Heading>
           <Flex direction="column" gap="4">
-            <Flex justify="between" align="center">
-              <Text size="3">오늘 근무자</Text>
-              <Heading size="5">18명</Heading>
-            </Flex>
-            <Flex justify="between" align="center">
-              <Text size="3">미배정 보호사</Text>
-              <Heading size="5">4명</Heading>
-            </Flex>
-            <Flex justify="between" align="center">
-              <Text size="3">신청자(배정 대기)</Text>
-              <Heading size="5">3명</Heading>
-            </Flex>
+            {/* 오늘 근무자 - 클릭 가능한 카드 */}
+            <Card 
+              style={{ 
+                cursor: 'pointer', 
+                transition: 'all 0.2s ease',
+                border: '1px solid var(--gray-6)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--accent-3)';
+                e.currentTarget.style.borderColor = 'var(--accent-8)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = 'var(--gray-6)';
+              }}
+              onClick={() => console.log('오늘 근무자 클릭')}
+            >
+              <Flex justify="between" align="center" p="2">
+                <Text size="3" weight="medium">오늘 근무자</Text>
+                <Heading size="5">18명</Heading>
+              </Flex>
+            </Card>
+
+            {/* 미배정 보호사 - 클릭 가능한 카드 */}
+            <Card 
+              style={{ 
+                cursor: 'pointer', 
+                transition: 'all 0.2s ease',
+                border: '1px solid var(--gray-6)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--accent-3)';
+                e.currentTarget.style.borderColor = 'var(--accent-8)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = 'var(--gray-6)';
+              }}
+              onClick={() => console.log('미배정 보호사 클릭')}
+            >
+              <Flex justify="between" align="center" p="2">
+                <Text size="3" weight="medium">미배정 보호사</Text>
+                <Heading size="5">4명</Heading>
+              </Flex>
+            </Card>
+
+            {/* 신청자(배정 대기) - 클릭 가능한 카드 */}
+            <Card 
+              style={{ 
+                cursor: 'pointer', 
+                transition: 'all 0.2s ease',
+                border: '1px solid var(--gray-6)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--accent-3)';
+                e.currentTarget.style.borderColor = 'var(--accent-8)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = 'var(--gray-6)';
+              }}
+              onClick={() => console.log('신청자 클릭')}
+            >
+              <Flex justify="between" align="center" p="2">
+                <Text size="3" weight="medium">신청자(배정 대기)</Text>
+                <Heading size="5">3명</Heading>
+              </Flex>
+            </Card>
           </Flex>
           
           <Heading size="4" mb="3" mt="6">근무지별 분포</Heading>
-          <Table.Root>
-            <Table.Header>
-              <Table.Row>
-                <Table.ColumnHeaderCell>근무지</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>인원</Table.ColumnHeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              <Table.Row>
-                <Table.Cell>센터</Table.Cell>
-                <Table.Cell>22명</Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>재가</Table.Cell>
-                <Table.Cell>25명</Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>방문</Table.Cell>
-                <Table.Cell>5명</Table.Cell>
-              </Table.Row>
-            </Table.Body>
-          </Table.Root>
+          <Flex direction="column" gap="4">
+            {/* 센터 */}
+            <Flex justify="between" align="center">
+              <Text size="3" weight="medium" style={{ minWidth: '60px' }}>센터</Text>
+              <Flex align="center" gap="3" style={{ width: '220px' }}>
+                <div style={{
+                  width: '120px',
+                  height: '12px',
+                  backgroundColor: 'var(--gray-4)',
+                  borderRadius: '6px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: '42%',
+                    height: '100%',
+                    backgroundColor: 'var(--blue-9)',
+                    borderRadius: '6px'
+                  }} />
+                </div>
+                <Text size="2" color="gray" style={{ minWidth: '90px', textAlign: 'right' }}>22명 (42%)</Text>
+              </Flex>
+            </Flex>
+
+            {/* 재가 */}
+            <Flex justify="between" align="center">
+              <Text size="3" weight="medium" style={{ minWidth: '60px' }}>재가</Text>
+              <Flex align="center" gap="3" style={{ width: '220px' }}>
+                <div style={{
+                  width: '120px',
+                  height: '12px',
+                  backgroundColor: 'var(--gray-4)',
+                  borderRadius: '6px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: '48%',
+                    height: '100%',
+                    backgroundColor: 'var(--purple-9)',
+                    borderRadius: '6px'
+                  }} />
+                </div>
+                <Text size="2" color="gray" style={{ minWidth: '90px', textAlign: 'right' }}>25명 (48%)</Text>
+              </Flex>
+            </Flex>
+
+            {/* 방문 */}
+            <Flex justify="between" align="center">
+              <Text size="3" weight="medium" style={{ minWidth: '60px' }}>방문</Text>
+              <Flex align="center" gap="3" style={{ width: '220px' }}>
+                <div style={{
+                  width: '120px',
+                  height: '12px',
+                  backgroundColor: 'var(--gray-4)',
+                  borderRadius: '6px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: '10%',
+                    height: '100%',
+                    backgroundColor: 'var(--orange-9)',
+                    borderRadius: '6px'
+                  }} />
+                </div>
+                <Text size="2" color="gray" style={{ minWidth: '90px', textAlign: 'right' }}>5명 (10%)</Text>
+              </Flex>
+            </Flex>
+          </Flex>
         </Card>
 
         {/* 오른쪽: 최근 알림 */}
