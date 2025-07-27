@@ -1,4 +1,5 @@
 import { Card, Flex, Text } from '@radix-ui/themes';
+import { sampleSchedules, groupSchedulesByDate } from '../../data/schedules';
 
 function getDaysArray(year: number, month: number) {
   const firstDay = new Date(year, month, 1).getDay();
@@ -10,15 +11,42 @@ function getDaysArray(year: number, month: number) {
   return days;
 }
 
-const sampleEvents = [
-  { date: 18, label: '생일', color: '#e5484d' },
-  { date: 10, label: '외할머니 생신', color: '#a259d9' },
-  { date: 15, label: '회의', color: '#3b82f6' },
-];
+// 날짜를 YYYY-MM-DD 형식으로 변환
+function formatDate(year: number, month: number, day: number): string {
+  const monthStr = (month + 1).toString().padStart(2, '0');
+  const dayStr = day.toString().padStart(2, '0');
+  return `${year}-${monthStr}-${dayStr}`;
+}
+
+// 근무 유형별 색상 반환
+function getWorkTypeColor(workType: string) {
+  switch (workType) {
+    case '센터': return 'var(--blue-9)';
+    case '재가': return 'var(--purple-9)';
+    case '방문': return 'var(--orange-9)';
+    default: return 'var(--gray-9)';
+  }
+}
+
+
 
 export default function CalendarGrid({ year, month }: { year: number, month: number }) {
   const days = getDaysArray(year, month);
   const weekCount = days.length / 7;
+  
+  // 오늘 날짜 확인
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+  
+  // 해당 월의 스케줄만 필터링
+  const monthSchedules = sampleSchedules.filter(schedule => {
+    const scheduleDate = new Date(schedule.date);
+    return scheduleDate.getFullYear() === year && scheduleDate.getMonth() === month;
+  });
+  
+  // 날짜별로 스케줄 그룹화
+  const schedulesByDate = groupSchedulesByDate(monthSchedules);
+
   return (
     <Card style={{ background: 'var(--gray-2)', flex: 1, height: '100%', padding: 0, overflow: 'hidden' }}>
       <div style={{ padding: 24, height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
@@ -42,7 +70,10 @@ export default function CalendarGrid({ year, month }: { year: number, month: num
           }}
         >
           {days.map((d, i) => {
-            const event = sampleEvents.find(e => e.date === d);
+            const dateStr = d ? formatDate(year, month, d) : '';
+            const daySchedules = d ? schedulesByDate[dateStr] || [] : [];
+            const isToday = d && isCurrentMonth && d === today.getDate();
+            
             return (
               <Card
                 key={i}
@@ -53,9 +84,8 @@ export default function CalendarGrid({ year, month }: { year: number, month: num
                   minWidth: 0,
                   boxSizing: 'border-box',
                   overflow: 'hidden',
-                  background: d ? 'var(--gray-4)' : 'transparent',
+                  background: d ? (isToday ? 'var(--accent-3)' : 'var(--gray-4)') : 'transparent',
                   color: d ? 'var(--gray-12)' : 'transparent',
-                  border: d ? '1px solid var(--gray-6)' : 'none',
                   position: 'relative',
                   display: 'flex',
                   flexDirection: 'column',
@@ -64,15 +94,55 @@ export default function CalendarGrid({ year, month }: { year: number, month: num
                   padding: 8,
                 }}
               >
-                {d && <Text size="4" weight="bold">{d}</Text>}
-                {d && event && (
-                  <div style={{
-                    position: 'absolute', bottom: 8, left: 8, right: 8,
-                    background: event.color, color: 'white', borderRadius: 6, fontSize: 12, padding: '2px 6px',
-                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                  }}>
-                    {event.label}
-                  </div>
+                {d && (
+                  <>
+                    <Text 
+                      size="4" 
+                      weight="bold" 
+                      style={{ 
+                        marginBottom: 4,
+                        color: isToday ? 'var(--accent-11)' : 'var(--gray-12)',
+                        fontWeight: 600
+                      }}
+                    >
+                      {d}
+                    </Text>
+                    
+                    {/* 근무 현황 요약 */}
+                    {daySchedules.length > 0 && (
+                      <Flex direction="column" gap="1" style={{ width: '100%' }}>
+                        <Text size="1" color="gray" style={{ marginBottom: 2 }}>
+                          근무: {daySchedules.length}명
+                        </Text>
+                        
+                        {/* 근무 유형별 요약 */}
+                        {daySchedules.slice(0, 3).map((schedule) => (
+                          <div
+                            key={schedule.id}
+                            style={{
+                              background: getWorkTypeColor(schedule.workType),
+                              color: 'white',
+                              borderRadius: 4,
+                              fontSize: 10,
+                              padding: '1px 4px',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              marginBottom: 1,
+                            }}
+                          >
+                            {schedule.caregiverName} ({schedule.workType})
+                          </div>
+                        ))}
+                        
+                        {daySchedules.length > 3 && (
+                          <Text size="1" color="gray">
+                            +{daySchedules.length - 3}명 더
+                          </Text>
+                        )}
+                      </Flex>
+                    )}
+                  </>
                 )}
               </Card>
             );
