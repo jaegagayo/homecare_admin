@@ -7,7 +7,7 @@ import SettingsPage from '../components/Settings/SettingsPage';
 
 const MENU = {
   DASHBOARD: '대시보드',
-  USERS: '사용자',
+  USERS: '요양보호사',
   CALENDAR: '캘린더',
   SETTINGS: '설정',
 };

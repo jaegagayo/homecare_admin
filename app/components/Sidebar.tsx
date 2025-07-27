@@ -1,18 +1,11 @@
 import { IconButton } from '@radix-ui/themes';
-import { DashboardIcon, PersonIcon, GearIcon, CalendarIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
+import { MENU } from '../constants/menu';
 
 interface FloatingActionBarProps {
   onMenuClick: (label: string) => void;
   selected: string;
 }
-
-const menu = [
-  { icon: <DashboardIcon width={24} height={24} />, label: '대시보드' },
-  { icon: <PersonIcon width={24} height={24} />, label: '사용자' },
-  { icon: <CalendarIcon width={24} height={24} />, label: '캘린더' },
-  { icon: <GearIcon width={24} height={24} />, label: '설정' },
-];
 
 export default function FloatingActionBar({ onMenuClick, selected }: FloatingActionBarProps) {
   const [hovered, setHovered] = useState<number | null>(null);
@@ -30,7 +23,7 @@ export default function FloatingActionBar({ onMenuClick, selected }: FloatingAct
         zIndex: 100,
       }}
     >
-      {menu.map((item, idx) => (
+      {MENU.map((item, idx) => (
         <div
           key={item.label}
           onMouseEnter={() => setHovered(idx)}
