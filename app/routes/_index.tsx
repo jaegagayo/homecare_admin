@@ -3,12 +3,14 @@ import Layout from '../components/Layout';
 import DashboardPage from '../components/Dashboard/DashboardPage';
 import CaregiversPage from '../components/Caregivers/CaregiversPage';
 import CalendarPage from '../components/Calendar/CalendarPage';
+import SettlementPage from '../components/Settlement/SettlementPage';
 import SettingsPage from '../components/Settings/SettingsPage';
 
 const MENU = {
   DASHBOARD: '현황판',
   USERS: '요양보호사',
   CALENDAR: '캘린더',
+  SETTLEMENT: '정산 관리',
   SETTINGS: '설정',
 };
 
@@ -20,6 +22,7 @@ export default function AdminAppShell() {
   if (selected === MENU.DASHBOARD) content = <DashboardPage />;
   else if (selected === MENU.USERS) content = <CaregiversPage />;
   else if (selected === MENU.CALENDAR) content = <CalendarPage />;
+  else if (selected === MENU.SETTLEMENT) content = <SettlementPage />;
   else if (selected === MENU.SETTINGS) content = <SettingsPage />;
 
   return (
