@@ -1,6 +1,6 @@
 import { IconButton } from '@radix-ui/themes';
 import { useState } from 'react';
-import { MENU } from '../constants/menu';
+import { MENU } from '../../constants/menu';
 
 interface FloatingActionBarProps {
   onMenuClick: (label: string) => void;
@@ -52,12 +52,17 @@ export default function FloatingActionBar({ onMenuClick, selected }: FloatingAct
           }}
         >
           <IconButton
-            variant={selected === item.label ? 'solid' : 'ghost'}
-            color="gray"
+            variant="ghost"
             size="3"
             tabIndex={-1}
             aria-label={item.label}
-            style={{ background: 'none', boxShadow: 'none', width: 40, height: 40 }}
+            style={{ 
+              color: selected === item.label ? 'var(--accent-10)' : 'gray',
+              background: 'none',
+              boxShadow: 'none',
+              width: 40,
+              height: 40
+            }}
           >
             {item.icon}
           </IconButton>
@@ -87,4 +92,4 @@ export default function FloatingActionBar({ onMenuClick, selected }: FloatingAct
       ))}
     </div>
   );
-}
+} 

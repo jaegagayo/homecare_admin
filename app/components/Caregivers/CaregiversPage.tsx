@@ -1,5 +1,6 @@
-import { SegmentedControl, Flex, Heading } from '@radix-ui/themes';
+import { Flex, Heading } from '@radix-ui/themes';
 import { useState } from 'react';
+import PageHeader from '../Common/PageHeader';
 import CaregiverList from './CaregiverList';
 import CaregiverCard from './CaregiverCard';
 import MultiSelectPanel from './MultiSelectPanel';
@@ -57,15 +58,11 @@ export default function CaregiversPage() {
 
   return (
     <Flex direction="column" gap="5" p="6" style={{ height: '100vh' }}>
-      <Flex align="center" justify="start" mb="4">
-        <SegmentedControl.Root value={tab} onValueChange={setTab} size="3">
-          {tabs.map(t => (
-            <SegmentedControl.Item key={t.key} value={t.key}>
-              {t.label}
-            </SegmentedControl.Item>
-          ))}
-        </SegmentedControl.Root>
-      </Flex>
+      <PageHeader 
+        tabs={tabs}
+        selectedTab={tab}
+        onTabChange={setTab}
+      />
       
       {tab === 'card' && (
         <Flex gap="6" style={{ flex: 1, minHeight: 0 }}>

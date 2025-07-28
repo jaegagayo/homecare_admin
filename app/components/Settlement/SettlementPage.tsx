@@ -1,5 +1,6 @@
-import { Flex, Text, SegmentedControl } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
 import { useState } from 'react';
+import PageHeader from '../Common/PageHeader';
 import SettlementOverviewCard from './SettlementOverviewCard';
 import PendingSettlementCard from './PendingSettlementCard';
 import SettlementHistoryTable from './SettlementHistoryTable';
@@ -21,16 +22,11 @@ export default function SettlementPage() {
 
   return (
     <Flex direction="column" gap="5" p="6" style={{ height: '100vh' }}>
-      {/* 상단 탭 */}
-      <Flex align="center" justify="start" mb="4">
-        <SegmentedControl.Root value={selectedTab} onValueChange={setSelectedTab} size="3">
-          {tabs.map(t => (
-            <SegmentedControl.Item key={t.key} value={t.key}>
-              {t.label}
-            </SegmentedControl.Item>
-          ))}
-        </SegmentedControl.Root>
-      </Flex>
+      <PageHeader 
+        tabs={tabs}
+        selectedTab={selectedTab}
+        onTabChange={setSelectedTab}
+      />
 
       {/* 탭별 내용 */}
       {selectedTab === 'overview' && (
