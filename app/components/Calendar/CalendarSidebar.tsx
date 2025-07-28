@@ -128,11 +128,11 @@ export default function CalendarSidebar({ selectedDate, onDateChange }: Calendar
                     flex: 1,
                     height: 24,
                     borderRadius: 4,
-                    background: isSelected ? 'var(--accent-9)' : hasSchedule ? 'var(--accent-3)' : 'none',
+                    background: isSelected ? 'var(--accent-9)' : 'none',
                     color: isSelected ? 'white' : 'var(--gray-12)',
                     textAlign: 'center',
                     lineHeight: '24px',
-                    fontWeight: isSelected ? 700 : hasSchedule ? 600 : 400,
+                    fontWeight: isSelected ? 700 : 400,
                     cursor: d ? 'pointer' : 'default',
                     fontSize: 14,
                     transition: 'background 0.15s',
@@ -142,10 +142,10 @@ export default function CalendarSidebar({ selectedDate, onDateChange }: Calendar
                   aria-label={d ? `${year}년 ${month + 1}월 ${d}일` : undefined}
                 >
                   {d || ''}
-                  {hasSchedule && !isSelected && (
+                  {hasSchedule && (
                     <div style={{
                       position: 'absolute',
-                      bottom: 2,
+                      bottom: 0,
                       left: '50%',
                       transform: 'translateX(-50%)',
                       width: 4,
