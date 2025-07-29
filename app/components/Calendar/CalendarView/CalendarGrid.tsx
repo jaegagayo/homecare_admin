@@ -1,5 +1,5 @@
 import { Card, Flex, Text } from '@radix-ui/themes';
-import { sampleSchedules, groupSchedulesByDate } from '../../data/schedules';
+import { sampleSchedules, groupSchedulesByDate } from '../../../data/schedules';
 
 function getDaysArray(year: number, month: number) {
   const firstDay = new Date(year, month, 1).getDay();

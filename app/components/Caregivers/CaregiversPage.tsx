@@ -14,17 +14,11 @@ const tabs = [
 
 export default function CaregiversPage() {
   const [tab, setTab] = useState('card');
-  const [selectedCaregiver, setSelectedCaregiver] = useState<number | null>(1);
+  const [selectedCaregiver, setSelectedCaregiver] = useState<number | null>(null);
+  const [selectedCaregivers, setSelectedCaregivers] = useState<number[]>([]);
+  const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('전체');
-  const [multiSelectMode, setMultiSelectMode] = useState(false);
-  const [selectedCaregivers, setSelectedCaregivers] = useState<number[]>([]);
-
-  const filteredCaregivers = sampleCaregivers.filter(caregiver => {
-    const matchesSearch = caregiver.name.includes(searchTerm) || caregiver.phone.includes(searchTerm);
-    const matchesStatus = selectedStatus === '전체' || caregiver.status === selectedStatus;
-    return matchesSearch && matchesStatus;
-  });
 
   const handleCaregiverSelect = (caregiverId: number) => {
     if (multiSelectMode) {
@@ -67,9 +61,8 @@ export default function CaregiversPage() {
       
       {tab === 'card' && (
         <Flex gap="6" style={{ flex: 1, minHeight: 0 }}>
-          {/* 좌측: 요양보호사 목록 */}
           <CaregiverList
-            caregivers={filteredCaregivers}
+            caregivers={sampleCaregivers}
             searchTerm={searchTerm}
             selectedStatus={selectedStatus}
             multiSelectMode={multiSelectMode}
@@ -80,8 +73,7 @@ export default function CaregiversPage() {
             onMultiSelectToggle={handleMultiSelectToggle}
             onCaregiverSelect={handleCaregiverSelect}
           />
-
-          {/* 우측: 인사카드 또는 복수 선택 결과 */}
+          
           {multiSelectMode && selectedCaregivers.length > 0 ? (
             <MultiSelectPanel
               selectedCaregivers={selectedCaregiversData}
@@ -89,11 +81,14 @@ export default function CaregiversPage() {
               onRemoveCaregiver={handleRemoveCaregiver}
             />
           ) : (
-            <CaregiverCard selectedCaregiver={selectedCaregiver} caregivers={sampleCaregivers} />
+            <CaregiverCard
+              selectedCaregiver={selectedCaregiver}
+              caregivers={sampleCaregivers}
+            />
           )}
         </Flex>
       )}
-      
+
       {tab === 'register' && (
         <RegistrationPage />
       )}

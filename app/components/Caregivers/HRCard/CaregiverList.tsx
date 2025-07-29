@@ -12,7 +12,6 @@ interface CaregiverListProps {
   selectedCaregivers: number[];
   onSearchChange: (value: string) => void;
   onStatusChange: (status: string) => void;
-  onMultiSelectToggle: () => void;
   onCaregiverSelect: (id: number) => void;
 }
 
@@ -25,7 +24,6 @@ export default function CaregiverList({
   selectedCaregivers,
   onSearchChange,
   onStatusChange,
-  onMultiSelectToggle,
   onCaregiverSelect
 }: CaregiverListProps) {
   const getStatusColor = (status: string) => {
@@ -51,16 +49,7 @@ export default function CaregiverList({
       <Flex direction="column" gap="4" p="4" style={{ flex: 1, minHeight: 0 }}>
         {/* 검색 및 필터 */}
         <Flex direction="column" gap="3">
-          <Flex justify="between" align="center">
             <Heading size="4">요양보호사 목록</Heading>
-            <Button 
-              variant={multiSelectMode ? 'solid' : 'soft'} 
-              size="2"
-              onClick={onMultiSelectToggle}
-            >
-              복수 선택 모드
-            </Button>
-          </Flex>
           
           {/* 검색바 */}
           <Flex gap="2" align="center">

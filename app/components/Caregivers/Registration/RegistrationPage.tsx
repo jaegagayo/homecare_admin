@@ -33,17 +33,17 @@ export default function RegistrationPage() {
 
   return (
     <Flex direction="column" gap="5" style={{ height: '100vh' }}>
-      <Heading size="4" mb="4">등록/말소 요청 관리</Heading>
-      
-      <Tabs.Root value={selectedTab} onValueChange={setSelectedTab}>
-        <Tabs.List>
-          <Tabs.Trigger value="pending">대기 중 ({getTabCount('pending')})</Tabs.Trigger>
-          <Tabs.Trigger value="approved">승인됨 ({getTabCount('approved')})</Tabs.Trigger>
-          <Tabs.Trigger value="rejected">반려됨 ({getTabCount('rejected')})</Tabs.Trigger>
-          <Tabs.Trigger value="direct-registration">직권 등록</Tabs.Trigger>
-          <Tabs.Trigger value="direct-deletion">직권 말소</Tabs.Trigger>
-        </Tabs.List>
-      </Tabs.Root>
+        <Heading size="4" mb="4">등록/말소 요청 관리</Heading>
+        
+        <Tabs.Root value={selectedTab} onValueChange={setSelectedTab}>
+          <Tabs.List>
+            <Tabs.Trigger value="pending">대기 중 ({getTabCount('pending')})</Tabs.Trigger>
+            <Tabs.Trigger value="approved">승인됨 ({getTabCount('approved')})</Tabs.Trigger>
+            <Tabs.Trigger value="rejected">반려됨 ({getTabCount('rejected')})</Tabs.Trigger>
+            <Tabs.Trigger value="direct-registration">직권 등록</Tabs.Trigger>
+            <Tabs.Trigger value="direct-deletion">직권 말소</Tabs.Trigger>
+          </Tabs.List>
+        </Tabs.Root>
 
       {/* 등록/말소 요청 관리 */}
       <Flex direction="column" style={{ flex: 1 }}>

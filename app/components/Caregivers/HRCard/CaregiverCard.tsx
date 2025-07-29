@@ -128,7 +128,7 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
           </ScrollArea>
         ) : (
           <Flex justify="center" align="center" style={{ flex: 1 }}>
-            <Text size="3" color="gray">요양보호사를 선택해주세요</Text>
+            <Text size="3" color="gray">보호사를 선택해주세요</Text>
           </Flex>
         )}
       </Flex>
