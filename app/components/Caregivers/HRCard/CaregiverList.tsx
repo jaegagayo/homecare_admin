@@ -1,7 +1,7 @@
 import { Flex, Heading, Card, Text, Button, Badge, Separator, ScrollArea, Checkbox } from '@radix-ui/themes';
 import { PlusIcon, MixIcon } from '@radix-ui/react-icons';
 
-import { Caregiver } from '../../data/caregivers';
+import { Caregiver } from '../../../data/caregivers';
 
 interface CaregiverListProps {
   caregivers: Caregiver[];

@@ -1,7 +1,7 @@
 import { Flex, Heading, Card, Text, Button, Badge, ScrollArea, Table } from '@radix-ui/themes';
 import { EnvelopeClosedIcon, ChatBubbleIcon, PersonIcon } from '@radix-ui/react-icons';
 
-import { Caregiver } from '../../data/caregivers';
+import { Caregiver } from '../../../data/caregivers';
 
 interface MultiSelectPanelProps {
   selectedCaregivers: Caregiver[];

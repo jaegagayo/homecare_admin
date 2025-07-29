@@ -1,10 +1,10 @@
 import { Flex } from '@radix-ui/themes';
 import { useState } from 'react';
 import PageHeader from '../Common/PageHeader';
-import CaregiverList from './CaregiverList';
-import CaregiverCard from './CaregiverCard';
-import MultiSelectPanel from './MultiSelectPanel';
-import RegistrationPage from './RegistrationPage';
+import CaregiverList from './HRCard/CaregiverList';
+import CaregiverCard from './HRCard/CaregiverCard';
+import MultiSelectPanel from './HRCard/MultiSelectPanel';
+import RegistrationPage from './Registration/RegistrationPage';
 import { sampleCaregivers } from '../../data/caregivers';
 
 const tabs = [

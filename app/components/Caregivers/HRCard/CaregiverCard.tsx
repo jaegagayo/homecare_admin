@@ -1,5 +1,5 @@
 import { Flex, Heading, Card, Text, Button, Badge, ScrollArea } from '@radix-ui/themes';
-import { Caregiver } from '../../data/caregivers';
+import { Caregiver } from '../../../data/caregivers';
 
 interface CaregiverCardProps {
   selectedCaregiver: number | null;
