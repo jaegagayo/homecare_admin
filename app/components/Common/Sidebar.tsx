@@ -45,7 +45,7 @@ export default function FloatingActionBar({ onMenuClick, selected }: FloatingAct
             padding: 0,
             height: 48,
             background: hovered === idx
-              ? 'linear-gradient(270deg, rgba(30,30,30,1) 60%, rgba(30,30,30,0.0) 100%)'
+              ? 'linear-gradient(270deg, var(--color-surface) 0%, transparent 100%)'
               : 'none',
             boxShadow: 'none',
             borderRadius: 24,

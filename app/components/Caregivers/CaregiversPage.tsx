@@ -1,9 +1,10 @@
-import { Flex, Heading } from '@radix-ui/themes';
+import { Flex } from '@radix-ui/themes';
 import { useState } from 'react';
 import PageHeader from '../Common/PageHeader';
 import CaregiverList from './CaregiverList';
 import CaregiverCard from './CaregiverCard';
 import MultiSelectPanel from './MultiSelectPanel';
+import RegistrationPage from './RegistrationPage';
 import { sampleCaregivers } from '../../data/caregivers';
 
 const tabs = [
@@ -94,7 +95,7 @@ export default function CaregiversPage() {
       )}
       
       {tab === 'register' && (
-        <Heading size="5">요양보호사 등록/말소 화면</Heading>
+        <RegistrationPage />
       )}
     </Flex>
   );
