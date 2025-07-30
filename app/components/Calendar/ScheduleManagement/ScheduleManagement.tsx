@@ -17,7 +17,6 @@ export default function ScheduleManagement({ onViewCaregiverSchedule }: Schedule
   const tabs = [
     { key: 'list', label: '스케줄 목록' },
     { key: 'add', label: '스케줄 추가' },
-    { key: 'approval', label: '승인/반려' },
   ];
 
   const getStatusColor = (status: string) => {
@@ -77,7 +76,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule }: Schedule
 
       <Tabs.Root value={selectedTab} onValueChange={setSelectedTab}>
         <Tabs.List>
-          {tabs.map(tab => (
+          {tabs.filter(tab => tab.key !== 'approval').map(tab => (
             <Tabs.Trigger key={tab.key} value={tab.key}>
               {tab.label}
             </Tabs.Trigger>
@@ -229,12 +228,6 @@ export default function ScheduleManagement({ onViewCaregiverSchedule }: Schedule
 
       {selectedTab === 'add' && (
         <AddSchedule />
-      )}
-
-      {selectedTab === 'approval' && (
-        <Flex justify="center" align="center" style={{ flex: 1 }}>
-          <Text size="4" color="gray">승인/반려 관리 (구현 예정)</Text>
-        </Flex>
       )}
     </Flex>
   );

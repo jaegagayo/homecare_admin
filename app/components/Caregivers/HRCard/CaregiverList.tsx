@@ -1,5 +1,5 @@
 import { Flex, Heading, Card, Text, Button, Badge, Separator, ScrollArea, Checkbox } from '@radix-ui/themes';
-import { PlusIcon, MixerHorizontalIcon } from '@radix-ui/react-icons';
+import { MixerHorizontalIcon } from '@radix-ui/react-icons';
 
 import { Caregiver } from '../../../data/caregivers';
 
@@ -133,12 +133,6 @@ export default function CaregiverList({
             ))}
           </Flex>
         </ScrollArea>
-
-        {/* 새 요양보호사 등록 버튼 */}
-        <Button style={{ width: '100%' }}>
-          <PlusIcon />
-          새 요양보호사 등록
-        </Button>
       </Flex>
     </Card>
   );
