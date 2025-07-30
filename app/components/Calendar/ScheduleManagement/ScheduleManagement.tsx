@@ -2,6 +2,7 @@ import { Flex, Heading, Text, Card, Button, Badge, Table, ScrollArea, Tabs, Sele
 import { useState } from 'react';
 import { sampleSchedules } from '../../../data/schedules';
 import { sampleCaregivers } from '../../../data/caregivers';
+import AddSchedule from './AddSchedule';
 
 interface ScheduleManagementProps {
   onViewCaregiverSchedule?: (caregiverId: number) => void;
@@ -161,7 +162,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule }: Schedule
                   {filteredSchedules.map(schedule => (
                     <Table.Row key={schedule.id}>
                       <Table.Cell>
-                        <Text weight="medium">{schedule.caregiverName}</Text>
+                          <Text weight="medium">{schedule.caregiverName}</Text>
                       </Table.Cell>
                       <Table.Cell>
                         <Text size="2">{schedule.date}</Text>
@@ -186,7 +187,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule }: Schedule
                         </Badge>
                       </Table.Cell>
                       <Table.Cell>
-                        <Flex gap="2">
+                          <Flex gap="2">
                           <Button 
                             variant="soft" 
                             size="1" 
@@ -197,25 +198,25 @@ export default function ScheduleManagement({ onViewCaregiverSchedule }: Schedule
                           </Button>
                           {schedule.status === '미배정' && (
                             <>
-                              <Button 
-                                variant="soft" 
-                                size="1" 
-                                color="green"
-                                onClick={() => handleApprove(schedule.id)}
-                              >
-                                배정
-                              </Button>
-                              <Button 
-                                variant="soft" 
-                                size="1" 
-                                color="red"
-                                onClick={() => handleReject(schedule.id)}
-                              >
-                                취소
-                              </Button>
+                            <Button 
+                              variant="soft" 
+                              size="1" 
+                              color="green"
+                              onClick={() => handleApprove(schedule.id)}
+                            >
+                              배정
+                            </Button>
+                            <Button 
+                              variant="soft" 
+                              size="1" 
+                              color="red"
+                              onClick={() => handleReject(schedule.id)}
+                            >
+                              취소
+                            </Button>
                             </>
                           )}
-                        </Flex>
+                          </Flex>
                       </Table.Cell>
                     </Table.Row>
                   ))}
@@ -227,9 +228,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule }: Schedule
       )}
 
       {selectedTab === 'add' && (
-        <Flex justify="center" align="center" style={{ flex: 1 }}>
-          <Text size="4" color="gray">스케줄 추가 기능 (구현 예정)</Text>
-        </Flex>
+        <AddSchedule />
       )}
 
       {selectedTab === 'approval' && (

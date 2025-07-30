@@ -1,5 +1,5 @@
 import { Flex, Heading, Card, Text, Button, Badge, Separator, ScrollArea, Checkbox } from '@radix-ui/themes';
-import { PlusIcon, MixIcon } from '@radix-ui/react-icons';
+import { PlusIcon, MixerHorizontalIcon } from '@radix-ui/react-icons';
 
 import { Caregiver } from '../../../data/caregivers';
 
@@ -71,7 +71,7 @@ export default function CaregiverList({
               }}
             />
             <Button variant="soft" size="2" style={{ height: '32px' }}>
-              <MixIcon />
+              <MixerHorizontalIcon />
             </Button>
           </Flex>
 
