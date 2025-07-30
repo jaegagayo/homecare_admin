@@ -1,5 +1,6 @@
 import { Card, Flex, Heading, Text, Table } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
+import { formatCurrency } from '../../utils/formatters';
 import '../../styles/card.css';
 
 export default function DashboardPage() {
@@ -71,15 +72,15 @@ export default function DashboardPage() {
           <Flex gap="6" wrap="wrap" justify="center">
             <Flex direction="column" align="center" style={{ minWidth: 150 }}>
               <Text size="2" color="gray">이번달 누적 정산</Text>
-              <Heading size="5">₩12,500,000</Heading>
+              <Heading size="6">{formatCurrency(12500000)}</Heading>
             </Flex>
             <Flex direction="column" align="center" style={{ minWidth: 150 }}>
               <Text size="2" color="gray">미정산 건수</Text>
-              <Heading size="5">2건</Heading>
+              <Heading size="6">2건</Heading>
             </Flex>
             <Flex direction="column" align="center" style={{ minWidth: 150 }}>
               <Text size="2" color="gray">부정행위 알림</Text>
-              <Heading size="5">1건</Heading>
+              <Heading size="6">1건</Heading>
             </Flex>
           </Flex>
         </Card>
