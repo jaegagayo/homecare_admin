@@ -1,4 +1,5 @@
 import { Flex, Heading, Text, Card, Tooltip } from '@radix-ui/themes';
+import { formatCurrency } from '../../utils/formatters';
 
 interface SettlementOverviewCardProps {
   totalAmount: number;
@@ -11,10 +12,6 @@ export default function SettlementOverviewCard({
   previousMonthChange, 
   monthlyData 
 }: SettlementOverviewCardProps) {
-  const formatAmount = (amount: number) => {
-    return `${(amount / 10000).toFixed(0)}만원`;
-  };
-
   const formatChange = (change: number) => {
     const sign = change >= 0 ? '+' : '';
     return `${sign}${change}%`;
@@ -24,7 +21,7 @@ export default function SettlementOverviewCard({
     <Card style={{ width: '280px', padding: '20px', display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Text size="2" color="gray" weight="medium">이번 달 총 정산</Text>
       <Heading size="5" style={{ color: 'var(--green-9)', marginTop: '8px' }}>
-        {formatAmount(totalAmount)}
+        {formatCurrency(totalAmount)}
       </Heading>
       <Text size="2" color="gray" style={{ marginTop: '4px' }}>
         전월 대비 {formatChange(previousMonthChange)}
@@ -37,7 +34,7 @@ export default function SettlementOverviewCard({
           {monthlyData.map((amount, index) => {
             const monthNames = ['2월', '3월', '4월', '5월', '6월', '7월'];
             return (
-              <Tooltip key={index} content={`${monthNames[index]}, ${amount}만원`}>
+              <Tooltip key={index} content={`${monthNames[index]}, ${formatCurrency(amount)}`}>
                 <div
                   style={{
                     flex: 1,

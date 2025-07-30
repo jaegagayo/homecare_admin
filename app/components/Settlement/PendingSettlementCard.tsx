@@ -1,4 +1,5 @@
 import { Flex, Heading, Text, Card, Tooltip } from '@radix-ui/themes';
+import { formatCurrency } from '../../utils/formatters';
 
 interface PendingSettlementCardProps {
   pendingCount: number;
@@ -11,10 +12,6 @@ export default function PendingSettlementCard({
   totalAmount, 
   weeklyData 
 }: PendingSettlementCardProps) {
-  const formatAmount = (amount: number) => {
-    return `${(amount / 10000).toFixed(0)}만원`;
-  };
-
     return (
     <Card style={{ width: '280px', padding: '20px', display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Text size="2" color="gray" weight="medium">미정산 건수</Text>
@@ -22,7 +19,7 @@ export default function PendingSettlementCard({
         {pendingCount}건
       </Heading>
       <Text size="2" color="gray" style={{ marginTop: '4px' }}>
-        총 {formatAmount(totalAmount)}
+        총 {formatCurrency(totalAmount)}
       </Text>
       
       {/* 최근 7일 미정산 건수 그래프 */}

@@ -1,4 +1,5 @@
 import { Heading, Card, Table, ScrollArea, Badge, Button } from '@radix-ui/themes';
+import { formatCurrency } from '../../utils/formatters';
 
 interface SettlementRecord {
   id: string;
@@ -34,10 +35,6 @@ export default function SettlementHistoryTable({ title, records }: SettlementHis
     }
   };
 
-  const formatAmount = (amount: number) => {
-    return `${amount.toLocaleString()}원`;
-  };
-
   return (
     <Card style={{ flex: 1, padding: '20px' }}>
       <Heading size="4" mb="4">{title}</Heading>
@@ -59,7 +56,7 @@ export default function SettlementHistoryTable({ title, records }: SettlementHis
                 <Table.Cell>{record.caregiverName}</Table.Cell>
                 <Table.Cell>{record.workDate}</Table.Cell>
                 <Table.Cell>{record.workHours}</Table.Cell>
-                <Table.Cell>{formatAmount(record.amount)}</Table.Cell>
+                <Table.Cell>{formatCurrency(record.amount)}</Table.Cell>
                 <Table.Cell>
                   <Badge color={getStatusColor(record.status)} size="1">
                     {getStatusText(record.status)}
