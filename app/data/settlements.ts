@@ -74,7 +74,7 @@ export const pendingSettlementRecords: SettlementRecord[] = [
 export const settlementOverviewData = {
   totalAmount: 24500000, // 2,450만원
   previousMonthChange: 12,
-  monthlyData: [1800, 2100, 1950, 2200, 2180, 2450] // 단위: 만원
+  monthlyData: [18000000, 21000000, 19500000, 22000000, 21800000, 24500000] // 단위: 만원
 };
 
 // 미정산 현황 데이터
