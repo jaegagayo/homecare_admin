@@ -115,31 +115,38 @@ export default function CalendarGrid({ year, month }: { year: number, month: num
                           근무: {daySchedules.length}명
                         </Text>
                         
-                        {/* 근무 유형별 요약 */}
-                        {daySchedules.slice(0, 3).map((schedule) => (
-                          <div
-                            key={schedule.id}
-                            style={{
-                              background: getWorkTypeColor(schedule.workType),
-                              color: 'white',
-                              borderRadius: 4,
-                              fontSize: 10,
-                              padding: '1px 4px',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              marginBottom: 1,
-                            }}
-                          >
-                            {schedule.caregiverName} ({schedule.workType})
-                          </div>
-                        ))}
-                        
-                        {daySchedules.length > 3 && (
-                          <Text size="1" color="gray">
-                            +{daySchedules.length - 3}명 더
-                          </Text>
-                        )}
+                        {/* 근무 유형별 인원수 계산 */}
+                        {(() => {
+                          const workTypeCounts = daySchedules.reduce((acc, schedule) => {
+                            acc[schedule.workType] = (acc[schedule.workType] || 0) + 1;
+                            return acc;
+                          }, {} as Record<string, number>);
+                          
+                          const workTypes = ['센터', '재가', '방문'];
+                          return workTypes.map(workType => {
+                            const count = workTypeCounts[workType] || 0;
+                            if (count === 0) return null;
+                            
+                            return (
+                              <div
+                                key={workType}
+                                style={{
+                                  background: getWorkTypeColor(workType),
+                                  color: 'white',
+                                  borderRadius: 4,
+                                  fontSize: 10,
+                                  padding: '1px 3px',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  marginBottom: 1,
+                                }}
+                              >
+                                {workType}: {count}명
+                              </div>
+                            );
+                          }).filter(Boolean);
+                        })()}
                       </Flex>
                     )}
                   </>
