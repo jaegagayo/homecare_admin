@@ -1,6 +1,6 @@
 import { Flex, Card, Text, Badge, Table, ScrollArea, Button, Select } from '@radix-ui/themes';
 import { useState } from 'react';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency } from '../../../utils/formatters';
 
 interface SettlementRecord {
   id: string;

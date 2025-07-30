@@ -1,5 +1,5 @@
 import { Flex, Heading, Text, Card, Tooltip } from '@radix-ui/themes';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency } from '../../../utils/formatters';
 
 interface SettlementOverviewCardProps {
   totalAmount: number;

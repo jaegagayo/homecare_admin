@@ -1,5 +1,5 @@
 import { Heading, Card, Table, ScrollArea, Badge, Button } from '@radix-ui/themes';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency } from '../../../utils/formatters';
 
 interface SettlementRecord {
   id: string;
