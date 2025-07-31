@@ -39,15 +39,6 @@ export default function ScheduleManagement({ onViewCaregiverSchedule }: Schedule
     }
   };
 
-  const getWorkTypeColor = (workType: string) => {
-    switch (workType) {
-      case '센터': return 'blue';
-      case '재가': return 'purple';
-      case '방문': return 'orange';
-      default: return 'gray';
-    }
-  };
-
   const filteredSchedules = sampleSchedules.filter(schedule => {
     const matchesDate = selectedDate === '' || schedule.date === selectedDate;
     const matchesCaregiver = selectedCaregiver === 'all' || 
@@ -150,7 +141,6 @@ export default function ScheduleManagement({ onViewCaregiverSchedule }: Schedule
                     <Table.ColumnHeaderCell>보호사명</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>날짜</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>시간</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>근무 유형</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>근무지</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>시급</Table.ColumnHeaderCell>
                     <Table.ColumnHeaderCell>상태</Table.ColumnHeaderCell>
@@ -168,11 +158,6 @@ export default function ScheduleManagement({ onViewCaregiverSchedule }: Schedule
                       </Table.Cell>
                       <Table.Cell>
                         <Text size="2">{schedule.startTime} - {schedule.endTime}</Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Badge color={getWorkTypeColor(schedule.workType)} size="1">
-                          {schedule.workType}
-                        </Badge>
                       </Table.Cell>
                       <Table.Cell>
                         <Text size="2" color="gray">{schedule.location}</Text>

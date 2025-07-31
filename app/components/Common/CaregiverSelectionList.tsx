@@ -27,15 +27,6 @@ export default function CaregiverSelectionList({
     }
   };
 
-  const getWorkTypeColor = (workType: string) => {
-    switch (workType) {
-      case '센터': return 'blue';
-      case '재가': return 'purple';
-      case '방문': return 'orange';
-      default: return 'gray';
-    }
-  };
-
   const filteredCaregivers = sampleCaregivers.filter(caregiver => {
     const matchesSearch = caregiver.name.includes(searchTerm) || 
                          caregiver.phone.includes(searchTerm);
@@ -46,7 +37,7 @@ export default function CaregiverSelectionList({
 
   return (
     <Flex direction="column" gap="4">
-      <Text size="2" weight="medium">말소할 보호사 선택</Text>
+      <Text size="2" weight="medium">요양보호사 선택</Text>
       
       {/* 검색바 */}
       <input
@@ -101,9 +92,6 @@ export default function CaregiverSelectionList({
                 <Flex gap="2" align="center">
                   <Badge color={getStatusColor(caregiver.status)} size="1">
                     {caregiver.status}
-                  </Badge>
-                  <Badge color={getWorkTypeColor(caregiver.workType)} size="1">
-                    {caregiver.workType}
                   </Badge>
                 </Flex>
               </Flex>

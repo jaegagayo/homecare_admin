@@ -1,4 +1,4 @@
-import { Flex, Heading, Text, Card, Button, TextField } from '@radix-ui/themes';
+import { Flex, Heading, Text, Card, Button, TextArea } from '@radix-ui/themes';
 import { useState } from 'react';
 import { sampleCaregivers } from '../../../data/caregivers';
 import CaregiverSelectionList from '../../Common/CaregiverSelectionList';
@@ -96,11 +96,11 @@ export default function DirectDeletionForm({ onSubmit }: DirectDeletionFormProps
               </Card>
             )}
 
-            <TextField.Root 
+            <TextArea 
               placeholder="말소 사유를 상세히 입력하세요"
               value={deletionReason}
               onChange={(e) => setDeletionReason(e.target.value)}
-              style={{ minHeight: '100px' }}
+              
             />
 
             <Flex gap="2">
