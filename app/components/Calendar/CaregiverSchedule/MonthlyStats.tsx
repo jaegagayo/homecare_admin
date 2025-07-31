@@ -1,6 +1,7 @@
 import { Flex, Card, Heading, Text, Badge, Table, ScrollArea } from '@radix-ui/themes';
 import { useState } from 'react';
 import { WorkSchedule } from '../../../data/schedules';
+import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
 
 interface MonthlyStatsProps {
   schedules: WorkSchedule[];
@@ -32,12 +33,7 @@ export default function MonthlyStats({ schedules }: MonthlyStatsProps) {
   };
 
   const getWorkTypeColor = (workType: string) => {
-    switch (workType) {
-      case '센터': return 'blue';
-      case '재가': return 'purple';
-      case '방문': return 'orange';
-      default: return 'gray';
-    }
+    return WORK_TYPE_COLORS[workType as keyof typeof WORK_TYPE_COLORS] as "blue" | "purple" | "green" | "orange" | "yellow" | "red" || 'gray';
   };
 
   const getStatusColor = (status: string) => {

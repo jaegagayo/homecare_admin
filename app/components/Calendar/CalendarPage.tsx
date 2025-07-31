@@ -8,6 +8,7 @@ import ScheduleManagement from './ScheduleManagement/ScheduleManagement';
 import CaregiverSchedule from './CaregiverSchedule/CaregiverSchedule';
 import CaregiverList from '../Common/CaregiverList';
 import { sampleCaregivers } from '../../data/caregivers';
+import { WORK_TYPES, WorkType } from '../../constants/workTypes';
 
 const tabs = [
   { key: 'calendar', label: '캘린더 보기' },
@@ -20,10 +21,13 @@ export default function CalendarPage() {
   const [selectedCaregiverId, setSelectedCaregiverId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('전체');
-  const [workTypeFilters, setWorkTypeFilters] = useState({
-    center: true,
-    home: true,
-    visit: true
+  const [workTypeFilters, setWorkTypeFilters] = useState<Record<WorkType, boolean>>({
+    [WORK_TYPES.VISITING_CARE]: true,
+    [WORK_TYPES.DAY_NIGHT_CARE]: true,
+    [WORK_TYPES.SHORT_TERM_CARE]: true,
+    [WORK_TYPES.VISITING_BATH]: true,
+    [WORK_TYPES.IN_HOME_SUPPORT]: true,
+    [WORK_TYPES.VISITING_NURSING]: true
   });
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState('month');
@@ -44,7 +48,7 @@ export default function CalendarPage() {
     }
   };
 
-  const handleWorkTypeFilterChange = (filters: { center: boolean; home: boolean; visit: boolean }) => {
+  const handleWorkTypeFilterChange = (filters: Record<WorkType, boolean>) => {
     setWorkTypeFilters(filters);
   };
 

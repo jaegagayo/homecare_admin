@@ -1,3 +1,5 @@
+import { WorkType, WORK_TYPES } from '../constants/workTypes';
+
 export interface WorkSchedule {
   id: string;
   caregiverId: number;
@@ -5,7 +7,7 @@ export interface WorkSchedule {
   date: string; // YYYY-MM-DD 형식
   startTime: string; // HH:MM 형식
   endTime: string; // HH:MM 형식
-  workType: '센터' | '재가' | '방문';
+  workType: WorkType;
   location: string;
   hourlyWage: number;
   status: '배정됨' | '미배정' | '완료' | '취소';
@@ -21,7 +23,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-25',
     startTime: '09:00',
     endTime: '17:00',
-    workType: '센터',
+    workType: WORK_TYPES.DAY_NIGHT_CARE,
     location: '서울요양센터',
     hourlyWage: 12000,
     status: '완료'
@@ -33,7 +35,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-25',
     startTime: '08:00',
     endTime: '16:00',
-    workType: '재가',
+    workType: WORK_TYPES.VISITING_CARE,
     location: '강남구 김씨댁',
     hourlyWage: 15000,
     status: '완료'
@@ -45,7 +47,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-26',
     startTime: '10:00',
     endTime: '18:00',
-    workType: '방문',
+    workType: WORK_TYPES.VISITING_BATH,
     location: '서초구 박씨댁',
     hourlyWage: 18000,
     status: '완료'
@@ -57,7 +59,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-26',
     startTime: '09:00',
     endTime: '17:00',
-    workType: '센터',
+    workType: WORK_TYPES.DAY_NIGHT_CARE,
     location: '서울요양센터',
     hourlyWage: 12000,
     status: '완료'
@@ -69,7 +71,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-27',
     startTime: '08:00',
     endTime: '16:00',
-    workType: '재가',
+    workType: WORK_TYPES.VISITING_CARE,
     location: '마포구 이씨댁',
     hourlyWage: 15000,
     status: '완료'
@@ -81,7 +83,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-28',
     startTime: '09:00',
     endTime: '17:00',
-    workType: '센터',
+    workType: WORK_TYPES.DAY_NIGHT_CARE,
     location: '서울요양센터',
     hourlyWage: 12000,
     status: '배정됨'
@@ -93,7 +95,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-28',
     startTime: '08:00',
     endTime: '16:00',
-    workType: '재가',
+    workType: WORK_TYPES.VISITING_CARE,
     location: '강남구 김씨댁',
     hourlyWage: 15000,
     status: '배정됨'
@@ -105,7 +107,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-28',
     startTime: '10:00',
     endTime: '18:00',
-    workType: '방문',
+    workType: WORK_TYPES.VISITING_BATH,
     location: '서초구 박씨댁',
     hourlyWage: 18000,
     status: '배정됨'
@@ -117,7 +119,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-29',
     startTime: '09:00',
     endTime: '17:00',
-    workType: '센터',
+    workType: WORK_TYPES.SHORT_TERM_CARE,
     location: '서울요양센터',
     hourlyWage: 12000,
     status: '미배정'
@@ -129,7 +131,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-29',
     startTime: '08:00',
     endTime: '16:00',
-    workType: '재가',
+    workType: WORK_TYPES.VISITING_CARE,
     location: '마포구 이씨댁',
     hourlyWage: 15000,
     status: '배정됨'
@@ -141,7 +143,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-30',
     startTime: '09:00',
     endTime: '17:00',
-    workType: '센터',
+    workType: WORK_TYPES.DAY_NIGHT_CARE,
     location: '서울요양센터',
     hourlyWage: 12000,
     status: '배정됨'
@@ -153,7 +155,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-30',
     startTime: '10:00',
     endTime: '18:00',
-    workType: '방문',
+    workType: WORK_TYPES.VISITING_NURSING,
     location: '용산구 이씨댁',
     hourlyWage: 18000,
     status: '미배정'
@@ -165,7 +167,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-07-31',
     startTime: '08:00',
     endTime: '16:00',
-    workType: '재가',
+    workType: WORK_TYPES.IN_HOME_SUPPORT,
     location: '서대문구 박씨댁',
     hourlyWage: 15000,
     status: '배정됨'
@@ -177,7 +179,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-08-01',
     startTime: '09:00',
     endTime: '17:00',
-    workType: '센터',
+    workType: WORK_TYPES.DAY_NIGHT_CARE,
     location: '서울요양센터',
     hourlyWage: 12000,
     status: '배정됨'
@@ -189,7 +191,7 @@ export const sampleSchedules: WorkSchedule[] = [
     date: '2025-08-02',
     startTime: '08:00',
     endTime: '16:00',
-    workType: '재가',
+    workType: WORK_TYPES.VISITING_CARE,
     location: '강남구 김씨댁',
     hourlyWage: 15000,
     status: '배정됨'

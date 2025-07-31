@@ -1,5 +1,6 @@
 import { Card, Flex, Text } from '@radix-ui/themes';
 import { sampleSchedules, groupSchedulesByDate } from '../../../data/schedules';
+import { WORK_TYPES, WorkType } from '../../../constants/workTypes';
 
 function getDaysArray(year: number, month: number) {
   const firstDay = new Date(year, month, 1).getDay();
@@ -19,13 +20,16 @@ function formatDate(year: number, month: number, day: number): string {
 }
 
 // 근무 유형별 색상 반환
-function getWorkTypeColor(workType: string) {
-  switch (workType) {
-    case '센터': return 'var(--blue-9)';
-    case '재가': return 'var(--purple-9)';
-    case '방문': return 'var(--orange-9)';
-    default: return 'var(--gray-9)';
-  }
+function getWorkTypeColor(workType: WorkType) {
+  const colorMap: Record<WorkType, string> = {
+    [WORK_TYPES.VISITING_CARE]: 'var(--blue-9)',
+    [WORK_TYPES.DAY_NIGHT_CARE]: 'var(--purple-9)',
+    [WORK_TYPES.SHORT_TERM_CARE]: 'var(--green-9)',
+    [WORK_TYPES.VISITING_BATH]: 'var(--orange-9)',
+    [WORK_TYPES.IN_HOME_SUPPORT]: 'var(--yellow-9)',
+    [WORK_TYPES.VISITING_NURSING]: 'var(--red-9)'
+  };
+  return colorMap[workType] || 'var(--gray-9)';
 }
 
 
@@ -33,11 +37,18 @@ function getWorkTypeColor(workType: string) {
 export default function CalendarGrid({ 
   year, 
   month, 
-  workTypeFilters = { center: true, home: true, visit: true } 
+  workTypeFilters = { 
+    [WORK_TYPES.VISITING_CARE]: true,
+    [WORK_TYPES.DAY_NIGHT_CARE]: true,
+    [WORK_TYPES.SHORT_TERM_CARE]: true,
+    [WORK_TYPES.VISITING_BATH]: true,
+    [WORK_TYPES.IN_HOME_SUPPORT]: true,
+    [WORK_TYPES.VISITING_NURSING]: true
+  } 
 }: { 
   year: number; 
   month: number; 
-  workTypeFilters?: { center: boolean; home: boolean; visit: boolean }; 
+  workTypeFilters?: Record<WorkType, boolean>; 
 }) {
   const days = getDaysArray(year, month);
   const weekCount = days.length / 7;
@@ -54,12 +65,7 @@ export default function CalendarGrid({
 
   // 근무 유형별 필터링
   const filteredSchedules = monthSchedules.filter(schedule => {
-    const workTypeMap = {
-      '센터': workTypeFilters.center,
-      '재가': workTypeFilters.home,
-      '방문': workTypeFilters.visit
-    };
-    return workTypeMap[schedule.workType as keyof typeof workTypeMap] || false;
+    return workTypeFilters[schedule.workType] || false;
   });
 
   // 날짜별로 스케줄 그룹화
@@ -140,30 +146,36 @@ export default function CalendarGrid({
                             return acc;
                           }, {} as Record<string, number>);
                           
-                          const workTypes = ['센터', '재가', '방문'];
-                          return workTypes.map(workType => {
-                            const count = workTypeCounts[workType] || 0;
-                            if (count === 0) return null;
-                            
-                            return (
-                              <div
-                                key={workType}
-                                style={{
-                                  background: getWorkTypeColor(workType),
-                                  color: 'white',
-                                  borderRadius: 4,
-                                  fontSize: 10,
-                                  padding: '1px 3px',
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  marginBottom: 1,
-                                }}
-                              >
-                                {workType}: {count}명
-                              </div>
-                            );
-                          }).filter(Boolean);
+                          const workTypes = Object.values(WORK_TYPES);
+                          return (
+                            <Flex gap="1" wrap="wrap">
+                              {workTypes.map(workType => {
+                                const count = workTypeCounts[workType] || 0;
+                                if (count === 0) return null;
+                                
+                                return (
+                                  <div
+                                    key={workType}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      background: getWorkTypeColor(workType),
+                                      color: 'white',
+                                      borderRadius: '50%',
+                                      width: '20px',
+                                      height: '20px',
+                                      fontSize: 12,
+                                      fontWeight: 'bold',
+                                    }}
+                                    title={`${workType}: ${count}명`}
+                                  >
+                                    {count}
+                                  </div>
+                                );
+                              }).filter(Boolean)}
+                            </Flex>
+                          );
                         })()}
                       </Flex>
                     )}

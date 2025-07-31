@@ -1,8 +1,9 @@
-import { Flex, Card, Heading, Text, Button, Select, Badge } from '@radix-ui/themes';
+import { Flex, Card, Heading, Text, Button, Select } from '@radix-ui/themes';
 import { useState } from 'react';
 import { sampleCaregivers } from '../../../data/caregivers';
 import CaregiverSelectionList from '../../Common/CaregiverSelectionList';
 import { formatCurrency } from '../../../utils/formatters';
+import { WORK_TYPES, WORK_TYPE_COLORS } from '../../../constants/workTypes';
 
 interface AddScheduleProps {
   onScheduleAdded?: () => void;
@@ -23,18 +24,16 @@ export default function AddSchedule({ onScheduleAdded }: AddScheduleProps) {
   const [hourlyWage, setHourlyWage] = useState('');
 
   const workTypes = [
-    { value: '센터', label: '센터' },
-    { value: '재가', label: '재가' },
-    { value: '방문', label: '방문' },
+    { value: WORK_TYPES.VISITING_CARE, label: WORK_TYPES.VISITING_CARE },
+    { value: WORK_TYPES.DAY_NIGHT_CARE, label: WORK_TYPES.DAY_NIGHT_CARE },
+    { value: WORK_TYPES.SHORT_TERM_CARE, label: WORK_TYPES.SHORT_TERM_CARE },
+    { value: WORK_TYPES.VISITING_BATH, label: WORK_TYPES.VISITING_BATH },
+    { value: WORK_TYPES.IN_HOME_SUPPORT, label: WORK_TYPES.IN_HOME_SUPPORT },
+    { value: WORK_TYPES.VISITING_NURSING, label: WORK_TYPES.VISITING_NURSING },
   ];
 
   const getWorkTypeColor = (type: string) => {
-    switch (type) {
-      case '센터': return 'blue';
-      case '재가': return 'purple';
-      case '방문': return 'orange';
-      default: return 'gray';
-    }
+    return WORK_TYPE_COLORS[type as keyof typeof WORK_TYPE_COLORS] as "blue" | "purple" | "green" | "orange" | "yellow" | "red" || 'gray';
   };
 
   const calculateTotalAmount = () => {
@@ -228,9 +227,14 @@ export default function AddSchedule({ onScheduleAdded }: AddScheduleProps) {
                       {workTypes.map(type => (
                         <Select.Item key={type.value} value={type.value}>
                           <Flex align="center" gap="2">
-                            <Badge color={getWorkTypeColor(type.value)} size="1">
-                              {type.label}
-                            </Badge>
+                            <div
+                              style={{
+                                width: '12px',
+                                height: '12px',
+                                borderRadius: '50%',
+                                backgroundColor: `var(--${getWorkTypeColor(type.value)}-9)`,
+                              }}
+                            />
                             {type.label}
                           </Flex>
                         </Select.Item>

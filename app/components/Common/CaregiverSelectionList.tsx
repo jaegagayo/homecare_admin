@@ -72,7 +72,7 @@ export default function CaregiverSelectionList({
       </Flex>
 
       {/* 보호사 목록 */}
-      <ScrollArea style={{ height: '300px' }}>
+      <ScrollArea type='always' scrollbars='vertical' style={{ height: '300px' }}>
         <Flex direction="column" gap="2">
           {filteredCaregivers.map(caregiver => (
             <Card 
@@ -80,7 +80,8 @@ export default function CaregiverSelectionList({
               style={{ 
                 padding: '12px',
                 cursor: 'pointer',
-                backgroundColor: selectedCaregiver === caregiver.id ? 'var(--accent-3)' : 'transparent'
+                backgroundColor: selectedCaregiver === caregiver.id ? 'var(--accent-3)' : 'transparent',
+                marginRight: '4%'
               }}
               onClick={() => onCaregiverSelect(caregiver.id)}
             >

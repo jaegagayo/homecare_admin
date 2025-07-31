@@ -1,6 +1,7 @@
 import { Card, Text, Checkbox, Flex, Heading, Badge } from '@radix-ui/themes';
 import { useState } from 'react';
 import { sampleSchedules, groupSchedulesByDate } from '../../../data/schedules';
+import { WORK_TYPES, WORK_TYPE_COLORS, WorkType } from '../../../constants/workTypes';
 
 function getDaysArray(year: number, month: number) {
   const firstDay = new Date(year, month, 1).getDay();
@@ -22,7 +23,7 @@ function formatDate(year: number, month: number, day: number): string {
 interface CalendarSidebarProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
-  onWorkTypeFilterChange?: (filters: { center: boolean; home: boolean; visit: boolean }) => void;
+  onWorkTypeFilterChange?: (filters: Record<WorkType, boolean>) => void;
 }
 
 export default function CalendarSidebar({ selectedDate, onDateChange, onWorkTypeFilterChange }: CalendarSidebarProps) {
@@ -31,10 +32,13 @@ export default function CalendarSidebar({ selectedDate, onDateChange, onWorkType
   const days = getDaysArray(year, month);
   
   // 체크박스 상태 관리
-  const [workTypeFilters, setWorkTypeFilters] = useState({
-    center: true,
-    home: true,
-    visit: true
+  const [workTypeFilters, setWorkTypeFilters] = useState<Record<WorkType, boolean>>({
+    [WORK_TYPES.VISITING_CARE]: true,
+    [WORK_TYPES.DAY_NIGHT_CARE]: true,
+    [WORK_TYPES.SHORT_TERM_CARE]: true,
+    [WORK_TYPES.VISITING_BATH]: true,
+    [WORK_TYPES.IN_HOME_SUPPORT]: true,
+    [WORK_TYPES.VISITING_NURSING]: true
   });
   
   // 해당 월의 스케줄만 필터링
@@ -47,11 +51,10 @@ export default function CalendarSidebar({ selectedDate, onDateChange, onWorkType
   const schedulesByDate = groupSchedulesByDate(monthSchedules);
   
   // 근무 유형별 통계
-  const workTypeStats = {
-    '센터': monthSchedules.filter(s => s.workType === '센터').length,
-    '재가': monthSchedules.filter(s => s.workType === '재가').length,
-    '방문': monthSchedules.filter(s => s.workType === '방문').length,
-  };
+  const workTypeStats = Object.values(WORK_TYPES).reduce((acc, workType) => {
+    acc[workType] = monthSchedules.filter(s => s.workType === workType).length;
+    return acc;
+  }, {} as Record<string, number>);
   
   // 상태별 통계
   const statusStats = {
@@ -60,8 +63,8 @@ export default function CalendarSidebar({ selectedDate, onDateChange, onWorkType
     '완료': monthSchedules.filter(s => s.status === '완료').length,
   };
 
-  const handleWorkTypeFilterChange = (type: 'center' | 'home' | 'visit', checked: boolean) => {
-    const newFilters = { ...workTypeFilters, [type]: checked };
+  const handleWorkTypeFilterChange = (workType: WorkType, checked: boolean) => {
+    const newFilters = { ...workTypeFilters, [workType]: checked };
     setWorkTypeFilters(newFilters);
     if (onWorkTypeFilterChange) {
       onWorkTypeFilterChange(newFilters);
@@ -75,39 +78,24 @@ export default function CalendarSidebar({ selectedDate, onDateChange, onWorkType
       {/* 근무 유형별 필터 */}
       <Text size="2" weight="bold">근무 유형</Text>
       <Flex direction="column" gap="2" mt="2" mb="4">
-        <Flex align="center" justify="between">
-          <Flex align="center" gap="2">
-            <Checkbox 
-              checked={workTypeFilters.center}
-              onCheckedChange={(checked) => handleWorkTypeFilterChange('center', checked as boolean)}
-              id="center" 
-            />
-            <label htmlFor="center"><Text size="2">센터</Text></label>
+        {Object.values(WORK_TYPES).map(workType => (
+          <Flex key={workType} align="center" justify="between">
+            <Flex align="center" gap="2">
+              <Checkbox 
+                checked={workTypeFilters[workType]}
+                onCheckedChange={(checked) => handleWorkTypeFilterChange(workType, checked as boolean)}
+                id={workType} 
+              />
+              <label htmlFor={workType}><Text size="2">{workType}</Text></label>
+            </Flex>
+            <Badge 
+              color={WORK_TYPE_COLORS[workType] as "blue" | "purple" | "green" | "orange" | "yellow" | "red"} 
+              size="1"
+            >
+              {workTypeStats[workType]}
+            </Badge>
           </Flex>
-          <Badge color="blue" size="1">{workTypeStats['센터']}</Badge>
-        </Flex>
-        <Flex align="center" justify="between">
-          <Flex align="center" gap="2">
-            <Checkbox 
-              checked={workTypeFilters.home}
-              onCheckedChange={(checked) => handleWorkTypeFilterChange('home', checked as boolean)}
-              id="home" 
-            />
-            <label htmlFor="home"><Text size="2">재가</Text></label>
-          </Flex>
-          <Badge color="purple" size="1">{workTypeStats['재가']}</Badge>
-        </Flex>
-        <Flex align="center" justify="between">
-          <Flex align="center" gap="2">
-            <Checkbox 
-              checked={workTypeFilters.visit}
-              onCheckedChange={(checked) => handleWorkTypeFilterChange('visit', checked as boolean)}
-              id="visit" 
-            />
-            <label htmlFor="visit"><Text size="2">방문</Text></label>
-          </Flex>
-          <Badge color="orange" size="1">{workTypeStats['방문']}</Badge>
-        </Flex>
+        ))}
       </Flex>
       
       {/* 상태별 통계 */}

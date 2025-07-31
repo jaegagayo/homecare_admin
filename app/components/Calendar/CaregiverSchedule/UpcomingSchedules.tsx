@@ -1,5 +1,6 @@
 import { Text, Badge, Table, ScrollArea } from '@radix-ui/themes';
 import { WorkSchedule } from '../../../data/schedules';
+import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
 
 interface UpcomingSchedulesProps {
   schedules: WorkSchedule[];
@@ -23,6 +24,7 @@ export default function UpcomingSchedules({ schedules }: UpcomingSchedulesProps)
           <Table.Row>
             <Table.ColumnHeaderCell>날짜</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>시간</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>근무 유형</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>근무지</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>시급</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>상태</Table.ColumnHeaderCell>
@@ -36,6 +38,14 @@ export default function UpcomingSchedules({ schedules }: UpcomingSchedulesProps)
               </Table.Cell>
               <Table.Cell>
                 <Text size="2">{schedule.startTime} - {schedule.endTime}</Text>
+              </Table.Cell>
+              <Table.Cell>
+                <Badge 
+                  color={WORK_TYPE_COLORS[schedule.workType] as "blue" | "purple" | "green" | "orange" | "yellow" | "red"} 
+                  size="1"
+                >
+                  {schedule.workType}
+                </Badge>
               </Table.Cell>
               <Table.Cell>
                 <Text size="2" color="gray">{schedule.location}</Text>
