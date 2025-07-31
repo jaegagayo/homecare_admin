@@ -1,5 +1,6 @@
 import { Flex, Heading, Card, Text, Button, Badge, ScrollArea } from '@radix-ui/themes';
 import { Caregiver } from '../../../data/caregivers';
+import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
 
 interface CaregiverCardProps {
   selectedCaregiver: number | null;
@@ -18,6 +19,15 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ko-KR');
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case '활동중': return 'green';
+      case '휴직': return 'yellow';
+      case '퇴사': return 'red';
+      default: return 'gray';
+    }
   };
 
   return (
@@ -70,9 +80,17 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
                   </Flex>
                   <Flex direction="column" gap="2" style={{ minWidth: 200 }}>
                     <Text size="2" color="gray">근무 유형</Text>
-                    <Badge color={getWorkTypeColor(caregiver.workType)} size="2">
-                      {caregiver.workType}
-                    </Badge>
+                    <Flex gap="2" wrap="wrap">
+                      {caregiver.workTypes.map((workType, index) => (
+                        <Badge 
+                          key={index} 
+                          color={WORK_TYPE_COLORS[workType] as "blue" | "purple" | "green" | "orange" | "yellow" | "red"} 
+                          size="2"
+                        >
+                          {workType}
+                        </Badge>
+                      ))}
+                    </Flex>
                   </Flex>
                   <Flex direction="column" gap="2" style={{ minWidth: 200 }}>
                     <Text size="2" color="gray">입사일</Text>
@@ -134,22 +152,4 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
       </Flex>
     </Card>
   );
-}
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case '활동중': return 'green';
-    case '휴직': return 'yellow';
-    case '퇴사': return 'red';
-    default: return 'gray';
-  }
-};
-
-const getWorkTypeColor = (workType: string) => {
-  switch (workType) {
-    case '센터': return 'blue';
-    case '재가': return 'purple';
-    case '방문': return 'orange';
-    default: return 'gray';
-  }
-}; 
+} 

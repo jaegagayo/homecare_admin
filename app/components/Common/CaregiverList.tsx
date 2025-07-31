@@ -38,15 +38,6 @@ export default function CaregiverList({
     }
   };
 
-  const getWorkTypeColor = (workType: string) => {
-    switch (workType) {
-      case '센터': return 'blue';
-      case '재가': return 'purple';
-      case '방문': return 'orange';
-      default: return 'gray';
-    }
-  };
-
   return (
     <Card style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
       <Flex direction="column" gap="4" p="4" style={{ flex: 1, minHeight: 0 }}>
@@ -129,19 +120,12 @@ export default function CaregiverList({
                     />
                   )}
                   <Flex direction="column" gap="1" style={{ flex: 1 }}>
-                    <Flex justify="between" align="center">
-                      <Text weight="medium" size="2">{caregiver.name}</Text>
-                      <Badge color={getStatusColor(caregiver.status)} size="1">
-                        {caregiver.status}
-                      </Badge>
-                    </Flex>
-                    <Flex justify="between" align="center">
-                      <Text size="1" color="gray">{caregiver.phone}</Text>
-                      <Badge color={getWorkTypeColor(caregiver.workType)} size="1">
-                        {caregiver.workType}
-                      </Badge>
-                    </Flex>
+                    <Text weight="medium" size="2">{caregiver.name}</Text>
+                    <Text size="1" color="gray">{caregiver.phone}</Text>
                   </Flex>
+                  <Badge color={getStatusColor(caregiver.status)} size="1">
+                    {caregiver.status}
+                  </Badge>
                 </Flex>
               </Card>
             ))}
