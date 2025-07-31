@@ -72,9 +72,9 @@ export default function DirectRegistrationForm({ onSubmit }: DirectRegistrationF
               />
             </Flex>
             <Flex direction="column" gap="2" style={{ flex: 1 }}>
-              <Text size="2" weight="medium">이메일</Text>
+              <Text size="2" weight="medium">이메일 *</Text>
               <TextField.Root 
-                placeholder="이메일을 입력하세요 (선택사항)"
+                placeholder="이메일을 입력하세요"
                 value={directEmail}
                 onChange={(e) => setDirectEmail(e.target.value)}
               />
@@ -92,7 +92,7 @@ export default function DirectRegistrationForm({ onSubmit }: DirectRegistrationF
 
           <Button 
             onClick={handleSubmit}
-            disabled={!directName || !directPhone || !directBirthDate || !directAddress}
+            disabled={!directName || !directPhone || !directBirthDate || !directAddress || !directEmail}
             style={{ marginTop: '8px' }}
           >
             등록 처리
