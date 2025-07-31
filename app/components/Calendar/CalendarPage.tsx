@@ -9,20 +9,24 @@ import CaregiverSchedule from './CaregiverSchedule/CaregiverSchedule';
 import CaregiverList from '../Common/CaregiverList';
 import { sampleCaregivers } from '../../data/caregivers';
 
+const tabs = [
+  { key: 'calendar', label: '캘린더 보기' },
+  { key: 'schedule', label: '스케줄 관리' },
+  { key: 'caregiver-schedule', label: '요양보호사별 스케줄' },
+];
+
 export default function CalendarPage() {
-  const today = new Date();
-  const [date, setDate] = useState(today);
-  const [view, setView] = useState('month');
   const [tab, setTab] = useState('calendar');
   const [selectedCaregiverId, setSelectedCaregiverId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('전체');
-
-  const tabs = [
-    { key: 'calendar', label: '캘린더 보기' },
-    { key: 'schedule', label: '스케줄 관리' },
-    { key: 'caregiver-schedule', label: '요양보호사별 스케줄' },
-  ];
+  const [workTypeFilters, setWorkTypeFilters] = useState({
+    center: true,
+    home: true,
+    visit: true
+  });
+  const [date, setDate] = useState(new Date());
+  const [view, setView] = useState('month');
 
   const handleViewCaregiverSchedule = (caregiverId: number) => {
     setSelectedCaregiverId(caregiverId);
@@ -35,10 +39,13 @@ export default function CalendarPage() {
 
   const handleTabChange = (newTab: string) => {
     setTab(newTab);
-    // 탭 변경 시 보호사 선택 상태 초기화
     if (newTab !== 'caregiver-schedule') {
       setSelectedCaregiverId(null);
     }
+  };
+
+  const handleWorkTypeFilterChange = (filters: { center: boolean; home: boolean; visit: boolean }) => {
+    setWorkTypeFilters(filters);
   };
 
 
@@ -53,18 +60,26 @@ export default function CalendarPage() {
       {/* 탭별 내용 */}
       {tab === 'calendar' && (
         <Flex gap="6" style={{ flex: 1, minHeight: 0 }}>
-          <CalendarSidebar selectedDate={date} onDateChange={setDate} />
+          <CalendarSidebar 
+            selectedDate={date} 
+            onDateChange={setDate} 
+            onWorkTypeFilterChange={handleWorkTypeFilterChange}
+          />
           <Flex direction="column" style={{ flex: 1 }}>
             <CalendarHeader
               year={date.getFullYear()}
               month={date.getMonth()}
               onPrev={() => setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1))}
               onNext={() => setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1))}
-              onToday={() => setDate(today)}
+              onToday={() => setDate(new Date())}
               view={view}
               setView={setView}
             />
-            <CalendarGrid year={date.getFullYear()} month={date.getMonth()} />
+            <CalendarGrid 
+              year={date.getFullYear()} 
+              month={date.getMonth()} 
+              workTypeFilters={workTypeFilters}
+            />
           </Flex>
         </Flex>
       )}

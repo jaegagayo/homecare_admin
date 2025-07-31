@@ -1,4 +1,5 @@
 import { Card, Text, Checkbox, Flex, Heading, Badge } from '@radix-ui/themes';
+import { useState } from 'react';
 import { sampleSchedules, groupSchedulesByDate } from '../../../data/schedules';
 
 function getDaysArray(year: number, month: number) {
@@ -21,12 +22,20 @@ function formatDate(year: number, month: number, day: number): string {
 interface CalendarSidebarProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
+  onWorkTypeFilterChange?: (filters: { center: boolean; home: boolean; visit: boolean }) => void;
 }
 
-export default function CalendarSidebar({ selectedDate, onDateChange }: CalendarSidebarProps) {
+export default function CalendarSidebar({ selectedDate, onDateChange, onWorkTypeFilterChange }: CalendarSidebarProps) {
   const year = selectedDate.getFullYear();
   const month = selectedDate.getMonth();
   const days = getDaysArray(year, month);
+  
+  // 체크박스 상태 관리
+  const [workTypeFilters, setWorkTypeFilters] = useState({
+    center: true,
+    home: true,
+    visit: true
+  });
   
   // 해당 월의 스케줄만 필터링
   const monthSchedules = sampleSchedules.filter(schedule => {
@@ -51,6 +60,14 @@ export default function CalendarSidebar({ selectedDate, onDateChange }: Calendar
     '완료': monthSchedules.filter(s => s.status === '완료').length,
   };
 
+  const handleWorkTypeFilterChange = (type: 'center' | 'home' | 'visit', checked: boolean) => {
+    const newFilters = { ...workTypeFilters, [type]: checked };
+    setWorkTypeFilters(newFilters);
+    if (onWorkTypeFilterChange) {
+      onWorkTypeFilterChange(newFilters);
+    }
+  };
+
   return (
     <Card style={{ width: 280, minHeight: 500, background: 'var(--gray-3)', padding: 20 }}>
       <Heading size="3" mb="4">근무 현황</Heading>
@@ -60,21 +77,33 @@ export default function CalendarSidebar({ selectedDate, onDateChange }: Calendar
       <Flex direction="column" gap="2" mt="2" mb="4">
         <Flex align="center" justify="between">
           <Flex align="center" gap="2">
-            <Checkbox defaultChecked id="center" />
+            <Checkbox 
+              checked={workTypeFilters.center}
+              onCheckedChange={(checked) => handleWorkTypeFilterChange('center', checked as boolean)}
+              id="center" 
+            />
             <label htmlFor="center"><Text size="2">센터</Text></label>
           </Flex>
           <Badge color="blue" size="1">{workTypeStats['센터']}</Badge>
         </Flex>
         <Flex align="center" justify="between">
           <Flex align="center" gap="2">
-            <Checkbox defaultChecked id="home" />
+            <Checkbox 
+              checked={workTypeFilters.home}
+              onCheckedChange={(checked) => handleWorkTypeFilterChange('home', checked as boolean)}
+              id="home" 
+            />
             <label htmlFor="home"><Text size="2">재가</Text></label>
           </Flex>
           <Badge color="purple" size="1">{workTypeStats['재가']}</Badge>
         </Flex>
         <Flex align="center" justify="between">
           <Flex align="center" gap="2">
-            <Checkbox defaultChecked id="visit" />
+            <Checkbox 
+              checked={workTypeFilters.visit}
+              onCheckedChange={(checked) => handleWorkTypeFilterChange('visit', checked as boolean)}
+              id="visit" 
+            />
             <label htmlFor="visit"><Text size="2">방문</Text></label>
           </Flex>
           <Badge color="orange" size="1">{workTypeStats['방문']}</Badge>

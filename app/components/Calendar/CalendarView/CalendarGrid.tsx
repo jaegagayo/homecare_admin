@@ -30,22 +30,40 @@ function getWorkTypeColor(workType: string) {
 
 
 
-export default function CalendarGrid({ year, month }: { year: number, month: number }) {
+export default function CalendarGrid({ 
+  year, 
+  month, 
+  workTypeFilters = { center: true, home: true, visit: true } 
+}: { 
+  year: number; 
+  month: number; 
+  workTypeFilters?: { center: boolean; home: boolean; visit: boolean }; 
+}) {
   const days = getDaysArray(year, month);
   const weekCount = days.length / 7;
   
   // 오늘 날짜 확인
   const today = new Date();
-  const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+  const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
   
   // 해당 월의 스케줄만 필터링
   const monthSchedules = sampleSchedules.filter(schedule => {
     const scheduleDate = new Date(schedule.date);
     return scheduleDate.getFullYear() === year && scheduleDate.getMonth() === month;
   });
-  
+
+  // 근무 유형별 필터링
+  const filteredSchedules = monthSchedules.filter(schedule => {
+    const workTypeMap = {
+      '센터': workTypeFilters.center,
+      '재가': workTypeFilters.home,
+      '방문': workTypeFilters.visit
+    };
+    return workTypeMap[schedule.workType as keyof typeof workTypeMap] || false;
+  });
+
   // 날짜별로 스케줄 그룹화
-  const schedulesByDate = groupSchedulesByDate(monthSchedules);
+  const schedulesByDate = groupSchedulesByDate(filteredSchedules);
 
   return (
     <Card style={{ background: 'var(--gray-2)', flex: 1, height: '100%', padding: 0, overflow: 'hidden' }}>
