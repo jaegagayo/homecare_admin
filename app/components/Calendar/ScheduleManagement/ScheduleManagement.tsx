@@ -1,5 +1,5 @@
 import { Flex, Heading, Text, Card, Button, Badge, Table, ScrollArea, Tabs, Select } from '@radix-ui/themes';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { sampleSchedules } from '../../../data/schedules';
 import { sampleCaregivers } from '../../../data/caregivers';
 import AddSchedule from './AddSchedule';
@@ -7,13 +7,21 @@ import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
 
 interface ScheduleManagementProps {
   onViewCaregiverSchedule?: (caregiverId: number) => void;
+  selectedDate?: string;
 }
 
-export default function ScheduleManagement({ onViewCaregiverSchedule }: ScheduleManagementProps) {
+export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDate: initialSelectedDate }: ScheduleManagementProps) {
   const [selectedTab, setSelectedTab] = useState('list');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(initialSelectedDate || new Date().toISOString().split('T')[0]);
   const [selectedCaregiver, setSelectedCaregiver] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+
+  // initialSelectedDate가 변경될 때 selectedDate 상태 업데이트
+  useEffect(() => {
+    if (initialSelectedDate) {
+      setSelectedDate(initialSelectedDate);
+    }
+  }, [initialSelectedDate]);
 
   const tabs = [
     { key: 'list', label: '스케줄 목록' },

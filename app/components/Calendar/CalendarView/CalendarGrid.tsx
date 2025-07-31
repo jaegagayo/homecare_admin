@@ -44,11 +44,13 @@ export default function CalendarGrid({
     [WORK_TYPES.VISITING_BATH]: true,
     [WORK_TYPES.IN_HOME_SUPPORT]: true,
     [WORK_TYPES.VISITING_NURSING]: true
-  } 
+  },
+  onDateClick
 }: { 
   year: number; 
   month: number; 
-  workTypeFilters?: Record<WorkType, boolean>; 
+  workTypeFilters?: Record<WorkType, boolean>;
+  onDateClick?: (date: string) => void;
 }) {
   const days = getDaysArray(year, month);
   const weekCount = days.length / 7;
@@ -108,7 +110,7 @@ export default function CalendarGrid({
                   minWidth: 0,
                   boxSizing: 'border-box',
                   overflow: 'hidden',
-                  background: d ? (isToday ? 'var(--accent-3)' : 'var(--gray-4)') : 'transparent',
+                  background: d ? (isToday ? 'var(--accent-4)' : 'var(--gray-4)') : 'transparent',
                   color: d ? 'var(--gray-12)' : 'transparent',
                   position: 'relative',
                   display: 'flex',
@@ -116,6 +118,24 @@ export default function CalendarGrid({
                   alignItems: 'flex-start',
                   justifyContent: 'flex-start',
                   padding: 8,
+                  cursor: d ? 'pointer' : 'default',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  if (d) {
+                    e.currentTarget.style.backgroundColor = 'var(--accent-3)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (d) {
+                    e.currentTarget.style.backgroundColor = isToday ? 'var(--accent-4)' : 'var(--gray-4)';
+                  }
+                }}
+                onClick={() => {
+                  if (d && onDateClick) {
+                    const dateStr = formatDate(year, month, d);
+                    onDateClick(dateStr);
+                  }
                 }}
               >
                 {d && (

@@ -31,6 +31,7 @@ export default function CalendarPage() {
   });
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState('month');
+  const [selectedDateForSchedule, setSelectedDateForSchedule] = useState<string>('');
 
   const handleViewCaregiverSchedule = (caregiverId: number) => {
     setSelectedCaregiverId(caregiverId);
@@ -52,6 +53,10 @@ export default function CalendarPage() {
     setWorkTypeFilters(filters);
   };
 
+  const handleDateClick = (dateStr: string) => {
+    setSelectedDateForSchedule(dateStr);
+    setTab('schedule');
+  };
 
   return (
     <Flex direction="column" gap="5" p="6" style={{ height: '100vh' }}>
@@ -83,13 +88,17 @@ export default function CalendarPage() {
               year={date.getFullYear()} 
               month={date.getMonth()} 
               workTypeFilters={workTypeFilters}
+              onDateClick={handleDateClick}
             />
           </Flex>
         </Flex>
       )}
 
       {tab === 'schedule' && (
-        <ScheduleManagement onViewCaregiverSchedule={handleViewCaregiverSchedule} />
+        <ScheduleManagement 
+          onViewCaregiverSchedule={handleViewCaregiverSchedule}
+          selectedDate={selectedDateForSchedule}
+        />
       )}
 
       {tab === 'caregiver-schedule' && (
