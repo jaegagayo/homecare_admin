@@ -1,7 +1,7 @@
 import { Flex } from '@radix-ui/themes';
 import { useState } from 'react';
 import PageHeader from '../Common/PageHeader';
-import CaregiverList from './HRCard/CaregiverList';
+import CaregiverList from '../Common/CaregiverList';
 import CaregiverCard from './HRCard/CaregiverCard';
 import MultiSelectPanel from './HRCard/MultiSelectPanel';
 import RegistrationPage from './Registration/RegistrationPage';
@@ -70,8 +70,9 @@ export default function CaregiversPage() {
             selectedCaregivers={selectedCaregivers}
             onSearchChange={setSearchTerm}
             onStatusChange={setSelectedStatus}
-            onMultiSelectToggle={handleMultiSelectToggle}
             onCaregiverSelect={handleCaregiverSelect}
+            onMultiSelectToggle={handleMultiSelectToggle}
+            showMultiSelectToggle={true}
           />
           
           {multiSelectMode && selectedCaregivers.length > 0 ? (

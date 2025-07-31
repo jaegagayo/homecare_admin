@@ -1,7 +1,7 @@
 import { Flex, Heading, Card, Text, Button, Badge, Separator, ScrollArea, Checkbox } from '@radix-ui/themes';
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
 
-import { Caregiver } from '../../../data/caregivers';
+import { Caregiver } from '../../data/caregivers';
 
 interface CaregiverListProps {
   caregivers: Caregiver[];
@@ -13,6 +13,8 @@ interface CaregiverListProps {
   onSearchChange: (value: string) => void;
   onStatusChange: (status: string) => void;
   onCaregiverSelect: (id: number) => void;
+  onMultiSelectToggle?: () => void;
+  showMultiSelectToggle?: boolean;
 }
 
 export default function CaregiverList({
@@ -24,7 +26,8 @@ export default function CaregiverList({
   selectedCaregivers,
   onSearchChange,
   onStatusChange,
-  onCaregiverSelect
+  onCaregiverSelect,
+  onMultiSelectToggle
 }: CaregiverListProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -49,7 +52,18 @@ export default function CaregiverList({
       <Flex direction="column" gap="4" p="4" style={{ flex: 1, minHeight: 0 }}>
         {/* 검색 및 필터 */}
         <Flex direction="column" gap="3">
-            <Heading size="4">요양보호사 목록</Heading>
+            <Flex justify="between" align="center">
+              <Heading size="4">요양보호사 목록</Heading>
+              {onMultiSelectToggle && (
+                <Button
+                  variant={multiSelectMode ? 'solid' : 'soft'}
+                  size="2"
+                  onClick={onMultiSelectToggle}
+                >
+                  {multiSelectMode ? '복수 선택 모드 해제' : '복수 선택 모드'}
+                </Button>
+              )}
+            </Flex>
           
           {/* 검색바 */}
           <Flex gap="2" align="center">

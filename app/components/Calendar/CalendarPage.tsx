@@ -6,7 +6,7 @@ import CalendarHeader from './CalendarView/CalendarHeader';
 import CalendarGrid from './CalendarView/CalendarGrid';
 import ScheduleManagement from './ScheduleManagement/ScheduleManagement';
 import CaregiverSchedule from './CaregiverSchedule/CaregiverSchedule';
-import CaregiverList from '../Caregivers/HRCard/CaregiverList';
+import CaregiverList from '../Common/CaregiverList';
 import { sampleCaregivers } from '../../data/caregivers';
 
 export default function CalendarPage() {
@@ -85,6 +85,7 @@ export default function CalendarPage() {
             onSearchChange={setSearchTerm}
             onStatusChange={setSelectedStatus}
             onCaregiverSelect={handleCaregiverSelect}
+            showMultiSelectToggle={false}
           />
           
           {selectedCaregiverId ? (

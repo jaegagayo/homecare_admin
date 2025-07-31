@@ -1,7 +1,7 @@
 import { Flex, Heading, Text, Card, Button, TextField } from '@radix-ui/themes';
 import { useState } from 'react';
 import { sampleCaregivers } from '../../../data/caregivers';
-import CaregiverSelectionList from './CaregiverSelectionList';
+import CaregiverSelectionList from '../../Common/CaregiverSelectionList';
 
 interface DirectDeletionFormProps {
   onSubmit: (data: { caregiverId: number; reason: string }) => void;

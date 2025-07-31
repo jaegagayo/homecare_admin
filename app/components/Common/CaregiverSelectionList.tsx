@@ -1,5 +1,5 @@
 import { Flex, Text, Card, Button, Badge, ScrollArea } from '@radix-ui/themes';
-import { sampleCaregivers } from '../../../data/caregivers';
+import { sampleCaregivers } from '../../data/caregivers';
 
 interface CaregiverSelectionListProps {
   searchTerm: string;

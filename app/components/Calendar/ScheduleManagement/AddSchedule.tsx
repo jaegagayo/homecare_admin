@@ -1,7 +1,7 @@
 import { Flex, Card, Heading, Text, Button, Select, Badge } from '@radix-ui/themes';
 import { useState } from 'react';
 import { sampleCaregivers } from '../../../data/caregivers';
-import CaregiverSelectionList from '../../Caregivers/Registration/CaregiverSelectionList';
+import CaregiverSelectionList from '../../Common/CaregiverSelectionList';
 import { formatCurrency } from '../../../utils/formatters';
 
 interface AddScheduleProps {

@@ -1,6 +1,6 @@
 import { Flex, Text, Card } from '@radix-ui/themes';
 import { useState } from 'react';
-import CaregiverList from '../../Caregivers/HRCard/CaregiverList';
+import CaregiverList from '../../Common/CaregiverList';
 import SettlementDetails from '../History/SettlementDetails';
 import { sampleCaregivers } from '../../../data/caregivers';
 import {
