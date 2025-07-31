@@ -1,6 +1,7 @@
 import { Flex, Heading, Card, Text, Button, Badge, ScrollArea } from '@radix-ui/themes';
 import { Caregiver } from '../../../data/caregivers';
 import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
+import { formatCurrency } from '../../../utils/formatters';
 
 interface CaregiverCardProps {
   selectedCaregiver: number | null;
@@ -9,13 +10,6 @@ interface CaregiverCardProps {
 
 export default function CaregiverCard({ selectedCaregiver, caregivers }: CaregiverCardProps) {
   const caregiver = caregivers.find(c => c.id === selectedCaregiver);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ko-KR', {
-      style: 'currency',
-      currency: 'KRW'
-    }).format(amount);
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ko-KR');
