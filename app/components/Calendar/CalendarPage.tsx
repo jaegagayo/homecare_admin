@@ -58,6 +58,10 @@ export default function CalendarPage() {
     setTab('schedule');
   };
 
+  const handleNavigateToDate = (year: number, month: number) => {
+    setDate(new Date(year, month, 1));
+  };
+
   return (
     <Flex direction="column" gap="5" p="6" style={{ height: '100vh' }}>
       <PageHeader 
@@ -81,8 +85,7 @@ export default function CalendarPage() {
               onPrev={() => setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1))}
               onNext={() => setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1))}
               onToday={() => setDate(new Date())}
-              view={view}
-              setView={setView}
+              onNavigateToDate={handleNavigateToDate}
             />
             <CalendarGrid 
               year={date.getFullYear()} 

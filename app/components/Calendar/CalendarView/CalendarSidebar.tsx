@@ -26,9 +26,10 @@ interface CalendarSidebarProps {
   onWorkTypeFilterChange?: (filters: Record<WorkType, boolean>) => void;
 }
 
-export default function CalendarSidebar({ selectedDate, onDateChange, onWorkTypeFilterChange }: CalendarSidebarProps) {
-  const year = selectedDate.getFullYear();
-  const month = selectedDate.getMonth();
+export default function CalendarSidebar({ onWorkTypeFilterChange }: CalendarSidebarProps) {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
   const days = getDaysArray(year, month);
   
   // 체크박스 상태 관리
@@ -126,37 +127,25 @@ export default function CalendarSidebar({ selectedDate, onDateChange, onWorkType
         {Array.from({ length: days.length / 7 }).map((_, weekIdx) => (
           <Flex key={weekIdx} gap="1">
             {days.slice(weekIdx * 7, weekIdx * 7 + 7).map((d, i) => {
-              const isSelected = d && d === selectedDate.getDate();
+              const isToday = d && d === today.getDate();
               const dateStr = d ? formatDate(year, month, d) : '';
               const hasSchedule = d && schedulesByDate[dateStr] && schedulesByDate[dateStr].length > 0;
               
               return (
                 <div
                   key={i}
-                  role={d ? 'button' : undefined}
-                  tabIndex={d ? 0 : -1}
-                  onClick={() => d && onDateChange(new Date(year, month, d))}
-                  onKeyDown={e => {
-                    if ((e.key === 'Enter' || e.key === ' ') && d) {
-                      onDateChange(new Date(year, month, d));
-                    }
-                  }}
                   style={{
                     flex: 1,
                     height: 24,
                     borderRadius: 4,
-                    background: isSelected ? 'var(--accent-9)' : 'none',
-                    color: isSelected ? 'white' : 'var(--gray-12)',
+                    background: isToday ? 'var(--accent-9)' : 'none',
+                    color: isToday ? 'white' : 'var(--gray-12)',
                     textAlign: 'center',
                     lineHeight: '24px',
-                    fontWeight: isSelected ? 700 : 400,
-                    cursor: d ? 'pointer' : 'default',
+                    fontWeight: isToday ? 700 : 400,
                     fontSize: 14,
-                    transition: 'background 0.15s',
-                    outline: 'none',
                     position: 'relative',
                   }}
-                  aria-label={d ? `${year}년 ${month + 1}월 ${d}일` : undefined}
                 >
                   {d || ''}
                   {hasSchedule && (

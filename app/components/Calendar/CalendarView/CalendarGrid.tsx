@@ -183,8 +183,8 @@ export default function CalendarGrid({
                                       background: getWorkTypeColor(workType),
                                       color: 'white',
                                       borderRadius: '50%',
-                                      width: '20px',
-                                      height: '20px',
+                                      width: '18px',
+                                      height: '18px',
                                       fontSize: 12,
                                       fontWeight: 'bold',
                                     }}
