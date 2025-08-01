@@ -1,4 +1,4 @@
-import { DashboardIcon, PersonIcon, CalendarIcon, GearIcon } from '@radix-ui/react-icons';
+import { DashboardIcon, PersonIcon, CalendarIcon, GearIcon, BellIcon } from '@radix-ui/react-icons';
 import React from 'react';
 
 // 원화 기호가 포함된 커스텀 아이콘
@@ -41,4 +41,5 @@ export const MENU = [
   { key: 'calendar', label: '캘린더', icon: <CalendarIcon width={24} height={24} /> },
   { key: 'settlement', label: '정산 관리', icon: <WonIcon /> },
   { key: 'settings', label: '설정', icon: <GearIcon width={24} height={24} /> },
+  { key: 'notifications', label: '알림', icon: <BellIcon width={24} height={24} /> },
 ]; 
