@@ -1,5 +1,5 @@
 import { Flex, Heading, Card, Text, Button, Badge, ScrollArea, Table } from '@radix-ui/themes';
-import { EnvelopeClosedIcon, ChatBubbleIcon, PersonIcon } from '@radix-ui/react-icons';
+import { EnvelopeClosedIcon, ChatBubbleIcon, PersonIcon, DownloadIcon } from '@radix-ui/react-icons';
 
 import { Caregiver } from '../../../data/caregivers';
 
@@ -21,11 +21,20 @@ export default function MultiSelectPanel({ selectedCaregivers, onClearSelection,
 
   const getWorkTypeColor = (workType: string) => {
     switch (workType) {
-      case '센터': return 'blue';
-      case '재가': return 'purple';
-      case '방문': return 'orange';
+      case '방문요양': return 'blue';
+      case '주·야간보호': return 'purple';
+      case '단기보호': return 'green';
+      case '방문목욕': return 'orange';
+      case '재가노인지원': return 'yellow';
+      case '방문간호': return 'red';
       default: return 'gray';
     }
+  };
+
+  const handleExportToExcel = () => {
+    // 엑셀 출력 로직
+    console.log('엑셀로 출력:', selectedCaregivers);
+    // 실제 구현에서는 엑셀 파일 생성 및 다운로드 로직을 추가
   };
 
   return (
@@ -67,8 +76,11 @@ export default function MultiSelectPanel({ selectedCaregivers, onClearSelection,
                     </Badge>
                   </Table.Cell>
                   <Table.Cell style={{ width: '20%' }}>
-                    <Badge color={getWorkTypeColor(caregiver.workType)} size="1">
-                      {caregiver.workType}
+                    <Badge color={getWorkTypeColor(caregiver.workTypes[0])} size="1">
+                      {caregiver.workTypes.length > 1 
+                        ? `${caregiver.workTypes[0]} 외 ${caregiver.workTypes.length - 1}개`
+                        : caregiver.workTypes[0]
+                      }
                     </Badge>
                   </Table.Cell>
                   <Table.Cell style={{ width: '20%' }}>
@@ -102,6 +114,10 @@ export default function MultiSelectPanel({ selectedCaregivers, onClearSelection,
             <Button variant="soft" size="2">
               <PersonIcon />
               일괄 근무 상태 수정
+            </Button>
+            <Button variant="soft" size="2" onClick={handleExportToExcel}>
+              <DownloadIcon />
+              엑셀로 출력하기
             </Button>
           </Flex>
         </Card>
