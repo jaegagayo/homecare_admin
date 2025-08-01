@@ -71,7 +71,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
   };
 
   return (
-    <Flex direction="column" gap="5" style={{ flex: 1 }}>
+    <Flex direction="column" gap="4" style={{ flex: 1, minHeight: 0 }}>
       <Heading size="4">스케줄 관리</Heading>
 
       <Tabs.Root value={selectedTab} onValueChange={setSelectedTab}>
@@ -85,7 +85,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
       </Tabs.Root>
 
       {selectedTab === 'list' && (
-        <Flex direction="column" gap="4">
+        <>
           {/* 필터 */}
           <Card style={{ padding: '16px' }}>
             <Flex gap="4" align="end">
@@ -142,8 +142,8 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
           </Card>
 
           {/* 스케줄 목록 */}
-          <Card style={{ flex: 1, padding: '16px' }}>
-            <ScrollArea style={{ height: '400px' }}>
+          <Card style={{ flex: 1, minHeight: 0 }}>
+            <ScrollArea style={{ height: '100%' }}>
               <Table.Root>
                 <Table.Header>
                   <Table.Row>
@@ -226,7 +226,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
               </Table.Root>
             </ScrollArea>
           </Card>
-        </Flex>
+        </>
       )}
 
       {selectedTab === 'add' && (

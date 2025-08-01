@@ -1,4 +1,5 @@
-import { Text, Badge, Table, ScrollArea } from '@radix-ui/themes';
+import { Text, Badge, Table, ScrollArea, Button, Flex, Popover } from '@radix-ui/themes';
+import { useState } from 'react';
 import { WorkSchedule } from '../../../data/schedules';
 import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
 
@@ -7,6 +8,8 @@ interface UpcomingSchedulesProps {
 }
 
 export default function UpcomingSchedules({ schedules }: UpcomingSchedulesProps) {
+  const [openPopover, setOpenPopover] = useState<string | null>(null);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case '완료': return 'green';
@@ -18,7 +21,7 @@ export default function UpcomingSchedules({ schedules }: UpcomingSchedulesProps)
   };
 
   return (
-    <ScrollArea style={{ height: '300px' }}>
+    <ScrollArea style={{ height: '50%' }}>
       <Table.Root>
         <Table.Header>
           <Table.Row>
@@ -28,6 +31,7 @@ export default function UpcomingSchedules({ schedules }: UpcomingSchedulesProps)
             <Table.ColumnHeaderCell>근무지</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>시급</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>상태</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>특이사항</Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -57,6 +61,40 @@ export default function UpcomingSchedules({ schedules }: UpcomingSchedulesProps)
                 <Badge color={getStatusColor(schedule.status)} size="1">
                   {schedule.status}
                 </Badge>
+              </Table.Cell>
+              <Table.Cell>
+                {schedule.notes ? (
+                  <Popover.Root open={openPopover === schedule.id} onOpenChange={(open) => setOpenPopover(open ? schedule.id : null)}>
+                    <Popover.Trigger>
+                      <Button 
+                        variant="soft" 
+                        size="1" 
+                        color="blue"
+                      >
+                        보기
+                      </Button>
+                    </Popover.Trigger>
+                    <Popover.Content>
+                      <Flex direction="column" gap="3" style={{ maxWidth: '300px' }}>
+                        <Flex justify="between" align="center">
+                          <Text size="2" weight="medium">특이사항</Text>
+                          <Button 
+                            variant="ghost" 
+                            size="1"
+                            onClick={() => setOpenPopover(null)}
+                          >
+                            ✕
+                          </Button>
+                        </Flex>
+                        <Text size="2" style={{ lineHeight: '1.6' }}>
+                          {schedule.notes}
+                        </Text>
+                      </Flex>
+                    </Popover.Content>
+                  </Popover.Root>
+                ) : (
+                  <Text size="2" color="gray">-</Text>
+                )}
               </Table.Cell>
             </Table.Row>
           ))}
