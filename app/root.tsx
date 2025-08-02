@@ -6,7 +6,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 
 import { Theme } from "@radix-ui/themes";
@@ -55,11 +55,33 @@ export const DarkModeContext = React.createContext<{
 });
 
 export default function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // 클라이언트 사이드에서만 localStorage 접근
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('darkMode');
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+    setIsDarkMode((prev: boolean) => {
+      const newValue = !prev;
+      // localStorage에 저장
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('darkMode', JSON.stringify(newValue));
+      }
+      return newValue;
+    });
   };
+
+  // 초기 로드 시 localStorage에서 상태 복원
+  useEffect(() => {
+    const saved = localStorage.getItem('darkMode');
+    if (saved !== null) {
+      setIsDarkMode(JSON.parse(saved));
+    }
+  }, []);
 
   return (
     <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>

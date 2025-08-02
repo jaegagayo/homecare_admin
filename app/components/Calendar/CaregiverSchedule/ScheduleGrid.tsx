@@ -127,7 +127,7 @@ export default function ScheduleGrid({ schedules }: ScheduleGridProps) {
         flex: 1, 
         overflow: 'auto', 
         position: 'relative', 
-        background: '#fff',
+        background: 'transparent',
         minHeight: 0
       }} ref={gridRef}>
         {/* 요일 헤더 - 고정 */}
@@ -138,13 +138,13 @@ export default function ScheduleGrid({ schedules }: ScheduleGridProps) {
           position: 'sticky',
           top: 0,
           zIndex: 30,
-          background: '#fff'
+          background: 'transparent'
         }}>
           <div style={{ background: 'var(--gray-2)' }} />
           {weekDates.map((date, idx) => (
             <div key={idx} style={{
-              background: isToday(date) ? 'var(--red-3)' : 'var(--gray-2)',
-              color: isToday(date) ? 'white' : undefined,
+              background: isToday(date) ? 'var(--accent-9)' : 'var(--gray-2)',
+              color: isToday(date) ? 'var(--accent-3)' : undefined,
               textAlign: 'center',
               fontWeight: 600,
               fontSize: 12,
@@ -164,7 +164,7 @@ export default function ScheduleGrid({ schedules }: ScheduleGridProps) {
             position: 'sticky', 
             left: 0,
             zIndex: 20,
-            background: '#fff'
+            background: 'transparent'
           }}>
             {timeSlots.map((slot, i) => (
               <div key={i} style={{
@@ -177,7 +177,7 @@ export default function ScheduleGrid({ schedules }: ScheduleGridProps) {
                 justifyContent: 'flex-end',
                 paddingRight: 8,
                 paddingTop: 4,
-                background: '#fff'
+                background: 'transparent'
               }}>{slot.label}</div>
             ))}
           </div>
@@ -219,9 +219,9 @@ export default function ScheduleGrid({ schedules }: ScheduleGridProps) {
                       top,
                       height,
                       background: `var(--${workTypeColor}-3)`, // 배경색
-                      border: `1.5px solid var(--${workTypeColor}-10)`, // 테두리색
+                      border: `1.5px solid var(--${workTypeColor}-11)`, // 테두리색
                       borderRadius: 6,
-                      color: `var(--${workTypeColor}-10)`,
+                      color: `var(--${workTypeColor}-11)`,
                       fontSize: 12,
                       padding: '2px 4px',
                       zIndex: 10,
@@ -242,7 +242,7 @@ export default function ScheduleGrid({ schedules }: ScheduleGridProps) {
                         gap: 8,
                         flex: 1,
                         justifyContent: 'center',
-                        color: '#111',
+                        color: 'var(--gray-12)',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, opacity: 0.9, lineHeight: 1 }}>
                           <PersonIcon /> {schedule.consumer}
