@@ -1,8 +1,9 @@
 import { IconButton, Popover } from '@radix-ui/themes';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { MENU } from '../../constants/menu';
 import NotificationPopover from '../Admin/NotificationPopover';
 import SettingsPopover from '../Admin/SettingsPopover';
+import { DarkModeContext } from '../../root';
 
 interface FloatingActionBarProps {
   onMenuClick: (label: string) => void;
@@ -13,6 +14,7 @@ export default function FloatingActionBar({ onMenuClick, selected }: FloatingAct
   const [hovered, setHovered] = useState<number | null>(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { isDarkMode } = useContext(DarkModeContext);
 
   const handleMenuClick = (label: string) => {
     if (label === '알림') {
@@ -73,7 +75,9 @@ export default function FloatingActionBar({ onMenuClick, selected }: FloatingAct
                   tabIndex={-1}
                   aria-label={item.label}
                   style={{ 
-                    color: hovered === idx ? 'white' : (selected === item.label ? 'var(--accent-10)' : 'gray'),
+                    color: hovered === idx 
+                      ? (isDarkMode ? 'white' : 'var(--gray-12)') 
+                      : (selected === item.label ? 'var(--accent-10)' : 'gray'),
                     background: 'none',
                     boxShadow: 'none',
                     width: 40,

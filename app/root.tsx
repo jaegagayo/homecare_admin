@@ -6,6 +6,8 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
+import { useState } from "react";
+import React from "react";
 
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
@@ -43,10 +45,27 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+// 다크모드 상태를 전역으로 관리하기 위한 컨텍스트
+export const DarkModeContext = React.createContext<{
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+}>({
+  isDarkMode: false,
+  toggleDarkMode: () => {},
+});
+
 export default function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
   return (
-    <Theme appearance="dark" accentColor="indigo" grayColor="gray">
-      <Outlet />
-    </Theme>
+    <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+      <Theme appearance={isDarkMode ? "dark" : "light"} accentColor="grass" grayColor="gray">
+        <Outlet />
+      </Theme>
+    </DarkModeContext.Provider>
   );
 }

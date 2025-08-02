@@ -1,10 +1,14 @@
-import { Flex, Text, IconButton } from '@radix-ui/themes';
+import { Flex, Text, IconButton, Switch, Separator } from '@radix-ui/themes';
+import { useContext } from 'react';
+import { DarkModeContext } from '../../root';
 
 interface SettingsPopoverProps {
   onOpenChange: (open: boolean) => void;
 }
 
 export default function SettingsPopover({ onOpenChange }: SettingsPopoverProps) {
+  const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
+
   return (
     <Flex direction="column" gap="3">
       <Flex justify="between" align="center">
@@ -17,10 +21,17 @@ export default function SettingsPopover({ onOpenChange }: SettingsPopoverProps) 
           ✕
         </IconButton>
       </Flex>
+
+      <Separator size="2" />
       
       <Flex direction="column" gap="2">
-        <Text size="2" color="gray">설정 기능이 준비 중입니다.</Text>
-        {/* 여기에 실제 설정 내용을 추가할 수 있습니다 */}
+        <Flex justify="between" align="center">
+          <Text size="2">다크 모드</Text>
+          <Switch 
+            checked={isDarkMode} 
+            onCheckedChange={toggleDarkMode}
+          />
+        </Flex>
       </Flex>
     </Flex>
   );

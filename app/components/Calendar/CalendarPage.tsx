@@ -30,7 +30,6 @@ export default function CalendarPage() {
     [WORK_TYPES.VISITING_NURSING]: true
   });
   const [date, setDate] = useState(new Date());
-  const [view, setView] = useState('month');
   const [selectedDateForSchedule, setSelectedDateForSchedule] = useState<string>('');
 
   const handleViewCaregiverSchedule = (caregiverId: number) => {
