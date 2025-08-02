@@ -28,6 +28,17 @@ export interface CaregiverCertificationApi {
   trainStatus: boolean;
 }
 
+// 매칭 정보 조회를 위한 API 응답 타입
+export interface AssignApi {
+  consumerName: string;
+  caregiverName: string;
+  serviceDate: string;
+  startTime: string;
+  endTime: string;
+  serviceType: string;
+  status: string;
+}
+
 export const getCaregivers = async (): Promise<CaregiverApi[]> => {
   try {
     const centerId = getStoredCenterId();
@@ -98,6 +109,33 @@ export const getCaregiverCertification = async (caregiverId: string): Promise<Ca
     return data;
   } catch (error) {
     console.error('Caregiver certification fetch error:', error);
+    throw error;
+  }
+};
+
+// 매칭 정보 조회 API 함수
+export const getAssignments = async (): Promise<AssignApi[]> => {
+  try {
+    const centerId = getStoredCenterId();
+    if (!centerId) {
+      throw new Error('centerId not found in localStorage');
+    }
+
+    const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.ASSIGN.GET_ALL.replace('{centerId}', centerId)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Assignments fetch failed: ${response.status}`);
+    }
+
+    const data: AssignApi[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Assignments fetch error:', error);
     throw error;
   }
 }; 

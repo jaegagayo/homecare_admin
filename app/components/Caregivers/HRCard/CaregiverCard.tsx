@@ -55,7 +55,6 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
   const [blacklist, setBlacklist] = useState<number[]>([]);
   const [selectedTab, setSelectedTab] = useState('basic');
   const [apiCaregiver, setApiCaregiver] = useState<Caregiver | null>(null);
-  const [certificationData, setCertificationData] = useState<CaregiverCertificationApi | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,7 +62,6 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
   useEffect(() => {
     if (!selectedCaregiver) {
       setApiCaregiver(null);
-      setCertificationData(null);
       setError(null);
       return;
     }
@@ -94,11 +92,9 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
       if (!profileData) {
         setError('인사카드 정보를 불러오는데 실패했습니다.');
         setApiCaregiver(null);
-        setCertificationData(null);
       } else {
         const convertedCaregiver = convertApiDataToCaregiver(profileData, certificationData || undefined);
         setApiCaregiver(convertedCaregiver);
-        setCertificationData(certificationData);
       }
 
       setLoading(false);
@@ -241,17 +237,7 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
                       </Flex>
                       <Flex direction="column" gap="2" style={{ minWidth: 200 }}>
                         <Text size="2" color="gray">교육 이수</Text>
-                        <Flex align="center" gap="2">
-                          <Text size="3" weight="medium">{caregiver.education || '-'}</Text>
-                          {certificationData && (
-                            <Badge 
-                              color={certificationData.trainStatus ? 'green' : 'red'} 
-                              size="1"
-                            >
-                              {certificationData.trainStatus ? '완료' : '미완료'}
-                            </Badge>
-                          )}
-                        </Flex>
+                        <Text size="3" weight="medium">{caregiver.education || '-'}</Text>
                       </Flex>
                     </Flex>
                   </Card>

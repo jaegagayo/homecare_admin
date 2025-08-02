@@ -19,4 +19,7 @@ export const API_ENDPOINTS = {
     GET_PROFILE: '/center/profile',
     GET_CERTIFICATION: '/center/{caregiverId}/certification',
   },
+  ASSIGN: {
+    GET_ALL: '/center/{centerId}/assign',
+  },
 } as const; 

@@ -1,7 +1,7 @@
-import { IconButton, Popover } from '@radix-ui/themes';
-import { useState, useContext } from 'react';
+import { IconButton, Popover, Badge } from '@radix-ui/themes';
+import { useState, useContext, useEffect } from 'react';
 import { MENU } from '../../constants/menu';
-import NotificationPopover from '../Admin/NotificationPopover';
+import NotificationPopover, { getNotificationCount } from '../Admin/NotificationPopover';
 import SettingsPopover from '../Admin/SettingsPopover';
 import { DarkModeContext } from '../../root';
 
@@ -14,7 +14,24 @@ export default function FloatingActionBar({ onMenuClick, selected }: FloatingAct
   const [hovered, setHovered] = useState<number | null>(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const { isDarkMode } = useContext(DarkModeContext);
+
+  // 알림 개수 업데이트
+  useEffect(() => {
+    const updateNotificationCount = () => {
+      const count = getNotificationCount();
+      setNotificationCount(count);
+    };
+
+    // 초기 로드
+    updateNotificationCount();
+
+    // 1초마다 업데이트
+    const interval = setInterval(updateNotificationCount, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleMenuClick = (label: string) => {
     if (label === '알림') {
@@ -67,6 +84,7 @@ export default function FloatingActionBar({ onMenuClick, selected }: FloatingAct
                     : 'none',
                   boxShadow: 'none',
                   borderRadius: 24,
+                  position: 'relative',
                 }}
               >
                 <IconButton
@@ -86,6 +104,29 @@ export default function FloatingActionBar({ onMenuClick, selected }: FloatingAct
                 >
                   {item.icon}
                 </IconButton>
+                
+                {/* 알림 개수 배지 */}
+                {item.label === '알림' && notificationCount > 0 && (
+                  <Badge 
+                    color="red" 
+                    size="1"
+                    style={{
+                      position: 'absolute',
+                      top: '4px',
+                      right: '4px',
+                      minWidth: '16px',
+                      height: '16px',
+                      fontSize: '10px',
+                      padding: '0 4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {notificationCount}
+                  </Badge>
+                )}
+                
                 <span
                   style={{
                     opacity: hovered === idx && item.label !== '설정' && item.label !== '알림' ? 1 : 0,
