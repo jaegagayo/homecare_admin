@@ -96,34 +96,21 @@ export const startNotificationPolling = () => {
       const allAssignments = getStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS);
       console.log('Current allAssignments:', allAssignments);
       
-      // 처음 실행인지 확인 (allAssignments가 비어있고, API에서 데이터가 있음)
-      const isFirstRun = allAssignments.length === 0 && newAssignments.length > 0;
+      // 두 스토리지의 길이 비교
+      const lengthDifference = newAssignments.length - allAssignments.length;
+      console.log('Length difference:', lengthDifference);
       
-      if (isFirstRun) {
-        console.log('First run detected, storing all assignments without notifications');
-        // 처음 실행 시에는 모든 데이터를 allAssignments에 저장하고, updatedAssignments는 비워둠
-        setStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS, newAssignments);
-        setStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS, []);
-        console.log('All assignments stored for first run');
-        return;
-      }
-      
-      // 새로운 매칭 정보 찾기 (이후 업데이트)
-      const currentAssignmentsSet = new Set(allAssignments.map(getAssignmentKey));
-      
-      const newItems = newAssignments.filter(assignment => 
-        !currentAssignmentsSet.has(getAssignmentKey(assignment))
-      );
-      
-      console.log('New items found:', newItems);
-
-      // 새로운 매칭 정보가 있으면 업데이트된 목록에 추가
-      if (newItems.length > 0) {
+      if (lengthDifference > 0) {
+        // 새로운 데이터가 있으면, 차이나는 개수만큼 앞에서부터 가져와서 updatedAssignments에 추가
+        const newItems = newAssignments.slice(0, lengthDifference);
+        console.log('New items to add:', newItems);
+        
         const updatedAssignments = getStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS);
         const newUpdatedAssignments = [...updatedAssignments, ...newItems];
         setStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS, newUpdatedAssignments);
         
         console.log('Updated assignments stored:', newUpdatedAssignments);
+        console.log('Updated assignments count:', newUpdatedAssignments.length);
         
         // 이벤트 발생
         notificationEvent.notify();
@@ -131,7 +118,7 @@ export const startNotificationPolling = () => {
 
       // 전체 매칭 정보 업데이트
       setStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS, newAssignments);
-      console.log('All assignments updated');
+      console.log('All assignments updated, new count:', newAssignments.length);
     } catch (error) {
       console.error('Failed to fetch assignments:', error);
     }
