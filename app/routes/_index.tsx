@@ -71,20 +71,20 @@ export default function AdminAppShell() {
   }
 
   // 로그인 실패 시 에러 표시
-  if (loginStatus === 'error') {
-    return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontSize: '18px',
-        color: 'red'
-      }}>
-        로그인에 실패했습니다. 서버를 확인해주세요.
-      </div>
-    );
-  }
+  // if (loginStatus === 'error') {
+  //   return (
+  //     <div style={{ 
+  //       display: 'flex', 
+  //       justifyContent: 'center', 
+  //       alignItems: 'center', 
+  //       height: '100vh',
+  //       fontSize: '18px',
+  //       color: 'red'
+  //     }}>
+  //       로그인에 실패했습니다. 서버를 확인해주세요.
+  //     </div>
+  //   );
+  // }
 
   // 로그인 성공 시 메인 앱 렌더링
   return (

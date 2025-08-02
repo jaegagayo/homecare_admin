@@ -1,6 +1,8 @@
 import { Card, Flex, Text } from '@radix-ui/themes';
+import { useState, useEffect } from 'react';
 import { sampleSchedules, groupSchedulesByDate } from '../../../data/schedules';
 import { WORK_TYPES, WorkType } from '../../../constants/workTypes';
+import { getScheduleByDate, WorkMatch } from '../../../api';
 
 function getDaysArray(year: number, month: number) {
   const firstDay = new Date(year, month, 1).getDay();
@@ -32,7 +34,23 @@ function getWorkTypeColor(workType: WorkType) {
   return colorMap[workType] || 'var(--gray-9)';
 }
 
-
+// API 데이터를 기존 스케줄 형식으로 변환
+function convertApiDataToSchedules(apiData: WorkMatch[]) {
+  return apiData.map(workMatch => ({
+    id: workMatch.workMatchId,
+    caregiverId: 1, // API에서 제공되지 않으므로 기본값 사용
+    caregiverName: workMatch.caregiverName,
+    consumer: '기본 수급자', // API에서 제공되지 않으므로 기본값 사용
+    date: workMatch.workDate,
+    startTime: '09:00', // API에서 제공되지 않으므로 기본값 사용
+    endTime: '18:00', // API에서 제공되지 않으므로 기본값 사용
+    workType: WORK_TYPES.VISITING_CARE, // API에서 제공되지 않으므로 기본값 사용
+    location: '기본 위치', // API에서 제공되지 않으므로 기본값 사용
+    hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
+    status: (workMatch.status === 'PLANNED' ? '배정됨' : '미배정') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
+    notes: '', // API에서 제공되지 않으므로 기본값 사용
+  }));
+}
 
 export default function CalendarGrid({ 
   year, 
@@ -52,6 +70,30 @@ export default function CalendarGrid({
   workTypeFilters?: Record<WorkType, boolean>;
   onDateClick?: (date: string) => void;
 }) {
+  const [apiSchedules, setApiSchedules] = useState<WorkMatch[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // API에서 스케줄 데이터 가져오기
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getScheduleByDate(year, month);
+        setApiSchedules(data);
+        console.log('스케줄 데이터 로드 성공:', data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '스케줄 로드 실패');
+        console.error('스케줄 로드 실패:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchedules();
+  }, [year, month]);
+
   const days = getDaysArray(year, month);
   const weekCount = days.length / 7;
   
@@ -59,8 +101,14 @@ export default function CalendarGrid({
   const today = new Date();
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
   
+  // API 데이터를 기존 형식으로 변환
+  const convertedApiSchedules = convertApiDataToSchedules(apiSchedules);
+  
+  // 기존 샘플 데이터와 API 데이터 합치기
+  const allSchedules = [...sampleSchedules, ...convertedApiSchedules];
+  
   // 해당 월의 스케줄만 필터링
-  const monthSchedules = sampleSchedules.filter(schedule => {
+  const monthSchedules = allSchedules.filter(schedule => {
     const scheduleDate = new Date(schedule.date);
     return scheduleDate.getFullYear() === year && scheduleDate.getMonth() === month;
   });
@@ -81,130 +129,162 @@ export default function CalendarGrid({
             <Text key={d} size="3" style={{ flex: 1, textAlign: 'center' }}>{d}</Text>
           ))}
         </Flex>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gridTemplateRows: `repeat(${weekCount}, 1fr)`,
-            gap: 8,
-            flex: 1,
+        
+        {/* 로딩 상태 표시 */}
+        {loading && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
             height: '100%',
-            boxSizing: 'border-box',
-            minHeight: 0,
-            minWidth: 0,
-            overflow: 'hidden',
-          }}
-        >
-          {days.map((d, i) => {
-            const dateStr = d ? formatDate(year, month, d) : '';
-            const daySchedules = d ? schedulesByDate[dateStr] || [] : [];
-            const isToday = d && isCurrentMonth && d === today.getDate();
-            
-            return (
-              <Card
-                key={i}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  minHeight: 0,
-                  minWidth: 0,
-                  boxSizing: 'border-box',
-                  overflow: 'hidden',
-                  background: d ? (isToday ? 'var(--accent-4)' : 'var(--gray-4)') : 'transparent',
-                  color: d ? 'var(--gray-12)' : 'transparent',
-                  position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  justifyContent: 'flex-start',
-                  padding: 8,
-                  cursor: d ? 'pointer' : 'default',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  if (d) {
-                    e.currentTarget.style.backgroundColor = 'var(--accent-3)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (d) {
-                    e.currentTarget.style.backgroundColor = isToday ? 'var(--accent-4)' : 'var(--gray-4)';
-                  }
-                }}
-                onClick={() => {
-                  if (d && onDateClick) {
-                    const dateStr = formatDate(year, month, d);
-                    onDateClick(dateStr);
-                  }
-                }}
-              >
-                {d && (
-                  <>
-                    <Text 
-                      size="4" 
-                      weight="bold" 
-                      style={{ 
-                        marginBottom: 4,
-                        color: isToday ? 'var(--accent-11)' : 'var(--gray-12)',
-                        fontWeight: 600
-                      }}
-                    >
-                      {d}
-                    </Text>
-                    
-                    {/* 근무 현황 요약 */}
-                    {daySchedules.length > 0 && (
-                      <Flex direction="column" gap="1" style={{ width: '100%' }}>
-                        <Text size="1" color="gray" style={{ marginBottom: 2 }}>
-                          근무: {daySchedules.length}명
-                        </Text>
-                        
-                        {/* 근무 유형별 인원수 계산 */}
-                        {(() => {
-                          const workTypeCounts = daySchedules.reduce((acc, schedule) => {
-                            acc[schedule.workType] = (acc[schedule.workType] || 0) + 1;
-                            return acc;
-                          }, {} as Record<string, number>);
+            fontSize: '14px',
+            color: 'var(--gray-11)'
+          }}>
+            스케줄 로딩 중...
+          </div>
+        )}
+        
+        {/* 에러 상태 표시 */}
+        {error && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '100%',
+            fontSize: '14px',
+            color: 'var(--red-9)'
+          }}>
+            {error}
+          </div>
+        )}
+        
+        {/* 캘린더 그리드 */}
+        {!loading && !error && (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(7, 1fr)',
+              gridTemplateRows: `repeat(${weekCount}, 1fr)`,
+              gap: 8,
+              flex: 1,
+              height: '100%',
+              boxSizing: 'border-box',
+              minHeight: 0,
+              minWidth: 0,
+              overflow: 'hidden',
+            }}
+          >
+            {days.map((d, i) => {
+              const dateStr = d ? formatDate(year, month, d) : '';
+              const daySchedules = d ? schedulesByDate[dateStr] || [] : [];
+              const isToday = d && isCurrentMonth && d === today.getDate();
+              
+              return (
+                <Card
+                  key={i}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: 0,
+                    minWidth: 0,
+                    boxSizing: 'border-box',
+                    overflow: 'hidden',
+                    background: d ? (isToday ? 'var(--accent-4)' : 'var(--gray-4)') : 'transparent',
+                    color: d ? 'var(--gray-12)' : 'transparent',
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    padding: 8,
+                    cursor: d ? 'pointer' : 'default',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (d) {
+                      e.currentTarget.style.backgroundColor = 'var(--accent-3)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (d) {
+                      e.currentTarget.style.backgroundColor = isToday ? 'var(--accent-4)' : 'var(--gray-4)';
+                    }
+                  }}
+                  onClick={() => {
+                    if (d && onDateClick) {
+                      const dateStr = formatDate(year, month, d);
+                      onDateClick(dateStr);
+                    }
+                  }}
+                >
+                  {d && (
+                    <>
+                      <Text 
+                        size="4" 
+                        weight="bold" 
+                        style={{ 
+                          marginBottom: 4,
+                          color: isToday ? 'var(--accent-11)' : 'var(--gray-12)',
+                          fontWeight: 600
+                        }}
+                      >
+                        {d}
+                      </Text>
+                      
+                      {/* 근무 현황 요약 */}
+                      {daySchedules.length > 0 && (
+                        <Flex direction="column" gap="1" style={{ width: '100%' }}>
+                          <Text size="1" color="gray" style={{ marginBottom: 2 }}>
+                            근무: {daySchedules.length}명
+                          </Text>
                           
-                          const workTypes = Object.values(WORK_TYPES);
-                          return (
-                            <Flex gap="1" wrap="wrap">
-                              {workTypes.map(workType => {
-                                const count = workTypeCounts[workType] || 0;
-                                if (count === 0) return null;
-                                
-                                return (
-                                  <div
-                                    key={workType}
-                                    style={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      background: getWorkTypeColor(workType),
-                                      color: 'white',
-                                      borderRadius: '50%',
-                                      width: '18px',
-                                      height: '18px',
-                                      fontSize: 12,
-                                      fontWeight: 'bold',
-                                    }}
-                                    title={`${workType}: ${count}명`}
-                                  >
-                                    {count}
-                                  </div>
-                                );
-                              }).filter(Boolean)}
-                            </Flex>
-                          );
-                        })()}
-                      </Flex>
-                    )}
-                  </>
-                )}
-              </Card>
-            );
-          })}
-        </div>
+                          {/* 근무 유형별 인원수 계산 */}
+                          {(() => {
+                            const workTypeCounts = daySchedules.reduce((acc, schedule) => {
+                              acc[schedule.workType] = (acc[schedule.workType] || 0) + 1;
+                              return acc;
+                            }, {} as Record<string, number>);
+                            
+                            const workTypes = Object.values(WORK_TYPES);
+                            return (
+                              <Flex gap="1" wrap="wrap">
+                                {workTypes.map(workType => {
+                                  const count = workTypeCounts[workType] || 0;
+                                  if (count === 0) return null;
+                                  
+                                  return (
+                                    <div
+                                      key={workType}
+                                      style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        background: getWorkTypeColor(workType),
+                                        color: 'white',
+                                        borderRadius: '50%',
+                                        width: '18px',
+                                        height: '18px',
+                                        fontSize: 12,
+                                        fontWeight: 'bold',
+                                      }}
+                                      title={`${workType}: ${count}명`}
+                                    >
+                                      {count}
+                                    </div>
+                                  );
+                                }).filter(Boolean)}
+                              </Flex>
+                            );
+                          })()}
+                        </Flex>
+                      )}
+                    </>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </div>
     </Card>
   );
