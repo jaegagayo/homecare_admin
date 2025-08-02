@@ -263,7 +263,7 @@ export const sampleSchedules: WorkSchedule[] = [
     consumer: '박영자',
     date: '2025-08-05',
     startTime: '10:49',
-    endTime: '18:00',
+    endTime: '11:49',
     workType: WORK_TYPES.VISITING_BATH,
     location: '서초구 박씨댁',
     hourlyWage: 18000,

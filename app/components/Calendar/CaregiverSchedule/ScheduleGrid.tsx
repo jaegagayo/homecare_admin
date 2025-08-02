@@ -8,7 +8,7 @@ interface ScheduleGridProps {
   schedules: WorkSchedule[];
 }
 
-const HOUR_HEIGHT = 40; // px, 1시간당 높이
+const HOUR_HEIGHT = 100; // px, 1시간당 높이
 const GRID_TOP_OFFSET = 32; // px, 헤더(요일) 높이 - 줄임
 
 export default function ScheduleGrid({ schedules }: ScheduleGridProps) {
