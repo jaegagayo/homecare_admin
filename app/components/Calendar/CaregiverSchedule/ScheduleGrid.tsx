@@ -38,6 +38,43 @@ const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(({ schedules 
     return () => clearInterval(timer);
   }, []);
 
+  // 가장 위에 있는 스케줄 블록에 맞춰 스크롤 위치 설정
+  useEffect(() => {
+    if (gridRef.current && schedules.length > 0) {
+      // 오늘 날짜의 스케줄들 중 가장 이른 시작 시간 찾기
+      const today = new Date();
+      const todaySchedules = schedules.filter(schedule => {
+        const scheduleDate = new Date(schedule.date);
+        return scheduleDate.toDateString() === today.toDateString();
+      });
+
+      if (todaySchedules.length > 0) {
+        // 가장 이른 시작 시간 찾기
+        const earliestSchedule = todaySchedules.reduce((earliest, current) => {
+          const earliestTime = new Date(`2000-01-01T${earliest.startTime}:00`);
+          const currentTime = new Date(`2000-01-01T${current.startTime}:00`);
+          return earliestTime < currentTime ? earliest : current;
+        });
+
+        // 가장 이른 스케줄의 시작 시간을 기준으로 스크롤 위치 계산
+        const [earliestHour, earliestMinute] = earliestSchedule.startTime.split(':').map(Number);
+        const earliestPosition = (earliestHour * 60 + earliestMinute) / 60 * HOUR_HEIGHT;
+        
+        // 가장 이른 스케줄에서 약간 위쪽으로 스크롤 (30분 전 위치)
+        const scrollPosition = Math.max(0, earliestPosition - HOUR_HEIGHT / 2);
+        
+        gridRef.current.scrollTop = scrollPosition;
+      } else {
+        // 오늘 스케줄이 없으면 현재 시간 기준으로 스크롤
+        const currentHour = currentTime.getHours();
+        const currentMinute = currentTime.getMinutes();
+        const currentPosition = (currentHour * 60 + currentMinute) / 60 * HOUR_HEIGHT;
+        const scrollPosition = Math.max(0, currentPosition - HOUR_HEIGHT / 2);
+        gridRef.current.scrollTop = scrollPosition;
+      }
+    }
+  }, [schedules, currentTime, currentWeek]);
+
   // 주간 날짜 배열 생성
   const getWeekDates = (startDate: Date) => {
     const dates = [];
