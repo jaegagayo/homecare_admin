@@ -1,13 +1,44 @@
 import { Flex, Heading, Text, Card, Button, Badge, Table, ScrollArea, Tabs, Select } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
-import { sampleCaregivers } from '../../../data/caregivers';
+import { getCaregivers, CaregiverApi, getScheduleByDay, WorkMatch } from '../../../api';
 import AddSchedule from './AddSchedule';
 import { WORK_TYPE_COLORS, WORK_TYPES, WorkType } from '../../../constants/workTypes';
-import { getScheduleByDay, WorkMatch } from '../../../api';
 
 interface ScheduleManagementProps {
   onViewCaregiverSchedule?: (caregiverId: string) => void;
   selectedDate?: string;
+}
+
+// API 데이터를 기존 Caregiver 형식으로 변환
+function convertApiDataToCaregivers(apiData: CaregiverApi[]) {
+  return apiData.map(caregiver => ({
+    caregiverId: caregiver.caregiverId, // UUID 그대로 사용
+    name: caregiver.name,
+    phone: caregiver.phone,
+    status: caregiver.status === 'ACTIVE' ? '활동중' : '휴직', // API 상태를 기존 상태로 매핑
+    workTypes: caregiver.serviceTypes.map(type => {
+      // API 서비스 타입을 기존 workTypes로 매핑
+      switch (type) {
+        case 'VISITING_CARE': return '방문요양';
+        case 'DAY_NIGHT_CARE': return '주·야간보호';
+        case 'RESPITE_CARE': return '단기보호';
+        case 'VISITING_BATH': return '방문목욕';
+        case 'IN_HOME_SUPPORT': return '재가노인지원';
+        case 'VISITING_NURSING': return '방문간호';
+        default: return '방문요양';
+      }
+    }),
+    joinDate: new Date().toISOString().split('T')[0], // API에서 제공되지 않으므로 기본값 사용
+    avatar: null,
+    email: `${caregiver.name}@example.com`, // API에서 제공되지 않으므로 기본값 사용
+    birthDate: '1980-01-01', // API에서 제공되지 않으므로 기본값 사용
+    address: '기본 주소', // API에서 제공되지 않으므로 기본값 사용
+    licenseNumber: '2023-000000', // API에서 제공되지 않으므로 기본값 사용
+    licenseDate: '2023-01-01', // API에서 제공되지 않으므로 기본값 사용
+    education: '완료', // API에서 제공되지 않으므로 기본값 사용
+    hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
+    workArea: '서울시', // API에서 제공되지 않으므로 기본값 사용
+  }));
 }
 
 // API 데이터를 기존 스케줄 형식으로 변환
@@ -47,8 +78,24 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
   const [selectedCaregiver, setSelectedCaregiver] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [apiSchedules, setApiSchedules] = useState<WorkMatch[]>([]);
+  const [apiCaregivers, setApiCaregivers] = useState<CaregiverApi[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // API에서 요양보호사 데이터 가져오기
+  useEffect(() => {
+    const fetchCaregivers = async () => {
+      try {
+        const data = await getCaregivers();
+        setApiCaregivers(data);
+        console.log('요양보호사 데이터 로드 성공:', data);
+      } catch (err) {
+        console.error('요양보호사 로드 실패:', err);
+      }
+    };
+
+    fetchCaregivers();
+  }, []);
 
   // initialSelectedDate가 변경될 때 selectedDate 상태 업데이트
   useEffect(() => {
@@ -111,6 +158,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
 
   // API 데이터를 기존 형식으로 변환
   const convertedApiSchedules = convertApiDataToSchedules(apiSchedules);
+  const convertedApiCaregivers = convertApiDataToCaregivers(apiCaregivers);
 
   const filteredSchedules = convertedApiSchedules.filter(schedule => {
     const matchesDate = selectedDate === '' || schedule.date === selectedDate;
@@ -178,7 +226,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
                   <Select.Trigger style={{ width: '150px' }} />
                   <Select.Content>
                     <Select.Item value="all">전체</Select.Item>
-                    {sampleCaregivers.map(caregiver => (
+                    {convertedApiCaregivers.map(caregiver => (
                       <Select.Item key={caregiver.caregiverId} value={caregiver.caregiverId}>
                         {caregiver.name}
                       </Select.Item>

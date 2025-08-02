@@ -1,6 +1,6 @@
 import { Flex, Card, Heading, Text, Button, Select } from '@radix-ui/themes';
-import { useState } from 'react';
-import { sampleCaregivers } from '../../../data/caregivers';
+import { useState, useEffect } from 'react';
+import { getCaregivers, CaregiverApi } from '../../../api';
 import CaregiverSelectionList from '../../Common/CaregiverSelectionList';
 import { formatCurrency } from '../../../utils/formatters';
 import { WORK_TYPES, WORK_TYPE_COLORS } from '../../../constants/workTypes';
@@ -9,11 +9,44 @@ interface AddScheduleProps {
   onScheduleAdded?: () => void;
 }
 
+// API 데이터를 기존 Caregiver 형식으로 변환
+function convertApiDataToCaregivers(apiData: CaregiverApi[]) {
+  return apiData.map(caregiver => ({
+    caregiverId: caregiver.caregiverId, // UUID 그대로 사용
+    name: caregiver.name,
+    phone: caregiver.phone,
+    status: caregiver.status === 'ACTIVE' ? '활동중' : '휴직', // API 상태를 기존 상태로 매핑
+    workTypes: caregiver.serviceTypes.map(type => {
+      // API 서비스 타입을 기존 workTypes로 매핑
+      switch (type) {
+        case 'VISITING_CARE': return '방문요양';
+        case 'DAY_NIGHT_CARE': return '주·야간보호';
+        case 'RESPITE_CARE': return '단기보호';
+        case 'VISITING_BATH': return '방문목욕';
+        case 'IN_HOME_SUPPORT': return '재가노인지원';
+        case 'VISITING_NURSING': return '방문간호';
+        default: return '방문요양';
+      }
+    }),
+    joinDate: new Date().toISOString().split('T')[0], // API에서 제공되지 않으므로 기본값 사용
+    avatar: null,
+    email: `${caregiver.name}@example.com`, // API에서 제공되지 않으므로 기본값 사용
+    birthDate: '1980-01-01', // API에서 제공되지 않으므로 기본값 사용
+    address: '기본 주소', // API에서 제공되지 않으므로 기본값 사용
+    licenseNumber: '2023-000000', // API에서 제공되지 않으므로 기본값 사용
+    licenseDate: '2023-01-01', // API에서 제공되지 않으므로 기본값 사용
+    education: '완료', // API에서 제공되지 않으므로 기본값 사용
+    hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
+    workArea: '서울시', // API에서 제공되지 않으므로 기본값 사용
+  }));
+}
+
 export default function AddSchedule({ onScheduleAdded }: AddScheduleProps) {
   const [scheduleStep, setScheduleStep] = useState<'select' | 'form' | 'confirm'>('select');
   const [selectedCaregiverForSchedule, setSelectedCaregiverForSchedule] = useState<string | null>(null);
   const [scheduleSearchTerm, setScheduleSearchTerm] = useState('');
   const [scheduleSelectedStatus, setScheduleSelectedStatus] = useState('전체');
+  const [apiCaregivers, setApiCaregivers] = useState<CaregiverApi[]>([]);
   
   // 스케줄 폼 데이터
   const [selectedDate, setSelectedDate] = useState('');
@@ -22,6 +55,24 @@ export default function AddSchedule({ onScheduleAdded }: AddScheduleProps) {
   const [workType, setWorkType] = useState('');
   const [location, setLocation] = useState('');
   const [hourlyWage, setHourlyWage] = useState('');
+
+  // API에서 요양보호사 데이터 가져오기
+  useEffect(() => {
+    const fetchCaregivers = async () => {
+      try {
+        const data = await getCaregivers();
+        setApiCaregivers(data);
+        console.log('요양보호사 데이터 로드 성공:', data);
+      } catch (err) {
+        console.error('요양보호사 로드 실패:', err);
+      }
+    };
+
+    fetchCaregivers();
+  }, []);
+
+  // API 데이터를 기존 형식으로 변환
+  const convertedApiCaregivers = convertApiDataToCaregivers(apiCaregivers);
 
   const workTypes = [
     { value: WORK_TYPES.VISITING_CARE, label: WORK_TYPES.VISITING_CARE },
@@ -153,7 +204,7 @@ export default function AddSchedule({ onScheduleAdded }: AddScheduleProps) {
             {selectedCaregiverForSchedule && (
               <Card style={{ padding: '12px', backgroundColor: 'var(--blue-2)' }}>
                 <Text size="2" weight="medium">
-                  선택된 보호사: {sampleCaregivers.find(c => c.caregiverId === selectedCaregiverForSchedule)?.name}
+                  선택된 보호사: {convertedApiCaregivers.find(c => c.caregiverId === selectedCaregiverForSchedule)?.name}
                 </Text>
               </Card>
             )}
@@ -314,8 +365,8 @@ export default function AddSchedule({ onScheduleAdded }: AddScheduleProps) {
                 <Text size="2" weight="medium" color="green">스케줄 대상</Text>
                 {selectedCaregiverForSchedule && (
                   <Text size="2">
-                    {sampleCaregivers.find(c => c.caregiverId === selectedCaregiverForSchedule)?.name} 
-                    ({sampleCaregivers.find(c => c.caregiverId === selectedCaregiverForSchedule)?.phone})
+                    {convertedApiCaregivers.find(c => c.caregiverId === selectedCaregiverForSchedule)?.name} 
+                    ({convertedApiCaregivers.find(c => c.caregiverId === selectedCaregiverForSchedule)?.phone})
                   </Text>
                 )}
               </Flex>
