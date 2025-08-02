@@ -6,8 +6,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
-import { useState, useEffect } from "react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
