@@ -28,8 +28,10 @@ export const getScheduleByDate = async (year: number, month: number): Promise<Wo
     const params = new URLSearchParams({
       centerId,
       year: year.toString(),
-      month: month.toString(),
+      month: (month + 1).toString(),
     });
+
+    console.log(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.SCHEDULE.GET_BY_DATE}?${params}`);
 
     const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.SCHEDULE.GET_BY_DATE}?${params}`, {
       method: 'GET',
