@@ -1,5 +1,5 @@
 import { Flex, Text, Button } from '@radix-ui/themes';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import { WorkSchedule } from '../../../data/schedules';
 import { ClockIcon, HomeIcon, PersonIcon } from '@radix-ui/react-icons';
 import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
@@ -11,10 +11,24 @@ interface ScheduleGridProps {
 const HOUR_HEIGHT = 100; // px, 1시간당 높이
 const GRID_TOP_OFFSET = 32; // px, 헤더(요일) 높이 - 줄임
 
-export default function ScheduleGrid({ schedules }: ScheduleGridProps) {
+// HOUR_HEIGHT를 export하여 다른 파일에서 사용할 수 있도록 함
+export { HOUR_HEIGHT, GRID_TOP_OFFSET };
+
+const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(({ schedules }, ref) => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(new Date());
   const gridRef = useRef<HTMLDivElement>(null);
+
+  // ref를 gridRef와 연결
+  useEffect(() => {
+    if (ref) {
+      if (typeof ref === 'function') {
+        ref(gridRef.current);
+      } else {
+        ref.current = gridRef.current;
+      }
+    }
+  }, [ref]);
 
   // 현재 시간 업데이트
   useEffect(() => {
@@ -276,4 +290,8 @@ export default function ScheduleGrid({ schedules }: ScheduleGridProps) {
       </div>
     </Flex>
   );
-} 
+});
+
+ScheduleGrid.displayName = 'ScheduleGrid';
+
+export default ScheduleGrid; 
