@@ -5,15 +5,17 @@ import { Caregiver } from '../../../data/caregivers';
 import UpcomingSchedules from './UpcomingSchedules';
 import CompletedSchedules from './CompletedSchedules';
 import MonthlyStats from './MonthlyStats';
+import ScheduleGrid from './ScheduleGrid';
 
 interface CaregiverScheduleProps {
   caregiver: Caregiver;
 }
 
 export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps) {
-  const [selectedTab, setSelectedTab] = useState('upcoming');
+  const [selectedTab, setSelectedTab] = useState('schedule');
 
   const tabs = [
+    { key: 'schedule', label: '스케줄표' },
     { key: 'upcoming', label: '예정된 스케줄' },
     { key: 'completed', label: '완료된 스케줄' },
     { key: 'monthly', label: '월별 통계' },
@@ -41,31 +43,37 @@ export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps)
   });
 
   return (
-    <Card style={{ flex: 3, display: 'flex', flexDirection: 'column' }}>
-      <Flex direction="column" gap="4" p="4" style={{ flex: 1 }}>
-        <Heading size="4">{caregiver.name} 보호사 스케줄</Heading>
+    <Card style={{ flex: 3, display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
+      <Flex direction="column" gap="4" p="4" style={{ flex: 1, minHeight: 0, height: '100%' }}>
+        <Heading size="4" style={{ flexShrink: 0 }}>{caregiver.name} 보호사 스케줄</Heading>
 
-        <Tabs.Root value={selectedTab} onValueChange={setSelectedTab}>
-          <Tabs.List>
+        <Tabs.Root value={selectedTab} onValueChange={setSelectedTab} style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <Tabs.List style={{ flexShrink: 0 }}>
             {tabs.map(tab => (
               <Tabs.Trigger key={tab.key} value={tab.key}>
                 {tab.label}
               </Tabs.Trigger>
             ))}
           </Tabs.List>
+          
+          <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+            {selectedTab === 'schedule' && (
+              <ScheduleGrid schedules={caregiverSchedules} />
+            )}
+
+            {selectedTab === 'upcoming' && (
+              <UpcomingSchedules schedules={upcomingSchedules} />
+            )}
+
+            {selectedTab === 'completed' && (
+              <CompletedSchedules schedules={completedSchedules} />
+            )}
+
+            {selectedTab === 'monthly' && (
+              <MonthlyStats schedules={caregiverSchedules} />
+            )}
+          </div>
         </Tabs.Root>
-
-        {selectedTab === 'upcoming' && (
-          <UpcomingSchedules schedules={upcomingSchedules} />
-        )}
-
-        {selectedTab === 'completed' && (
-          <CompletedSchedules schedules={completedSchedules} />
-        )}
-
-        {selectedTab === 'monthly' && (
-          <MonthlyStats schedules={caregiverSchedules} />
-        )}
       </Flex>
     </Card>
   );
