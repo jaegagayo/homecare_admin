@@ -195,23 +195,23 @@ export default function NotificationPopover({ onOpenChange }: NotificationPopove
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PENDING': return 'yellow';
-      case 'CONFIRMED': return 'green';
-      case 'CANCELLED': return 'red';
-      default: return 'gray';
-    }
-  };
+  // const getStatusColor = (status: string) => {
+  //   switch (status) {
+  //     case 'PENDING': return 'yellow';
+  //     case 'CONFIRMED': return 'green';
+  //     case 'CANCELLED': return 'red';
+  //     default: return 'gray';
+  //   }
+  // };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'PENDING': return '대기중';
-      case 'CONFIRMED': return '확정';
-      case 'CANCELLED': return '취소';
-      default: return status;
-    }
-  };
+  // const getStatusText = (status: string) => {
+  //   switch (status) {
+  //     case 'PENDING': return '대기중';
+  //     case 'CONFIRMED': return '확정';
+  //     case 'CANCELLED': return '취소';
+  //     default: return status;
+  //   }
+  // };
 
   return (
     <Flex direction="column" gap="3" style={{ width: '400px', maxHeight: '500px' }}>
@@ -249,12 +249,12 @@ export default function NotificationPopover({ onOpenChange }: NotificationPopove
                   <Text size="2" weight="medium">
                     {assignment.consumerName} → {assignment.caregiverName}
                   </Text>
-                  <Badge 
+                  {/* <Badge 
                     color={getStatusColor(assignment.status) as "yellow" | "green" | "red" | "gray"} 
                     size="1"
                   >
                     {getStatusText(assignment.status)}
-                  </Badge>
+                  </Badge> */}
                 </Flex>
                 
                 <Flex direction="column" gap="1">
