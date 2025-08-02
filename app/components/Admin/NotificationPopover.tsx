@@ -38,6 +38,69 @@ const setStoredData = (key: string, data: AssignApi[]) => {
   }
 };
 
+// 전역 상태 관리를 위한 이벤트 시스템
+const createNotificationEvent = () => {
+  const listeners: (() => void)[] = [];
+  
+  return {
+    subscribe: (callback: () => void) => {
+      listeners.push(callback);
+      return () => {
+        const index = listeners.indexOf(callback);
+        if (index > -1) {
+          listeners.splice(index, 1);
+        }
+      };
+    },
+    notify: () => {
+      listeners.forEach(callback => callback());
+    }
+  };
+};
+
+const notificationEvent = createNotificationEvent();
+
+// 실시간 매칭 정보 업데이트 함수 (전역에서 사용)
+export const startNotificationPolling = () => {
+  const centerId = getStoredCenterId();
+  if (!centerId) return;
+
+  const pollAssignments = async () => {
+    try {
+      const newAssignments = await getAssignments();
+      const allAssignments = getStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS);
+      
+      // 새로운 매칭 정보 찾기
+      const currentAssignmentsSet = new Set(allAssignments.map(getAssignmentKey));
+      
+      const newItems = newAssignments.filter(assignment => 
+        !currentAssignmentsSet.has(getAssignmentKey(assignment))
+      );
+
+      // 새로운 매칭 정보가 있으면 업데이트된 목록에 추가
+      if (newItems.length > 0) {
+        const updatedAssignments = getStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS);
+        const newUpdatedAssignments = [...updatedAssignments, ...newItems];
+        setStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS, newUpdatedAssignments);
+        
+        // 이벤트 발생
+        notificationEvent.notify();
+      }
+
+      // 전체 매칭 정보 업데이트
+      setStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS, newAssignments);
+    } catch (error) {
+      console.error('Failed to fetch assignments:', error);
+    }
+  };
+
+  // 초기 로드
+  pollAssignments();
+
+  // 1초마다 업데이트
+  return setInterval(pollAssignments, 1000);
+};
+
 // 알림 개수를 가져오는 함수 (외부에서 사용)
 export const getNotificationCount = (): number => {
   const updatedAssignments = getStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS);
@@ -46,58 +109,20 @@ export const getNotificationCount = (): number => {
 
 export default function NotificationPopover({ onOpenChange }: NotificationPopoverProps) {
   const [updatedAssignments, setUpdatedAssignments] = useState<AssignApi[]>([]);
-  const [allAssignments, setAllAssignments] = useState<AssignApi[]>([]);
 
-  // 초기 데이터 로드
+  // 초기 데이터 로드 및 실시간 업데이트 구독
   useEffect(() => {
-    const storedAllAssignments = getStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS);
     const storedUpdatedAssignments = getStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS);
-    
-    setAllAssignments(storedAllAssignments);
     setUpdatedAssignments(storedUpdatedAssignments);
+
+    // 실시간 업데이트 구독
+    const unsubscribe = notificationEvent.subscribe(() => {
+      const newUpdatedAssignments = getStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS);
+      setUpdatedAssignments(newUpdatedAssignments);
+    });
+
+    return unsubscribe;
   }, []);
-
-  // 실시간 매칭 정보 업데이트
-  useEffect(() => {
-    const centerId = getStoredCenterId();
-    if (!centerId) return;
-
-    const fetchAssignments = async () => {
-      try {
-        const newAssignments = await getAssignments();
-        
-        // 새로운 매칭 정보 찾기
-        const currentAssignmentsSet = new Set(allAssignments.map(getAssignmentKey));
-        
-        const newItems = newAssignments.filter(assignment => 
-          !currentAssignmentsSet.has(getAssignmentKey(assignment))
-        );
-
-        // 새로운 매칭 정보가 있으면 업데이트된 목록에 추가
-        if (newItems.length > 0) {
-          setUpdatedAssignments(prev => {
-            const updated = [...prev, ...newItems];
-            setStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS, updated);
-            return updated;
-          });
-        }
-
-        // 전체 매칭 정보 업데이트
-        setAllAssignments(newAssignments);
-        setStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS, newAssignments);
-      } catch (error) {
-        console.error('Failed to fetch assignments:', error);
-      }
-    };
-
-    // 초기 로드
-    fetchAssignments();
-
-    // 1초마다 업데이트
-    const interval = setInterval(fetchAssignments, 1000);
-
-    return () => clearInterval(interval);
-  }, [allAssignments]);
 
   // 알림 클릭 시 해당 알림 제거
   const handleNotificationClick = (clickedAssignment: AssignApi) => {
