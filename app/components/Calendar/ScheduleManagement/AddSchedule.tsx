@@ -26,7 +26,7 @@ export default function AddSchedule({ onScheduleAdded }: AddScheduleProps) {
   const workTypes = [
     { value: WORK_TYPES.VISITING_CARE, label: WORK_TYPES.VISITING_CARE },
     { value: WORK_TYPES.DAY_NIGHT_CARE, label: WORK_TYPES.DAY_NIGHT_CARE },
-    { value: WORK_TYPES.SHORT_TERM_CARE, label: WORK_TYPES.SHORT_TERM_CARE },
+    { value: WORK_TYPES.RESPITE_CARE, label: WORK_TYPES.RESPITE_CARE },
     { value: WORK_TYPES.VISITING_BATH, label: WORK_TYPES.VISITING_BATH },
     { value: WORK_TYPES.IN_HOME_SUPPORT, label: WORK_TYPES.IN_HOME_SUPPORT },
     { value: WORK_TYPES.VISITING_NURSING, label: WORK_TYPES.VISITING_NURSING },

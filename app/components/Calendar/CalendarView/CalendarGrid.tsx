@@ -26,7 +26,7 @@ function getWorkTypeColor(workType: WorkType) {
   const colorMap: Record<WorkType, string> = {
     [WORK_TYPES.VISITING_CARE]: 'var(--blue-9)',
     [WORK_TYPES.DAY_NIGHT_CARE]: 'var(--purple-9)',
-    [WORK_TYPES.SHORT_TERM_CARE]: 'var(--green-9)',
+    [WORK_TYPES.RESPITE_CARE]: 'var(--green-9)',
     [WORK_TYPES.VISITING_BATH]: 'var(--orange-9)',
     [WORK_TYPES.IN_HOME_SUPPORT]: 'var(--yellow-9)',
     [WORK_TYPES.VISITING_NURSING]: 'var(--red-9)'
@@ -58,7 +58,7 @@ export default function CalendarGrid({
   workTypeFilters = { 
     [WORK_TYPES.VISITING_CARE]: true,
     [WORK_TYPES.DAY_NIGHT_CARE]: true,
-    [WORK_TYPES.SHORT_TERM_CARE]: true,
+    [WORK_TYPES.RESPITE_CARE]: true,
     [WORK_TYPES.VISITING_BATH]: true,
     [WORK_TYPES.IN_HOME_SUPPORT]: true,
     [WORK_TYPES.VISITING_NURSING]: true

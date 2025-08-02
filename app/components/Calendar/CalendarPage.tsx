@@ -24,7 +24,7 @@ export default function CalendarPage() {
   const [workTypeFilters, setWorkTypeFilters] = useState<Record<WorkType, boolean>>({
     [WORK_TYPES.VISITING_CARE]: true,
     [WORK_TYPES.DAY_NIGHT_CARE]: true,
-    [WORK_TYPES.SHORT_TERM_CARE]: true,
+    [WORK_TYPES.RESPITE_CARE]: true,
     [WORK_TYPES.VISITING_BATH]: true,
     [WORK_TYPES.IN_HOME_SUPPORT]: true,
     [WORK_TYPES.VISITING_NURSING]: true

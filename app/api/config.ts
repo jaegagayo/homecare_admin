@@ -13,4 +13,7 @@ export const API_ENDPOINTS = {
   SCHEDULE: {
     GET_BY_DATE: '/center/schedule/date',
   },
+  CAREGIVER: {
+    GET_ALL: '/center/{centerId}/caregiver',
+  },
 } as const; 
