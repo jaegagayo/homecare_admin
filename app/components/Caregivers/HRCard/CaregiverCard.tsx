@@ -1,12 +1,45 @@
 import { Flex, Heading, Card, Text, Button, Badge, ScrollArea, Checkbox, Tabs } from '@radix-ui/themes';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Caregiver } from '../../../data/caregivers';
 import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
 import { formatCurrency } from '../../../utils/formatters';
+import { getCaregiverProfile, getCaregiverCertification, CaregiverProfileApi, CaregiverCertificationApi } from '../../../api/caregiver';
 
 interface CaregiverCardProps {
   selectedCaregiver: string | null;
   caregivers: Caregiver[];
+}
+
+// API 데이터를 기존 Caregiver 형식으로 변환
+function convertApiDataToCaregiver(apiData: CaregiverProfileApi, certificationData?: CaregiverCertificationApi): Caregiver {
+  return {
+    caregiverId: '', // API에서 제공되지 않으므로 빈 문자열 사용
+    name: apiData.caregiverName,
+    phone: apiData.phone,
+    status: apiData.status === 'ACTIVE' ? '활동중' : '휴직', // API 상태를 기존 상태로 매핑
+    workTypes: apiData.serviceTypes.map(type => {
+      // API 서비스 타입을 기존 workTypes로 매핑
+      switch (type) {
+        case 'VISITING_CARE': return '방문요양';
+        case 'DAY_NIGHT_CARE': return '주·야간보호';
+        case 'RESPITE_CARE': return '단기보호';
+        case 'VISITING_BATH': return '방문목욕';
+        case 'IN_HOME_SUPPORT': return '재가노인지원';
+        case 'VISITING_NURSING': return '방문간호';
+        default: return '방문요양';
+      }
+    }),
+    joinDate: new Date().toISOString().split('T')[0], // API에서 제공되지 않으므로 기본값 사용
+    avatar: null,
+    email: apiData.email,
+    birthDate: apiData.birthDate,
+    address: apiData.address,
+    licenseNumber: certificationData?.certificationNumber || '-',
+    licenseDate: certificationData?.certificationDate || '-',
+    education: certificationData?.trainStatus ? '완료' : '미완료', // API에서 제공되지 않으므로 기본값 사용
+    hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
+    workArea: '서울시', // API에서 제공되지 않으므로 기본값 사용
+  };
 }
 
 // 돌봄을 받는 사람들의 샘플 데이터
@@ -19,9 +52,49 @@ const sampleClients = [
 ];
 
 export default function CaregiverCard({ selectedCaregiver, caregivers }: CaregiverCardProps) {
-  const caregiver = caregivers.find(c => c.caregiverId === selectedCaregiver);
   const [blacklist, setBlacklist] = useState<number[]>([]);
   const [selectedTab, setSelectedTab] = useState('basic');
+  const [apiCaregiver, setApiCaregiver] = useState<Caregiver | null>(null);
+  const [certificationData, setCertificationData] = useState<CaregiverCertificationApi | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // API에서 인사카드 데이터와 자격증 데이터 가져오기
+  useEffect(() => {
+    if (!selectedCaregiver) {
+      setApiCaregiver(null);
+      setCertificationData(null);
+      return;
+    }
+
+    const fetchCaregiverData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // 인사카드 정보와 자격증 정보를 병렬로 가져오기
+        const [profileData, certificationData] = await Promise.all([
+          getCaregiverProfile(selectedCaregiver),
+          getCaregiverCertification(selectedCaregiver)
+        ]);
+        
+        const convertedCaregiver = convertApiDataToCaregiver(profileData, certificationData);
+        setApiCaregiver(convertedCaregiver);
+        setCertificationData(certificationData);
+      } catch (err) {
+        console.error('Failed to fetch caregiver data:', err);
+        setError('인사카드 정보를 불러오는데 실패했습니다.');
+        setApiCaregiver(null);
+        setCertificationData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCaregiverData();
+  }, [selectedCaregiver]);
+
+  // API 데이터가 있으면 API 데이터를, 없으면 기존 데이터를 사용
+  const caregiver = apiCaregiver || caregivers.find(c => c.caregiverId === selectedCaregiver);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ko-KR');
@@ -52,7 +125,15 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
           <Button variant="soft" size="2">편집</Button>
         </Flex>
 
-        {caregiver ? (
+        {loading ? (
+          <Flex justify="center" align="center" style={{ flex: 1 }}>
+            <Text size="3" color="gray">로딩 중...</Text>
+          </Flex>
+        ) : error ? (
+          <Flex justify="center" align="center" style={{ flex: 1 }}>
+            <Text size="3" color="red">{error}</Text>
+          </Flex>
+        ) : caregiver ? (
           <Tabs.Root value={selectedTab} onValueChange={setSelectedTab}>
             <Tabs.List>
               <Tabs.Trigger value="basic">인사 정보</Tabs.Trigger>
@@ -146,7 +227,17 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
                       </Flex>
                       <Flex direction="column" gap="2" style={{ minWidth: 200 }}>
                         <Text size="2" color="gray">교육 이수</Text>
-                        <Text size="3" weight="medium">{caregiver.education || '-'}</Text>
+                        <Flex align="center" gap="2">
+                          <Text size="3" weight="medium">{caregiver.education || '-'}</Text>
+                          {certificationData && (
+                            <Badge 
+                              color={certificationData.trainStatus ? 'green' : 'red'} 
+                              size="1"
+                            >
+                              {certificationData.trainStatus ? '완료' : '미완료'}
+                            </Badge>
+                          )}
+                        </Flex>
                       </Flex>
                     </Flex>
                   </Card>

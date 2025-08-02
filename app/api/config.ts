@@ -16,5 +16,7 @@ export const API_ENDPOINTS = {
   },
   CAREGIVER: {
     GET_ALL: '/center/{centerId}/caregiver',
+    GET_PROFILE: '/center/profile',
+    GET_CERTIFICATION: '/center/{caregiverId}/certification',
   },
 } as const; 
