@@ -58,7 +58,7 @@ export const getCaregivers = async (): Promise<CaregiverApi[]> => {
 export const getCaregiverProfile = async (caregiverId: string): Promise<CaregiverProfileApi> => {
   try {
     const params = new URLSearchParams({
-      caregiverId,
+      caregiverId: caregiverId,
     });
 
     const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.CAREGIVER.GET_PROFILE}?${params}`, {
