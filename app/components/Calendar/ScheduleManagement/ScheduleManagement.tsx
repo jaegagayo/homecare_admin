@@ -3,11 +3,43 @@ import { useState, useEffect } from 'react';
 import { sampleSchedules } from '../../../data/schedules';
 import { sampleCaregivers } from '../../../data/caregivers';
 import AddSchedule from './AddSchedule';
-import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
+import { WORK_TYPE_COLORS, WORK_TYPES, WorkType } from '../../../constants/workTypes';
+import { getScheduleByDay, WorkMatch } from '../../../api';
 
 interface ScheduleManagementProps {
   onViewCaregiverSchedule?: (caregiverId: number) => void;
   selectedDate?: string;
+}
+
+// API 데이터를 기존 스케줄 형식으로 변환
+function convertApiDataToSchedules(apiData: WorkMatch[]) {
+  return apiData.map(workMatch => ({
+    id: workMatch.workMatchId,
+    caregiverId: workMatch.caregiverId,
+    caregiverName: workMatch.caregiverName,
+    consumer: '기본 수급자', // API에서 제공되지 않으므로 기본값 사용
+    date: workMatch.workDate,
+    startTime: workMatch.startTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
+    endTime: workMatch.endTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
+    workType: workMatch.serviceType.length > 0 ? mapServiceTypeToWorkType(workMatch.serviceType[0]) : WORK_TYPES.VISITING_CARE, // 첫 번째 서비스 타입 사용
+    location: workMatch.address,
+    hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
+    status: (workMatch.status === 'PLANNED' ? '배정됨' : '미배정') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
+    notes: '', // API에서 제공되지 않으므로 기본값 사용
+  }));
+}
+
+// API 서비스 타입을 기존 workType으로 매핑
+function mapServiceTypeToWorkType(serviceType: string): WorkType {
+  switch (serviceType) {
+    case 'VISITING_CARE': return WORK_TYPES.VISITING_CARE;
+    case 'DAY_NIGHT_CARE': return WORK_TYPES.DAY_NIGHT_CARE;
+    case 'RESPITE_CARE': return WORK_TYPES.RESPITE_CARE;
+    case 'VISITING_BATH': return WORK_TYPES.VISITING_BATH;
+    case 'IN_HOME_SUPPORT': return WORK_TYPES.IN_HOME_SUPPORT;
+    case 'VISITING_NURSING': return WORK_TYPES.VISITING_NURSING;
+    default: return WORK_TYPES.VISITING_CARE;
+  }
 }
 
 export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDate: initialSelectedDate }: ScheduleManagementProps) {
@@ -15,6 +47,9 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
   const [selectedDate, setSelectedDate] = useState(initialSelectedDate || new Date().toISOString().split('T')[0]);
   const [selectedCaregiver, setSelectedCaregiver] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [apiSchedules, setApiSchedules] = useState<WorkMatch[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // initialSelectedDate가 변경될 때 selectedDate 상태 업데이트
   useEffect(() => {
@@ -22,6 +57,33 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
       setSelectedDate(initialSelectedDate);
     }
   }, [initialSelectedDate]);
+
+  // 선택된 날짜에 따라 API에서 스케줄 데이터 가져오기
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      if (!selectedDate) return;
+      
+      setLoading(true);
+      setError(null);
+      try {
+        const date = new Date(selectedDate);
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const day = date.getDate();
+        
+        const data = await getScheduleByDay(year, month, day);
+        setApiSchedules(data);
+        console.log('스케줄 데이터 로드 성공:', data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '스케줄 로드 실패');
+        console.error('스케줄 로드 실패:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchedules();
+  }, [selectedDate]);
 
   const tabs = [
     { key: 'list', label: '스케줄 목록' },
@@ -48,7 +110,13 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
     }
   };
 
-  const filteredSchedules = sampleSchedules.filter(schedule => {
+  // API 데이터를 기존 형식으로 변환
+  const convertedApiSchedules = convertApiDataToSchedules(apiSchedules);
+  
+  // 기존 샘플 데이터와 API 데이터 합치기
+  const allSchedules = [...sampleSchedules, ...convertedApiSchedules];
+
+  const filteredSchedules = allSchedules.filter(schedule => {
     const matchesDate = selectedDate === '' || schedule.date === selectedDate;
     const matchesCaregiver = selectedCaregiver === 'all' || 
                             schedule.caregiverId.toString() === selectedCaregiver;
@@ -141,91 +209,123 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
             </Flex>
           </Card>
 
+          {/* 로딩 상태 표시 */}
+          {loading && (
+            <Card style={{ padding: '20px' }}>
+              <Flex justify="center" align="center">
+                <Text size="2" color="gray">스케줄 데이터 로딩 중...</Text>
+              </Flex>
+            </Card>
+          )}
+
+          {/* 에러 상태 표시 */}
+          {error && (
+            <Card style={{ padding: '20px' }}>
+              <Flex justify="center" align="center">
+                <Text size="2" color="red">{error}</Text>
+              </Flex>
+            </Card>
+          )}
+
           {/* 스케줄 목록 */}
-          <Card style={{ flex: 1, minHeight: 0 }}>
-            <ScrollArea style={{ height: '100%' }}>
-              <Table.Root>
-                <Table.Header>
-                  <Table.Row>
-                    <Table.ColumnHeaderCell>보호사명</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>날짜</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>시간</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>근무 유형</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>근무지</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>시급</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>상태</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>작업</Table.ColumnHeaderCell>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {filteredSchedules.map(schedule => (
-                    <Table.Row key={schedule.id}>
-                      <Table.Cell>
-                          <Text weight="medium">{schedule.caregiverName}</Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text size="2">{schedule.date}</Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text size="2">{schedule.startTime} - {schedule.endTime}</Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Badge 
-                          color={WORK_TYPE_COLORS[schedule.workType] as "blue" | "purple" | "green" | "orange" | "yellow" | "red"} 
-                          size="1"
-                        >
-                          {schedule.workType}
-                        </Badge>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text size="2" color="gray">{schedule.location}</Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text size="2">{schedule.hourlyWage.toLocaleString()}원</Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Badge color={getStatusColor(schedule.status)} size="1">
-                          {getStatusText(schedule.status)}
-                        </Badge>
-                      </Table.Cell>
-                      <Table.Cell>
-                          <Flex gap="2">
-                          <Button 
-                            variant="soft" 
-                            size="1" 
-                            color="blue"
-                            onClick={() => handleViewCaregiverSchedule(schedule.caregiverId)}
-                          >
-                            조회
-                          </Button>
-                          {schedule.status === '미배정' && (
-                            <>
-                            <Button 
-                              variant="soft" 
-                              size="1" 
-                              color="green"
-                              onClick={() => handleApprove(schedule.id)}
-                            >
-                              배정
-                            </Button>
-                            <Button 
-                              variant="soft" 
-                              size="1" 
-                              color="red"
-                              onClick={() => handleReject(schedule.id)}
-                            >
-                              취소
-                            </Button>
-                            </>
-                          )}
-                          </Flex>
-                      </Table.Cell>
+          {!loading && !error && (
+            <Card style={{ flex: 1, minHeight: 0 }}>
+              <ScrollArea style={{ height: '100%' }}>
+                <Table.Root>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColumnHeaderCell>보호사명</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>날짜</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>시간</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>근무 유형</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>근무지</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>시급</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>상태</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>작업</Table.ColumnHeaderCell>
                     </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table.Root>
-            </ScrollArea>
-          </Card>
+                  </Table.Header>
+                  <Table.Body>
+                    {filteredSchedules.length === 0 ? (
+                      <Table.Row>
+                        <Table.Cell colSpan={8}>
+                          <Flex justify="center" align="center" p="4">
+                            <Text size="2" color="gray">
+                              해당 날짜의 스케줄이 없습니다.
+                            </Text>
+                          </Flex>
+                        </Table.Cell>
+                      </Table.Row>
+                    ) : (
+                      filteredSchedules.map(schedule => (
+                        <Table.Row key={schedule.id}>
+                          <Table.Cell>
+                              <Text weight="medium">{schedule.caregiverName}</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Text size="2">{schedule.date}</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Text size="2">{schedule.startTime} - {schedule.endTime}</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Badge 
+                              color={WORK_TYPE_COLORS[schedule.workType] as "blue" | "purple" | "green" | "orange" | "yellow" | "red"} 
+                              size="1"
+                            >
+                              {schedule.workType}
+                            </Badge>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Text size="2" color="gray">{schedule.location}</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Text size="2">{schedule.hourlyWage.toLocaleString()}원</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Badge color={getStatusColor(schedule.status)} size="1">
+                              {getStatusText(schedule.status)}
+                            </Badge>
+                          </Table.Cell>
+                          <Table.Cell>
+                              <Flex gap="2">
+                              <Button 
+                                variant="soft" 
+                                size="1" 
+                                color="blue"
+                                onClick={() => handleViewCaregiverSchedule(schedule.caregiverId)}
+                              >
+                                조회
+                              </Button>
+                              {schedule.status === '미배정' && (
+                                <>
+                                <Button 
+                                  variant="soft" 
+                                  size="1" 
+                                  color="green"
+                                  onClick={() => handleApprove(schedule.id)}
+                                >
+                                  배정
+                                </Button>
+                                <Button 
+                                  variant="soft" 
+                                  size="1" 
+                                  color="red"
+                                  onClick={() => handleReject(schedule.id)}
+                                >
+                                  취소
+                                </Button>
+                                </>
+                              )}
+                              </Flex>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))
+                    )}
+                  </Table.Body>
+                </Table.Root>
+              </ScrollArea>
+            </Card>
+          )}
         </>
       )}
 

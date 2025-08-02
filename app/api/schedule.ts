@@ -3,8 +3,13 @@ import { getStoredCenterId } from './auth';
 
 export interface WorkMatch {
   workMatchId: string;
+  caregiverId: number;
   caregiverName: string;
   workDate: string;
+  startTime: string;
+  endTime: string;
+  serviceType: string[];
+  address: string;
   status: string;
 }
 
@@ -12,13 +17,14 @@ export interface ScheduleRequest {
   centerId: string;
   year: number;
   month: number;
+  day?: number; // 선택적 파라미터
 }
 
 export interface ScheduleResponse {
   [key: string]: WorkMatch[];
 }
 
-export const getScheduleByDate = async (year: number, month: number): Promise<WorkMatch[]> => {
+export const getScheduleByDate = async (year: number, month: number, day?: number): Promise<WorkMatch[]> => {
   try {
     const centerId = getStoredCenterId();
     if (!centerId) {
@@ -30,6 +36,11 @@ export const getScheduleByDate = async (year: number, month: number): Promise<Wo
       year: year.toString(),
       month: (month + 1).toString(),
     });
+
+    // day 파라미터가 제공된 경우 추가
+    if (day !== undefined) {
+      params.append('day', day.toString());
+    }
 
     console.log(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.SCHEDULE.GET_BY_DATE}?${params}`);
 
@@ -50,4 +61,9 @@ export const getScheduleByDate = async (year: number, month: number): Promise<Wo
     console.error('Schedule fetch error:', error);
     throw error;
   }
+};
+
+// 특정 일자의 스케줄만 가져오는 함수
+export const getScheduleByDay = async (year: number, month: number, day: number): Promise<WorkMatch[]> => {
+  return getScheduleByDate(year, month, day);
 }; 

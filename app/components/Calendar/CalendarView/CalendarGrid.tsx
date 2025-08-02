@@ -38,18 +38,31 @@ function getWorkTypeColor(workType: WorkType) {
 function convertApiDataToSchedules(apiData: WorkMatch[]) {
   return apiData.map(workMatch => ({
     id: workMatch.workMatchId,
-    caregiverId: 1, // API에서 제공되지 않으므로 기본값 사용
+    caregiverId: workMatch.caregiverId,
     caregiverName: workMatch.caregiverName,
     consumer: '기본 수급자', // API에서 제공되지 않으므로 기본값 사용
     date: workMatch.workDate,
-    startTime: '09:00', // API에서 제공되지 않으므로 기본값 사용
-    endTime: '18:00', // API에서 제공되지 않으므로 기본값 사용
-    workType: WORK_TYPES.VISITING_CARE, // API에서 제공되지 않으므로 기본값 사용
-    location: '기본 위치', // API에서 제공되지 않으므로 기본값 사용
+    startTime: workMatch.startTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
+    endTime: workMatch.endTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
+    workType: workMatch.serviceType.length > 0 ? mapServiceTypeToWorkType(workMatch.serviceType[0]) : '방문요양', // 첫 번째 서비스 타입 사용
+    location: workMatch.address,
     hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
     status: (workMatch.status === 'PLANNED' ? '배정됨' : '미배정') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
     notes: '', // API에서 제공되지 않으므로 기본값 사용
   }));
+}
+
+// API 서비스 타입을 기존 workType으로 매핑
+function mapServiceTypeToWorkType(serviceType: string): WorkType {
+  switch (serviceType) {
+    case 'VISITING_CARE': return WORK_TYPES.VISITING_CARE;
+    case 'DAY_NIGHT_CARE': return WORK_TYPES.DAY_NIGHT_CARE;
+    case 'RESPITE_CARE': return WORK_TYPES.RESPITE_CARE;
+    case 'VISITING_BATH': return WORK_TYPES.VISITING_BATH;
+    case 'IN_HOME_SUPPORT': return WORK_TYPES.IN_HOME_SUPPORT;
+    case 'VISITING_NURSING': return WORK_TYPES.VISITING_NURSING;
+    default: return WORK_TYPES.VISITING_CARE;
+  }
 }
 
 export default function CalendarGrid({ 
