@@ -106,7 +106,6 @@ export default function CalendarPage() {
       {tab === 'caregiver-schedule' && (
         <Flex gap="6" style={{ flex: 1, minHeight: 0 }}>
           <CaregiverList
-            caregivers={sampleCaregivers}
             searchTerm={searchTerm}
             selectedStatus={selectedStatus}
             multiSelectMode={false}

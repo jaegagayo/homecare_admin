@@ -6,7 +6,6 @@ import { Caregiver } from '../../data/caregivers';
 import { getCaregivers, CaregiverApi } from '../../api';
 
 interface CaregiverListProps {
-  caregivers: Caregiver[];
   searchTerm: string;
   selectedStatus: string;
   multiSelectMode: boolean;
@@ -52,7 +51,6 @@ function convertApiDataToCaregivers(apiData: CaregiverApi[]): Caregiver[] {
 }
 
 export default function CaregiverList({
-  caregivers: propCaregivers,
   searchTerm,
   selectedStatus,
   multiSelectMode,
@@ -89,9 +87,6 @@ export default function CaregiverList({
 
   // API 데이터를 기존 형식으로 변환
   const convertedApiCaregivers = convertApiDataToCaregivers(apiCaregivers);
-  
-  // 기존 props 데이터와 API 데이터 합치기
-  const allCaregivers = [...propCaregivers, ...convertedApiCaregivers];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -193,7 +188,7 @@ export default function CaregiverList({
         {!loading && !error && (
           <ScrollArea type='always' scrollbars='vertical' style={{ flex: 1, minHeight: 0 }}>
             <Flex direction="column" gap="3">
-              {allCaregivers.map(caregiver => (
+              {convertedApiCaregivers.map(caregiver => (
                 <Card
                   key={caregiver.id}
                   style={{

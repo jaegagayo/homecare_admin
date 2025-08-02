@@ -1,6 +1,6 @@
 import { Card, Flex, Text } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
-import { sampleSchedules, groupSchedulesByDate } from '../../../data/schedules';
+import { groupSchedulesByDate } from '../../../utils/scheduleUtils';
 import { WORK_TYPES, WorkType } from '../../../constants/workTypes';
 import { getScheduleByDate, WorkMatch } from '../../../api';
 
@@ -117,11 +117,8 @@ export default function CalendarGrid({
   // API 데이터를 기존 형식으로 변환
   const convertedApiSchedules = convertApiDataToSchedules(apiSchedules);
   
-  // 기존 샘플 데이터와 API 데이터 합치기
-  const allSchedules = [...sampleSchedules, ...convertedApiSchedules];
-  
   // 해당 월의 스케줄만 필터링
-  const monthSchedules = allSchedules.filter(schedule => {
+  const monthSchedules = convertedApiSchedules.filter(schedule => {
     const scheduleDate = new Date(schedule.date);
     return scheduleDate.getFullYear() === year && scheduleDate.getMonth() === month;
   });

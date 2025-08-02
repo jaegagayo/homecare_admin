@@ -1,6 +1,5 @@
 import { Flex, Heading, Text, Card, Button, Badge, Table, ScrollArea, Tabs, Select } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
-import { sampleSchedules } from '../../../data/schedules';
 import { sampleCaregivers } from '../../../data/caregivers';
 import AddSchedule from './AddSchedule';
 import { WORK_TYPE_COLORS, WORK_TYPES, WorkType } from '../../../constants/workTypes';
@@ -112,11 +111,8 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
 
   // API 데이터를 기존 형식으로 변환
   const convertedApiSchedules = convertApiDataToSchedules(apiSchedules);
-  
-  // 기존 샘플 데이터와 API 데이터 합치기
-  const allSchedules = [...sampleSchedules, ...convertedApiSchedules];
 
-  const filteredSchedules = allSchedules.filter(schedule => {
+  const filteredSchedules = convertedApiSchedules.filter(schedule => {
     const matchesDate = selectedDate === '' || schedule.date === selectedDate;
     const matchesCaregiver = selectedCaregiver === 'all' || 
                             schedule.caregiverId.toString() === selectedCaregiver;

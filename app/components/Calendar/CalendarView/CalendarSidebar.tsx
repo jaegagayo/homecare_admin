@@ -1,6 +1,7 @@
 import { Card, Text, Checkbox, Flex, Heading, Badge } from '@radix-ui/themes';
 import { useState } from 'react';
-import { sampleSchedules, groupSchedulesByDate } from '../../../data/schedules';
+import { groupSchedulesByDate } from '../../../utils/scheduleUtils';
+import { sampleSchedules } from '../../../data/schedules';
 import { WORK_TYPES, WORK_TYPE_COLORS, WorkType } from '../../../constants/workTypes';
 
 function getDaysArray(year: number, month: number) {
