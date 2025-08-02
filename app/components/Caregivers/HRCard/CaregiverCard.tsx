@@ -176,16 +176,12 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
 
               {/* 블랙리스트 탭 */}
               {selectedTab === 'blacklist' && (
-                <Card>
-                  <Flex justify="between" align="center" mb="3">
-                    <Heading size="3">블랙리스트</Heading>
-                    <Text size="2" color="gray">매칭 제외 대상</Text>
-                  </Flex>
+                <Flex direction="column" gap="4">
                   <Flex direction="column" gap="3">
                     <Text size="2" color="gray" mb="2">
                       이 요양보호사와 매칭되지 않기를 원하는 돌봄 대상자 목록입니다.
                     </Text>
-                    <ScrollArea style={{ height: '400px' }}>
+                    <ScrollArea style={{ height: '100%' }}>
                       <Flex direction="column" gap="2">
                         {sampleClients.map(client => (
                           <Flex 
@@ -219,8 +215,8 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
                         ))}
                       </Flex>
                     </ScrollArea>
-                    <Flex justify="between" align="center" mt="2">
-                      <Text size="2" color="gray">
+                    <Flex justify="between" align="center">
+                      <Text size="2" color="gray" mt='2'>
                         총 {sampleClients.length}명 중 {blacklist.length}명 매칭 제외
                       </Text>
                       <Button variant="soft" size="1" color="red">
@@ -228,7 +224,7 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
                       </Button>
                     </Flex>
                   </Flex>
-                </Card>
+                </Flex>
               )}
             </ScrollArea>
           </Tabs.Root>

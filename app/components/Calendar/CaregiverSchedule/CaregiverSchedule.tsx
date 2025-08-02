@@ -2,8 +2,7 @@ import { Flex, Heading, Card, Tabs, Button } from '@radix-ui/themes';
 import { useState, useRef } from 'react';
 import { sampleSchedules } from '../../../data/schedules';
 import { Caregiver } from '../../../data/caregivers';
-import UpcomingSchedules from './UpcomingSchedules';
-import CompletedSchedules from './CompletedSchedules';
+import ScheduleList from './ScheduleList';
 import MonthlyStats from './MonthlyStats';
 import ScheduleGrid from './ScheduleGrid';
 import { exportAndDownloadSchedule } from '../../../utils/scheduleImageExport';
@@ -19,8 +18,7 @@ export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps)
 
   const tabs = [
     { key: 'schedule', label: '스케줄표' },
-    { key: 'upcoming', label: '예정된 스케줄' },
-    { key: 'completed', label: '완료된 스케줄' },
+    { key: 'schedules', label: '스케줄 목록' },
     { key: 'monthly', label: '월별 통계' },
   ];
 
@@ -28,22 +26,6 @@ export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps)
   const caregiverSchedules = sampleSchedules.filter(schedule => 
     schedule.caregiverId === caregiver.id
   );
-
-  // 예정된 스케줄 (오늘 이후)
-  const upcomingSchedules = caregiverSchedules.filter(schedule => {
-    const scheduleDate = new Date(schedule.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return scheduleDate >= today && schedule.status !== '취소';
-  });
-
-  // 완료된 스케줄 (오늘 이전)
-  const completedSchedules = caregiverSchedules.filter(schedule => {
-    const scheduleDate = new Date(schedule.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return scheduleDate < today || schedule.status === '완료';
-  });
 
   // 이미지 출력 처리
   const handleExportImage = async () => {
@@ -104,12 +86,8 @@ export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps)
               <ScheduleGrid ref={scheduleGridRef} schedules={caregiverSchedules} />
             )}
 
-            {selectedTab === 'upcoming' && (
-              <UpcomingSchedules schedules={upcomingSchedules} />
-            )}
-
-            {selectedTab === 'completed' && (
-              <CompletedSchedules schedules={completedSchedules} />
+            {selectedTab === 'schedules' && (
+              <ScheduleList schedules={caregiverSchedules} />
             )}
 
             {selectedTab === 'monthly' && (
