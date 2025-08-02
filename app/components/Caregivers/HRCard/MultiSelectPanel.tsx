@@ -1,7 +1,11 @@
-import { Flex, Heading, Card, Text, Button, Badge, ScrollArea, Table } from '@radix-ui/themes';
-import { EnvelopeClosedIcon, ChatBubbleIcon, PersonIcon, DownloadIcon } from '@radix-ui/react-icons';
-
+import { Card, Flex, Heading, Button, Table, ScrollArea, Badge, Text } from '@radix-ui/themes';
+import { ChatBubbleIcon, EnvelopeClosedIcon, PersonIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { Caregiver } from '../../../data/caregivers';
+import { 
+  exportToExcel, 
+  convertCaregiversToExcelData, 
+  generateFilename 
+} from '../../../utils/excel';
 
 interface MultiSelectPanelProps {
   selectedCaregivers: Caregiver[];
@@ -12,9 +16,9 @@ interface MultiSelectPanelProps {
 export default function MultiSelectPanel({ selectedCaregivers, onClearSelection, onRemoveCaregiver }: MultiSelectPanelProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case '활동중': return 'green';
-      case '휴직': return 'yellow';
-      case '퇴사': return 'red';
+      case '활성': return 'green';
+      case '비활성': return 'red';
+      case '대기': return 'yellow';
       default: return 'gray';
     }
   };
@@ -22,9 +26,7 @@ export default function MultiSelectPanel({ selectedCaregivers, onClearSelection,
   const getWorkTypeColor = (workType: string) => {
     switch (workType) {
       case '방문요양': return 'blue';
-      case '주·야간보호': return 'purple';
-      case '단기보호': return 'green';
-      case '방문목욕': return 'orange';
+      case '방문목욕': return 'purple';
       case '재가노인지원': return 'yellow';
       case '방문간호': return 'red';
       default: return 'gray';
@@ -32,9 +34,30 @@ export default function MultiSelectPanel({ selectedCaregivers, onClearSelection,
   };
 
   const handleExportToExcel = () => {
-    // 엑셀 출력 로직
-    console.log('엑셀로 출력:', selectedCaregivers);
-    // 실제 구현에서는 엑셀 파일 생성 및 다운로드 로직을 추가
+    if (selectedCaregivers.length === 0) {
+      alert('엑셀로 출력할 요양보호사를 선택해주세요.');
+      return;
+    }
+
+    try {
+      // 요양보호사 데이터를 엑셀 형식으로 변환
+      const excelData = convertCaregiversToExcelData(selectedCaregivers);
+      
+      // 파일명 생성
+      const filename = generateFilename('요양보호사_목록');
+      
+      // 엑셀 파일 생성 및 다운로드
+      const success = exportToExcel(excelData, filename, '요양보호사 목록');
+      
+      if (success) {
+        console.log('엑셀 파일이 성공적으로 생성되었습니다.');
+      } else {
+        alert('엑셀 파일 생성 중 오류가 발생했습니다.');
+      }
+    } catch (error) {
+      console.error('엑셀 출력 중 오류:', error);
+      alert('엑셀 파일 생성 중 오류가 발생했습니다.');
+    }
   };
 
   return (
