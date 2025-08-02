@@ -38,6 +38,21 @@ const setStoredData = (key: string, data: AssignApi[]) => {
   }
 };
 
+// localStorage 키들을 초기화하는 함수
+const initializeStorageKeys = () => {
+  // updatedAssignments 키가 없으면 빈 배열로 초기화
+  if (!localStorage.getItem(STORAGE_KEYS.UPDATED_ASSIGNMENTS)) {
+    setStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS, []);
+    console.log('Initialized updatedAssignments storage key');
+  }
+  
+  // allAssignments 키가 없으면 빈 배열로 초기화
+  if (!localStorage.getItem(STORAGE_KEYS.ALL_ASSIGNMENTS)) {
+    setStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS, []);
+    console.log('Initialized allAssignments storage key');
+  }
+};
+
 // 전역 상태 관리를 위한 이벤트 시스템
 const createNotificationEvent = () => {
   const listeners: (() => void)[] = [];
@@ -63,12 +78,23 @@ const notificationEvent = createNotificationEvent();
 // 실시간 매칭 정보 업데이트 함수 (전역에서 사용)
 export const startNotificationPolling = () => {
   const centerId = getStoredCenterId();
-  if (!centerId) return;
+  if (!centerId) {
+    console.log('centerId not found, skipping notification polling');
+    return;
+  }
+
+  console.log('Starting notification polling with centerId:', centerId);
+  
+  // localStorage 키들 초기화
+  initializeStorageKeys();
 
   const pollAssignments = async () => {
     try {
       const newAssignments = await getAssignments();
+      console.log('Fetched assignments:', newAssignments);
+      
       const allAssignments = getStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS);
+      console.log('Current allAssignments:', allAssignments);
       
       // 새로운 매칭 정보 찾기
       const currentAssignmentsSet = new Set(allAssignments.map(getAssignmentKey));
@@ -76,6 +102,8 @@ export const startNotificationPolling = () => {
       const newItems = newAssignments.filter(assignment => 
         !currentAssignmentsSet.has(getAssignmentKey(assignment))
       );
+      
+      console.log('New items found:', newItems);
 
       // 새로운 매칭 정보가 있으면 업데이트된 목록에 추가
       if (newItems.length > 0) {
@@ -83,12 +111,15 @@ export const startNotificationPolling = () => {
         const newUpdatedAssignments = [...updatedAssignments, ...newItems];
         setStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS, newUpdatedAssignments);
         
+        console.log('Updated assignments stored:', newUpdatedAssignments);
+        
         // 이벤트 발생
         notificationEvent.notify();
       }
 
       // 전체 매칭 정보 업데이트
       setStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS, newAssignments);
+      console.log('All assignments updated');
     } catch (error) {
       console.error('Failed to fetch assignments:', error);
     }
