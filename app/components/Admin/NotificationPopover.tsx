@@ -96,7 +96,19 @@ export const startNotificationPolling = () => {
       const allAssignments = getStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS);
       console.log('Current allAssignments:', allAssignments);
       
-      // 새로운 매칭 정보 찾기
+      // 처음 실행인지 확인 (allAssignments가 비어있고, API에서 데이터가 있음)
+      const isFirstRun = allAssignments.length === 0 && newAssignments.length > 0;
+      
+      if (isFirstRun) {
+        console.log('First run detected, storing all assignments without notifications');
+        // 처음 실행 시에는 모든 데이터를 allAssignments에 저장하고, updatedAssignments는 비워둠
+        setStoredData(STORAGE_KEYS.ALL_ASSIGNMENTS, newAssignments);
+        setStoredData(STORAGE_KEYS.UPDATED_ASSIGNMENTS, []);
+        console.log('All assignments stored for first run');
+        return;
+      }
+      
+      // 새로운 매칭 정보 찾기 (이후 업데이트)
       const currentAssignmentsSet = new Set(allAssignments.map(getAssignmentKey));
       
       const newItems = newAssignments.filter(assignment => 
