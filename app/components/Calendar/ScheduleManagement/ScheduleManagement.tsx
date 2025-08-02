@@ -6,7 +6,7 @@ import { WORK_TYPE_COLORS, WORK_TYPES, WorkType } from '../../../constants/workT
 import { getScheduleByDay, WorkMatch } from '../../../api';
 
 interface ScheduleManagementProps {
-  onViewCaregiverSchedule?: (caregiverId: number) => void;
+  onViewCaregiverSchedule?: (caregiverId: string) => void;
   selectedDate?: string;
 }
 
@@ -115,7 +115,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
   const filteredSchedules = convertedApiSchedules.filter(schedule => {
     const matchesDate = selectedDate === '' || schedule.date === selectedDate;
     const matchesCaregiver = selectedCaregiver === 'all' || 
-                            schedule.caregiverId.toString() === selectedCaregiver;
+                            schedule.caregiverId === selectedCaregiver;
     const matchesStatus = selectedStatus === 'all' || schedule.status === selectedStatus;
     return matchesDate && matchesCaregiver && matchesStatus;
   });
@@ -128,7 +128,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
     console.log('스케줄 반려:', id);
   };
 
-  const handleViewCaregiverSchedule = (caregiverId: number) => {
+  const handleViewCaregiverSchedule = (caregiverId: string) => {
     if (onViewCaregiverSchedule) {
       onViewCaregiverSchedule(caregiverId);
     }
@@ -179,7 +179,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
                   <Select.Content>
                     <Select.Item value="all">전체</Select.Item>
                     {sampleCaregivers.map(caregiver => (
-                      <Select.Item key={caregiver.id} value={caregiver.id.toString()}>
+                      <Select.Item key={caregiver.caregiverId} value={caregiver.caregiverId}>
                         {caregiver.name}
                       </Select.Item>
                     ))}

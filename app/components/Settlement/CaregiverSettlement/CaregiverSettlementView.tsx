@@ -9,11 +9,11 @@ import {
 } from '../../../data/settlements';
 
 export default function CaregiverSettlementView() {
-  const [selectedCaregiverId, setSelectedCaregiverId] = useState<number | null>(null);
+  const [selectedCaregiverId, setSelectedCaregiverId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('전체');
 
-  const handleCaregiverSelect = (caregiverId: number) => setSelectedCaregiverId(caregiverId);
+  const handleCaregiverSelect = (caregiverId: string) => setSelectedCaregiverId(caregiverId);
 
   return (
     <Flex gap="6" style={{ flex: 1, minHeight: 0 }}>
@@ -31,11 +31,11 @@ export default function CaregiverSettlementView() {
         <Card style={{ flex: 3, display: 'flex', flexDirection: 'column' }}>
           <Flex direction="column" gap="4" p="4" style={{ flex: 1 }}>
             <Text size="4" weight="bold">
-              {sampleCaregivers.find(c => c.id === selectedCaregiverId)?.name} 보호사 정산 내역
+              {sampleCaregivers.find(c => c.caregiverId === selectedCaregiverId)?.name} 보호사 정산 내역
             </Text>
             <SettlementDetails
               records={[...recentSettlementRecords, ...pendingSettlementRecords].filter(
-                record => record.caregiverName === sampleCaregivers.find(c => c.id === selectedCaregiverId)?.name
+                record => record.caregiverName === sampleCaregivers.find(c => c.caregiverId === selectedCaregiverId)?.name
               )}
             />
           </Flex>

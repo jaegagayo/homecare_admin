@@ -18,7 +18,7 @@ const tabs = [
 
 export default function CalendarPage() {
   const [tab, setTab] = useState('calendar');
-  const [selectedCaregiverId, setSelectedCaregiverId] = useState<number | null>(null);
+  const [selectedCaregiverId, setSelectedCaregiverId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('전체');
   const [workTypeFilters, setWorkTypeFilters] = useState<Record<WorkType, boolean>>({
@@ -32,12 +32,12 @@ export default function CalendarPage() {
   const [date, setDate] = useState(new Date());
   const [selectedDateForSchedule, setSelectedDateForSchedule] = useState<string>('');
 
-  const handleViewCaregiverSchedule = (caregiverId: number) => {
+  const handleViewCaregiverSchedule = (caregiverId: string) => {
     setSelectedCaregiverId(caregiverId);
     setTab('caregiver-schedule');
   };
 
-  const handleCaregiverSelect = (caregiverId: number) => {
+  const handleCaregiverSelect = (caregiverId: string) => {
     setSelectedCaregiverId(caregiverId);
   };
 
@@ -119,7 +119,7 @@ export default function CalendarPage() {
           
           {selectedCaregiverId ? (
             <CaregiverSchedule 
-              caregiver={sampleCaregivers.find(c => c.id === selectedCaregiverId)!} 
+              caregiver={sampleCaregivers.find(c => c.caregiverId === selectedCaregiverId)!} 
             />
           ) : (
             <Card style={{ flex: 3, display: 'flex', flexDirection: 'column' }}>

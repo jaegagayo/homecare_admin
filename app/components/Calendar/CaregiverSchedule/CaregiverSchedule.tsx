@@ -57,7 +57,7 @@ export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps)
       setLoading(true);
       setError(null);
       try {
-        const data = await getCaregiverSchedule(caregiver.id);
+        const data = await getCaregiverSchedule(caregiver.caregiverId);
         setApiSchedules(data);
         console.log('요양보호사 스케줄 데이터 로드 성공:', data);
       } catch (err) {
@@ -69,7 +69,7 @@ export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps)
     };
 
     fetchCaregiverSchedules();
-  }, [caregiver.id]);
+  }, [caregiver.caregiverId]);
 
   const tabs = [
     { key: 'schedule', label: '스케줄표' },

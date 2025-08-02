@@ -5,7 +5,7 @@ import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
 import { formatCurrency } from '../../../utils/formatters';
 
 interface CaregiverCardProps {
-  selectedCaregiver: number | null;
+  selectedCaregiver: string | null;
   caregivers: Caregiver[];
 }
 
@@ -19,7 +19,7 @@ const sampleClients = [
 ];
 
 export default function CaregiverCard({ selectedCaregiver, caregivers }: CaregiverCardProps) {
-  const caregiver = caregivers.find(c => c.id === selectedCaregiver);
+  const caregiver = caregivers.find(c => c.caregiverId === selectedCaregiver);
   const [blacklist, setBlacklist] = useState<number[]>([]);
   const [selectedTab, setSelectedTab] = useState('basic');
 

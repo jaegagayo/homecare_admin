@@ -11,7 +11,7 @@ interface AddScheduleProps {
 
 export default function AddSchedule({ onScheduleAdded }: AddScheduleProps) {
   const [scheduleStep, setScheduleStep] = useState<'select' | 'form' | 'confirm'>('select');
-  const [selectedCaregiverForSchedule, setSelectedCaregiverForSchedule] = useState<number | null>(null);
+  const [selectedCaregiverForSchedule, setSelectedCaregiverForSchedule] = useState<string | null>(null);
   const [scheduleSearchTerm, setScheduleSearchTerm] = useState('');
   const [scheduleSelectedStatus, setScheduleSelectedStatus] = useState('전체');
   
@@ -153,7 +153,7 @@ export default function AddSchedule({ onScheduleAdded }: AddScheduleProps) {
             {selectedCaregiverForSchedule && (
               <Card style={{ padding: '12px', backgroundColor: 'var(--blue-2)' }}>
                 <Text size="2" weight="medium">
-                  선택된 보호사: {sampleCaregivers.find(c => c.id === selectedCaregiverForSchedule)?.name}
+                  선택된 보호사: {sampleCaregivers.find(c => c.caregiverId === selectedCaregiverForSchedule)?.name}
                 </Text>
               </Card>
             )}
@@ -314,8 +314,8 @@ export default function AddSchedule({ onScheduleAdded }: AddScheduleProps) {
                 <Text size="2" weight="medium" color="green">스케줄 대상</Text>
                 {selectedCaregiverForSchedule && (
                   <Text size="2">
-                    {sampleCaregivers.find(c => c.id === selectedCaregiverForSchedule)?.name} 
-                    ({sampleCaregivers.find(c => c.id === selectedCaregiverForSchedule)?.phone})
+                    {sampleCaregivers.find(c => c.caregiverId === selectedCaregiverForSchedule)?.name} 
+                    ({sampleCaregivers.find(c => c.caregiverId === selectedCaregiverForSchedule)?.phone})
                   </Text>
                 )}
               </Flex>

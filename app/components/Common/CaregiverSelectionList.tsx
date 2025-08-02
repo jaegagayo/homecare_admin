@@ -4,10 +4,10 @@ import { sampleCaregivers } from '../../data/caregivers';
 interface CaregiverSelectionListProps {
   searchTerm: string;
   selectedStatus: string;
-  selectedCaregiver: number | null;
+  selectedCaregiver: string | null;
   onSearchChange: (value: string) => void;
   onStatusChange: (status: string) => void;
-  onCaregiverSelect: (id: number) => void;
+  onCaregiverSelect: (caregiverId: string) => void;
 }
 
 export default function CaregiverSelectionList({
@@ -76,14 +76,14 @@ export default function CaregiverSelectionList({
         <Flex direction="column" gap="2">
           {filteredCaregivers.map(caregiver => (
             <Card 
-              key={caregiver.id}
+              key={caregiver.caregiverId}
               style={{ 
                 padding: '12px',
                 cursor: 'pointer',
-                backgroundColor: selectedCaregiver === caregiver.id ? 'var(--accent-3)' : 'transparent',
+                backgroundColor: selectedCaregiver === caregiver.caregiverId ? 'var(--accent-3)' : 'transparent',
                 marginRight: '4%'
               }}
-              onClick={() => onCaregiverSelect(caregiver.id)}
+              onClick={() => onCaregiverSelect(caregiver.caregiverId)}
             >
               <Flex justify="between" align="center">
                 <Flex direction="column" gap="1">

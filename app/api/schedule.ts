@@ -3,7 +3,7 @@ import { getStoredCenterId } from './auth';
 
 export interface WorkMatch {
   workMatchId: string;
-  caregiverId: number;
+  caregiverId: string;
   caregiverName: string;
   workDate: string;
   startTime: string;
@@ -15,7 +15,7 @@ export interface WorkMatch {
 
 export interface ServiceMatch {
   serviceMatchId: string;
-  caregiverId: number;
+  caregiverId: string;
   caregiverName: string;
   consumerName: string;
   serviceDate: string;
@@ -84,7 +84,7 @@ export const getScheduleByDay = async (year: number, month: number, day: number)
 };
 
 // 특정 요양보호사의 스케줄을 가져오는 함수
-export const getCaregiverSchedule = async (caregiverId: number): Promise<ServiceMatch[]> => {
+export const getCaregiverSchedule = async (caregiverId: string): Promise<ServiceMatch[]> => {
   try {
     const centerId = getStoredCenterId();
     if (!centerId) {

@@ -4,12 +4,12 @@ import { sampleCaregivers } from '../../../data/caregivers';
 import CaregiverSelectionList from '../../Common/CaregiverSelectionList';
 
 interface DirectDeletionFormProps {
-  onSubmit: (data: { caregiverId: number; reason: string }) => void;
+  onSubmit: (data: { caregiverId: string; reason: string }) => void;
 }
 
 export default function DirectDeletionForm({ onSubmit }: DirectDeletionFormProps) {
   const [deletionStep, setDeletionStep] = useState<'select' | 'reason' | 'confirm'>('select');
-  const [selectedCaregiverForDeletion, setSelectedCaregiverForDeletion] = useState<number | null>(null);
+  const [selectedCaregiverForDeletion, setSelectedCaregiverForDeletion] = useState<string | null>(null);
   const [deletionReason, setDeletionReason] = useState('');
   const [deletionSearchTerm, setDeletionSearchTerm] = useState('');
   const [deletionSelectedStatus, setDeletionSelectedStatus] = useState('전체');
@@ -91,7 +91,7 @@ export default function DirectDeletionForm({ onSubmit }: DirectDeletionFormProps
             {selectedCaregiverForDeletion && (
               <Card style={{ padding: '12px', backgroundColor: 'var(--blue-2)' }}>
                 <Text size="2" weight="medium">
-                  선택된 보호사: {sampleCaregivers.find(c => c.id === selectedCaregiverForDeletion)?.name}
+                  선택된 보호사: {sampleCaregivers.find(c => c.caregiverId === selectedCaregiverForDeletion)?.name}
                 </Text>
               </Card>
             )}
@@ -129,8 +129,8 @@ export default function DirectDeletionForm({ onSubmit }: DirectDeletionFormProps
                 <Text size="2" weight="medium" color="red">말소 대상</Text>
                 {selectedCaregiverForDeletion && (
                   <Text size="2">
-                    {sampleCaregivers.find(c => c.id === selectedCaregiverForDeletion)?.name} 
-                    ({sampleCaregivers.find(c => c.id === selectedCaregiverForDeletion)?.phone})
+                    {sampleCaregivers.find(c => c.caregiverId === selectedCaregiverForDeletion)?.name} 
+                    ({sampleCaregivers.find(c => c.caregiverId === selectedCaregiverForDeletion)?.phone})
                   </Text>
                 )}
               </Flex>

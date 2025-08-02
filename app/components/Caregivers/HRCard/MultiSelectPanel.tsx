@@ -10,7 +10,7 @@ import {
 interface MultiSelectPanelProps {
   selectedCaregivers: Caregiver[];
   onClearSelection: () => void;
-  onRemoveCaregiver: (caregiverId: number) => void;
+  onRemoveCaregiver: (caregiverId: string) => void;
 }
 
 export default function MultiSelectPanel({ selectedCaregivers, onClearSelection, onRemoveCaregiver }: MultiSelectPanelProps) {
@@ -86,7 +86,7 @@ export default function MultiSelectPanel({ selectedCaregivers, onClearSelection,
           <Table.Root style={{ tableLayout: 'fixed', width: '100%' }}>
             <Table.Body>
               {selectedCaregivers.map(caregiver => (
-                <Table.Row key={caregiver.id}>
+                <Table.Row key={caregiver.caregiverId}>
                   <Table.Cell style={{ width: '20%' }}>
                     <Text weight="medium" size="2">{caregiver.name}</Text>
                   </Table.Cell>
@@ -111,7 +111,7 @@ export default function MultiSelectPanel({ selectedCaregivers, onClearSelection,
                       variant="soft"
                       size="1"
                       color="red"
-                      onClick={() => onRemoveCaregiver(caregiver.id)}
+                      onClick={() => onRemoveCaregiver(caregiver.caregiverId)}
                     >
                       선택 취소
                     </Button>

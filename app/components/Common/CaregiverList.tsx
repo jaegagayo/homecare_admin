@@ -9,11 +9,11 @@ interface CaregiverListProps {
   searchTerm: string;
   selectedStatus: string;
   multiSelectMode: boolean;
-  selectedCaregiver: number | null;
-  selectedCaregivers: number[];
+  selectedCaregiver: string | null;
+  selectedCaregivers: string[];
   onSearchChange: (value: string) => void;
   onStatusChange: (status: string) => void;
-  onCaregiverSelect: (id: number) => void;
+  onCaregiverSelect: (caregiverId: string) => void;
   onMultiSelectToggle?: () => void;
   showMultiSelectToggle?: boolean;
 }
@@ -21,7 +21,7 @@ interface CaregiverListProps {
 // API 데이터를 기존 Caregiver 형식으로 변환
 function convertApiDataToCaregivers(apiData: CaregiverApi[]): Caregiver[] {
   return apiData.map(caregiver => ({
-    id: parseInt(caregiver.caregiverId.split('-')[0]) || Math.floor(Math.random() * 1000), // UUID에서 숫자 추출 또는 랜덤 ID
+    caregiverId: caregiver.caregiverId, // UUID 그대로 사용
     name: caregiver.name,
     phone: caregiver.phone,
     status: caregiver.status === 'ACTIVE' ? '활동중' : '휴직', // API 상태를 기존 상태로 매핑
@@ -190,19 +190,19 @@ export default function CaregiverList({
             <Flex direction="column" gap="3">
               {convertedApiCaregivers.map(caregiver => (
                 <Card
-                  key={caregiver.id}
+                  key={caregiver.caregiverId}
                   style={{
                     cursor: 'pointer',
-                    backgroundColor: (!multiSelectMode && selectedCaregiver === caregiver.id) ? 'var(--accent-3)' : 'transparent',
+                    backgroundColor: (!multiSelectMode && selectedCaregiver === caregiver.caregiverId) ? 'var(--accent-3)' : 'transparent',
                     marginRight: '10%'
                   }}
-                  onClick={() => onCaregiverSelect(caregiver.id)}
+                  onClick={() => onCaregiverSelect(caregiver.caregiverId)}
                 >
                   <Flex gap="2" p="1" align="center">
                     {multiSelectMode && (
                       <Checkbox 
-                        checked={selectedCaregivers.includes(caregiver.id)}
-                        onChange={() => onCaregiverSelect(caregiver.id)}
+                        checked={selectedCaregivers.includes(caregiver.caregiverId)}
+                        onChange={() => onCaregiverSelect(caregiver.caregiverId)}
                         onClick={(e) => e.stopPropagation()}
                         style={{ marginRight: '2%' }}
                       />

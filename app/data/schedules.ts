@@ -2,7 +2,7 @@ import { WorkType, WORK_TYPES } from '../constants/workTypes';
 
 export interface WorkSchedule {
   id: string;
-  caregiverId: number;
+  caregiverId: string;
   caregiverName: string;
   consumer: string;
   date: string; // YYYY-MM-DD 형식
@@ -19,7 +19,7 @@ export const sampleSchedules: WorkSchedule[] = [
   // 2025년 7월 스케줄 예시 (오늘 날짜 기준)
   {
     id: '1',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김순자',
     date: '2025-07-25',
@@ -33,7 +33,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '2',
-    caregiverId: 2,
+    caregiverId: '2',
     caregiverName: '박철수',
     consumer: '김말자',
     date: '2025-07-25',
@@ -47,7 +47,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '3',
-    caregiverId: 3,
+    caregiverId: '3',
     caregiverName: '이미영',
     consumer: '김막자',
     date: '2025-07-26',
@@ -61,7 +61,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '4',
-    caregiverId: 4,
+    caregiverId: '4',
     caregiverName: '최민수',
     consumer: '김점례',
     date: '2025-07-26',
@@ -75,7 +75,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '5',
-    caregiverId: 5,
+    caregiverId: '5',
     caregiverName: '정수진',
     consumer: '김점순',
     date: '2025-07-27',
@@ -89,7 +89,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '6',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김영희',
     date: '2025-07-28',
@@ -103,7 +103,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '7',
-    caregiverId: 2,
+    caregiverId: '2',
     caregiverName: '박철수',
     consumer: '김철수',
     date: '2025-07-28',
@@ -117,7 +117,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '8',
-    caregiverId: 3,
+    caregiverId: '3',
     caregiverName: '이미영',
     consumer: '박영자',
     date: '2025-07-28',
@@ -131,7 +131,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '9',
-    caregiverId: 4,
+    caregiverId: '4',
     caregiverName: '최민수',
     consumer: '이순자',
     date: '2025-07-29',
@@ -145,7 +145,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '10',
-    caregiverId: 5,
+    caregiverId: '5',
     caregiverName: '정수진',
     consumer: '이영숙',
     date: '2025-07-29',
@@ -159,7 +159,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '11',
-    caregiverId: 6,
+    caregiverId: '6',
     caregiverName: '한지민',
     consumer: '최영희',
     date: '2025-07-30',
@@ -173,7 +173,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '12',
-    caregiverId: 7,
+    caregiverId: '7',
     caregiverName: '송민호',
     consumer: '이미영',
     date: '2025-07-30',
@@ -187,7 +187,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '13',
-    caregiverId: 8,
+    caregiverId: '8',
     caregiverName: '윤서연',
     consumer: '박영자',
     date: '2025-07-31',
@@ -201,7 +201,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '14',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김순자',
     date: '2025-08-01',
@@ -215,7 +215,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '15',
-    caregiverId: 2,
+    caregiverId: '2',
     caregiverName: '박철수',
     consumer: '김말자',
     date: '2025-08-02',
@@ -230,7 +230,7 @@ export const sampleSchedules: WorkSchedule[] = [
   // 김영희 보호사 추가 스케줄들
   {
     id: '16',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김순자',
     date: '2025-08-03',
@@ -244,7 +244,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '17',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '이영숙',
     date: '2025-08-04',
@@ -258,7 +258,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '18',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '박영자',
     date: '2025-08-05',
@@ -272,7 +272,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '19',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '최영희',
     date: '2025-08-06',
@@ -286,7 +286,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '20',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '최영희',
     date: '2025-08-07',
@@ -300,7 +300,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '21',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김순자',
     date: '2025-08-08',
@@ -314,7 +314,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '22',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김영희',
     date: '2025-08-09',
@@ -328,7 +328,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '23',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '이영숙',
     date: '2025-08-10',
@@ -342,7 +342,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '24',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김순자',
     date: '2025-08-11',
@@ -356,7 +356,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '25',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '박영자',
     date: '2025-08-12',
@@ -370,7 +370,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '26',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '최영희',
     date: '2025-08-13',
@@ -384,7 +384,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '27',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김순자',
     date: '2025-08-14',
@@ -398,7 +398,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '28',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김영희',
     date: '2025-08-15',
@@ -412,7 +412,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '29',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '이순자',
     date: '2025-08-16',
@@ -426,7 +426,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '30',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '이영숙',
     date: '2025-08-17',
@@ -440,7 +440,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '31',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '박영자',
     date: '2025-08-18',
@@ -454,7 +454,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '32',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김순자',
     date: '2025-08-19',
@@ -468,7 +468,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '33',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '최영희',
     date: '2025-08-20',
@@ -482,7 +482,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '34',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김영희',
     date: '2025-08-21',
@@ -496,7 +496,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '35',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김순자',
     date: '2025-08-22',
@@ -511,7 +511,7 @@ export const sampleSchedules: WorkSchedule[] = [
   // 2025년 8월 2일 스케줄 데이터
   {
     id: '36',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김순자',
     date: '2025-08-02',
@@ -525,7 +525,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '37',
-    caregiverId: 2,
+    caregiverId: '2',
     caregiverName: '박철수',
     consumer: '김말자',
     date: '2025-08-02',
@@ -539,7 +539,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '38',
-    caregiverId: 3,
+    caregiverId: '3',
     caregiverName: '이미영',
     consumer: '박영자',
     date: '2025-08-02',
@@ -553,7 +553,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '39',
-    caregiverId: 4,
+    caregiverId: '4',
     caregiverName: '최동욱',
     consumer: '이순자',
     date: '2025-08-02',
@@ -567,7 +567,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '40',
-    caregiverId: 5,
+    caregiverId: '5',
     caregiverName: '정수진',
     consumer: '이영숙',
     date: '2025-08-02',
@@ -581,7 +581,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '41',
-    caregiverId: 6,
+    caregiverId: '6',
     caregiverName: '한지민',
     consumer: '최영희',
     date: '2025-08-02',
@@ -595,7 +595,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '42',
-    caregiverId: 7,
+    caregiverId: '7',
     caregiverName: '송민호',
     consumer: '이미영',
     date: '2025-08-02',
@@ -609,7 +609,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '43',
-    caregiverId: 8,
+    caregiverId: '8',
     caregiverName: '윤서연',
     consumer: '박영자',
     date: '2025-08-02',
@@ -623,7 +623,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '44',
-    caregiverId: 9,
+    caregiverId: '9',
     caregiverName: '김태현',
     consumer: '김순자',
     date: '2025-08-02',
@@ -637,7 +637,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '45',
-    caregiverId: 10,
+    caregiverId: '10',
     caregiverName: '박소영',
     consumer: '이영숙',
     date: '2025-08-02',
@@ -651,7 +651,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '46',
-    caregiverId: 11,
+    caregiverId: '11',
     caregiverName: '이준호',
     consumer: '최영희',
     date: '2025-08-02',
@@ -665,7 +665,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '47',
-    caregiverId: 12,
+    caregiverId: '12',
     caregiverName: '최은지',
     consumer: '이순자',
     date: '2025-08-02',
@@ -679,7 +679,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '48',
-    caregiverId: 13,
+    caregiverId: '13',
     caregiverName: '정현우',
     consumer: '김영희',
     date: '2025-08-02',
@@ -693,7 +693,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '49',
-    caregiverId: 14,
+    caregiverId: '14',
     caregiverName: '한미라',
     consumer: '박영자',
     date: '2025-08-02',
@@ -707,7 +707,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '50',
-    caregiverId: 15,
+    caregiverId: '15',
     caregiverName: '송재현',
     consumer: '최영희',
     date: '2025-08-02',
@@ -721,7 +721,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '51',
-    caregiverId: 1,
+    caregiverId: '1',
     caregiverName: '김영희',
     consumer: '김순자',
     date: '2025-08-02',
@@ -735,7 +735,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '52',
-    caregiverId: 2,
+    caregiverId: '2',
     caregiverName: '박철수',
     consumer: '이영숙',
     date: '2025-08-02',
@@ -749,7 +749,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '53',
-    caregiverId: 3,
+    caregiverId: '3',
     caregiverName: '이미영',
     consumer: '김영희',
     date: '2025-08-02',
@@ -763,7 +763,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '54',
-    caregiverId: 4,
+    caregiverId: '4',
     caregiverName: '최동욱',
     consumer: '이순자',
     date: '2025-08-02',
@@ -777,7 +777,7 @@ export const sampleSchedules: WorkSchedule[] = [
   },
   {
     id: '55',
-    caregiverId: 5,
+    caregiverId: '5',
     caregiverName: '정수진',
     consumer: '박영자',
     date: '2025-08-02',

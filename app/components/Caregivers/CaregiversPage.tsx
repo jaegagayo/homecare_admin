@@ -14,13 +14,13 @@ const tabs = [
 
 export default function CaregiversPage() {
   const [tab, setTab] = useState('card');
-  const [selectedCaregiver, setSelectedCaregiver] = useState<number | null>(null);
-  const [selectedCaregivers, setSelectedCaregivers] = useState<number[]>([]);
+  const [selectedCaregiver, setSelectedCaregiver] = useState<string | null>(null);
+  const [selectedCaregivers, setSelectedCaregivers] = useState<string[]>([]);
   const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('전체');
 
-  const handleCaregiverSelect = (caregiverId: number) => {
+  const handleCaregiverSelect = (caregiverId: string) => {
     if (multiSelectMode) {
       setSelectedCaregivers(prev => 
         prev.includes(caregiverId) 
@@ -43,12 +43,12 @@ export default function CaregiversPage() {
     setSelectedCaregivers([]);
   };
 
-  const handleRemoveCaregiver = (caregiverId: number) => {
+  const handleRemoveCaregiver = (caregiverId: string) => {
     setSelectedCaregivers(prev => prev.filter(id => id !== caregiverId));
   };
 
   const selectedCaregiversData = sampleCaregivers.filter(caregiver => 
-    selectedCaregivers.includes(caregiver.id)
+    selectedCaregivers.includes(caregiver.caregiverId)
   );
 
   return (

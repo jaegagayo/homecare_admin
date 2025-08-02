@@ -1,7 +1,7 @@
 import { WorkType, WORK_TYPES } from '../constants/workTypes';
 
 export interface Caregiver {
-  id: number;
+  caregiverId: string;
   name: string;
   phone: string;
   status: string;
@@ -20,7 +20,7 @@ export interface Caregiver {
 
 export const sampleCaregivers: Caregiver[] = [
   {
-    id: 1,
+    caregiverId: '1',
     name: '김영희',
     phone: '010-1234-5678',
     status: '활동중',
@@ -37,7 +37,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 강남구'
   },
   {
-    id: 2,
+    caregiverId: '2',
     name: '박철수',
     phone: '010-2345-6789',
     status: '활동중',
@@ -54,7 +54,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 서초구'
   },
   {
-    id: 3,
+    caregiverId: '3',
     name: '이미영',
     phone: '010-3456-7890',
     status: '휴직',
@@ -71,7 +71,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 마포구'
   },
   {
-    id: 4,
+    caregiverId: '4',
     name: '최동욱',
     phone: '010-4567-8901',
     status: '활동중',
@@ -88,7 +88,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 송파구'
   },
   {
-    id: 5,
+    caregiverId: '5',
     name: '정수진',
     phone: '010-5678-9012',
     status: '퇴사',
@@ -105,7 +105,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 영등포구'
   },
   {
-    id: 6,
+    caregiverId: '6',
     name: '한지민',
     phone: '010-6789-0123',
     status: '활동중',
@@ -122,7 +122,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 강서구'
   },
   {
-    id: 7,
+    caregiverId: '7',
     name: '송민호',
     phone: '010-7890-1234',
     status: '활동중',
@@ -139,7 +139,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 성동구'
   },
   {
-    id: 8,
+    caregiverId: '8',
     name: '윤서연',
     phone: '010-8901-2345',
     status: '휴직',
@@ -156,7 +156,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 광진구'
   },
   {
-    id: 9,
+    caregiverId: '9',
     name: '김태현',
     phone: '010-9012-3456',
     status: '활동중',
@@ -173,7 +173,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 중구'
   },
   {
-    id: 10,
+    caregiverId: '10',
     name: '박소영',
     phone: '010-0123-4567',
     status: '활동중',
@@ -190,7 +190,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 용산구'
   },
   {
-    id: 11,
+    caregiverId: '11',
     name: '이준호',
     phone: '010-1235-6789',
     status: '활동중',
@@ -207,7 +207,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 동대문구'
   },
   {
-    id: 12,
+    caregiverId: '12',
     name: '최은지',
     phone: '010-2346-7890',
     status: '활동중',
@@ -224,7 +224,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 서대문구'
   },
   {
-    id: 13,
+    caregiverId: '13',
     name: '정현우',
     phone: '010-3457-8901',
     status: '퇴사',
@@ -241,7 +241,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 종로구'
   },
   {
-    id: 14,
+    caregiverId: '14',
     name: '한미라',
     phone: '010-4568-9012',
     status: '활동중',
@@ -258,7 +258,7 @@ export const sampleCaregivers: Caregiver[] = [
     workArea: '서울시 노원구'
   },
   {
-    id: 15,
+    caregiverId: '15',
     name: '송재현',
     phone: '010-5679-0123',
     status: '휴직',
