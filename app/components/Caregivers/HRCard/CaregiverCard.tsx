@@ -64,30 +64,44 @@ export default function CaregiverCard({ selectedCaregiver, caregivers }: Caregiv
     if (!selectedCaregiver) {
       setApiCaregiver(null);
       setCertificationData(null);
+      setError(null);
       return;
     }
 
     const fetchCaregiverData = async () => {
       setLoading(true);
       setError(null);
+      
+      let profileData: CaregiverProfileApi | null = null;
+      let certificationData: CaregiverCertificationApi | null = null;
+
+      // 인사카드 정보 가져오기
       try {
-        // 인사카드 정보와 자격증 정보를 병렬로 가져오기
-        const [profileData, certificationData] = await Promise.all([
-          getCaregiverProfile(selectedCaregiver),
-          getCaregiverCertification(selectedCaregiver)
-        ]);
-        
-        const convertedCaregiver = convertApiDataToCaregiver(profileData, certificationData);
-        setApiCaregiver(convertedCaregiver);
-        setCertificationData(certificationData);
+        profileData = await getCaregiverProfile(selectedCaregiver);
       } catch (err) {
-        console.error('Failed to fetch caregiver data:', err);
+        console.error('Failed to fetch caregiver profile:', err);
+      }
+
+      // 자격증 정보 가져오기
+      try {
+        certificationData = await getCaregiverCertification(selectedCaregiver);
+      } catch (err) {
+        console.error('Failed to fetch caregiver certification:', err);
+        // 자격증 정보 실패는 에러로 처리하지 않음
+      }
+
+      // 인사카드 정보가 없으면 에러 처리
+      if (!profileData) {
         setError('인사카드 정보를 불러오는데 실패했습니다.');
         setApiCaregiver(null);
         setCertificationData(null);
-      } finally {
-        setLoading(false);
+      } else {
+        const convertedCaregiver = convertApiDataToCaregiver(profileData, certificationData || undefined);
+        setApiCaregiver(convertedCaregiver);
+        setCertificationData(certificationData);
       }
+
+      setLoading(false);
     };
 
     fetchCaregiverData();
