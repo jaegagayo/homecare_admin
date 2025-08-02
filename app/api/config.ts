@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   },
   SCHEDULE: {
     GET_BY_DATE: '/center/schedule/date',
+    GET_BY_CAREGIVER: '/center/schedule/{caregiverId}',
   },
   CAREGIVER: {
     GET_ALL: '/center/{centerId}/caregiver',

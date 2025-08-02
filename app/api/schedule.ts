@@ -13,6 +13,21 @@ export interface WorkMatch {
   status: string;
 }
 
+export interface ServiceMatch {
+  serviceMatchId: string;
+  caregiverId: number;
+  caregiverName: string;
+  consumerName: string;
+  serviceDate: string;
+  startTime: string;
+  endTime: string;
+  workType: string[];
+  address: string;
+  hourlyWage: number;
+  status: string;
+  notes: string | null;
+}
+
 export interface ScheduleRequest {
   centerId: string;
   year: number;
@@ -66,4 +81,31 @@ export const getScheduleByDate = async (year: number, month: number, day?: numbe
 // 특정 일자의 스케줄만 가져오는 함수
 export const getScheduleByDay = async (year: number, month: number, day: number): Promise<WorkMatch[]> => {
   return getScheduleByDate(year, month, day);
+};
+
+// 특정 요양보호사의 스케줄을 가져오는 함수
+export const getCaregiverSchedule = async (caregiverId: number): Promise<ServiceMatch[]> => {
+  try {
+    const centerId = getStoredCenterId();
+    if (!centerId) {
+      throw new Error('centerId not found in localStorage');
+    }
+
+    const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.SCHEDULE.GET_BY_CAREGIVER.replace('{caregiverId}', caregiverId.toString())}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Caregiver schedule fetch failed: ${response.status}`);
+    }
+
+    const data: ServiceMatch[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Caregiver schedule fetch error:', error);
+    throw error;
+  }
 }; 
