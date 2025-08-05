@@ -14,20 +14,28 @@ interface CaregiverScheduleProps {
 
 // API 데이터를 기존 스케줄 형식으로 변환
 function convertApiDataToSchedules(apiData: ServiceMatch[]) {
-  return apiData.map(serviceMatch => ({
-    id: serviceMatch.serviceMatchId,
-    caregiverId: serviceMatch.caregiverId,
-    caregiverName: serviceMatch.caregiverName,
-    consumer: serviceMatch.consumerName,
-    date: serviceMatch.serviceDate,
-    startTime: serviceMatch.startTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-    endTime: serviceMatch.endTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-    workType: serviceMatch.workType.length > 0 ? mapServiceTypeToWorkType(serviceMatch.workType[0]) : WORK_TYPES.VISITING_CARE, // 첫 번째 서비스 타입 사용
-    location: serviceMatch.address,
-    hourlyWage: serviceMatch.hourlyWage,
-    status: (serviceMatch.status === 'PENDING' ? '미배정' : serviceMatch.status === 'PLANNED' ? '배정됨' : '완료') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
-    notes: serviceMatch.notes || '', // API에서 제공되지 않으므로 기본값 사용
-  }));
+  return apiData.map(serviceMatch => {
+    // workType이 비어있으면 기본값 사용
+    let workType: WorkType = WORK_TYPES.VISITING_CARE;
+    if (serviceMatch.workType && serviceMatch.workType.length > 0) {
+      workType = mapServiceTypeToWorkType(serviceMatch.workType[0]);
+    }
+    
+    return {
+      id: serviceMatch.serviceMatchId,
+      caregiverId: serviceMatch.caregiverId,
+      caregiverName: serviceMatch.caregiverName,
+      consumer: serviceMatch.consumerName,
+      date: serviceMatch.serviceDate,
+      startTime: serviceMatch.startTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
+      endTime: serviceMatch.endTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
+      workType: workType,
+      location: serviceMatch.address,
+      hourlyWage: serviceMatch.hourlyWage,
+      status: (serviceMatch.status === 'PENDING' ? '미배정' : serviceMatch.status === 'PLANNED' ? '배정됨' : '완료') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
+      notes: serviceMatch.notes || '', // API에서 제공되지 않으므로 기본값 사용
+    };
+  });
 }
 
 // API 서비스 타입을 기존 workType으로 매핑

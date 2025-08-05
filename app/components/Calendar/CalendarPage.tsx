@@ -132,7 +132,6 @@ export default function CalendarPage() {
         <Flex gap="6" style={{ flex: 1, minHeight: 0 }}>
           <CalendarSidebar 
             selectedDate={date} 
-            onDateChange={setDate} 
             onWorkTypeFilterChange={handleWorkTypeFilterChange}
           />
           <Flex direction="column" style={{ flex: 1 }}>

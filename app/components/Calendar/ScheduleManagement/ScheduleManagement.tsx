@@ -42,21 +42,34 @@ function convertApiDataToCaregivers(apiData: CaregiverApi[]) {
 }
 
 // API 데이터를 기존 스케줄 형식으로 변환
-function convertApiDataToSchedules(apiData: WorkMatch[]) {
-  return apiData.map(workMatch => ({
-    id: workMatch.workMatchId,
-    caregiverId: workMatch.caregiverId,
-    caregiverName: workMatch.caregiverName,
-    consumer: '기본 수급자', // API에서 제공되지 않으므로 기본값 사용
-    date: workMatch.workDate,
-    startTime: workMatch.startTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-    endTime: workMatch.endTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-    workType: workMatch.serviceType.length > 0 ? mapServiceTypeToWorkType(workMatch.serviceType[0]) : WORK_TYPES.VISITING_CARE, // 첫 번째 서비스 타입 사용
-    location: workMatch.address,
-    hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
-    status: (workMatch.status === 'PLANNED' ? '배정됨' : '미배정') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
-    notes: '', // API에서 제공되지 않으므로 기본값 사용
-  }));
+function convertApiDataToSchedules(apiData: WorkMatch[], caregivers: CaregiverApi[]) {
+  return apiData.map(workMatch => {
+    // 해당 보호사의 실제 서비스 타입 찾기
+    const caregiver = caregivers.find(c => c.caregiverId === workMatch.caregiverId);
+    let workType: WorkType = WORK_TYPES.VISITING_CARE;
+    
+    if (workMatch.serviceType && workMatch.serviceType.length > 0) {
+      workType = mapServiceTypeToWorkType(workMatch.serviceType[0]);
+    } else if (caregiver && caregiver.serviceTypes.length > 0) {
+      // 보호사의 기본 서비스 타입 사용
+      workType = mapServiceTypeToWorkType(caregiver.serviceTypes[0]);
+    }
+    
+    return {
+      id: workMatch.workMatchId,
+      caregiverId: workMatch.caregiverId,
+      caregiverName: workMatch.caregiverName,
+      consumer: '기본 수급자', // API에서 제공되지 않으므로 기본값 사용
+      date: workMatch.workDate,
+      startTime: workMatch.startTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
+      endTime: workMatch.endTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
+      workType: workType,
+      location: workMatch.address,
+      hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
+      status: (workMatch.status === 'PLANNED' ? '배정됨' : '미배정') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
+      notes: '', // API에서 제공되지 않으므로 기본값 사용
+    };
+  });
 }
 
 // API 서비스 타입을 기존 workType으로 매핑
@@ -157,7 +170,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
   };
 
   // API 데이터를 기존 형식으로 변환
-  const convertedApiSchedules = convertApiDataToSchedules(apiSchedules);
+  const convertedApiSchedules = convertApiDataToSchedules(apiSchedules, apiCaregivers);
   const convertedApiCaregivers = convertApiDataToCaregivers(apiCaregivers);
 
   const filteredSchedules = convertedApiSchedules.filter(schedule => {

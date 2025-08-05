@@ -164,10 +164,8 @@ export default function FloatingActionBar({ onMenuClick, selected }: FloatingAct
               </Popover.Content>
             )}
           </Popover.Root>
-          
-          {/* 1차 구현 사항에 정산 관리는 제외 */}
-          {/* 이후 2차에서 정산 관리와 설정 사이에 구분선 추가 예정 */}
-          {item.label === '캘린더' && (
+
+          {item.label === '정산 관리' && (
             <div
               style={{
                 width: '32px',
