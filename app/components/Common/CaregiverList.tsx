@@ -2,8 +2,8 @@ import { Flex, Heading, Card, Text, Button, Badge, Separator, ScrollArea, Checkb
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
 import { useState, useEffect } from 'react';
 
-import { Caregiver } from '../../data/caregivers';
 import { getCaregivers, CaregiverApi } from '../../api';
+import { CAREGIVER_STATUS, CAREGIVER_STATUS_COLORS } from '../../constants/caregiverStatus';
 
 interface CaregiverListProps {
   searchTerm: string;
@@ -18,37 +18,7 @@ interface CaregiverListProps {
   showMultiSelectToggle?: boolean;
 }
 
-// API 데이터를 기존 Caregiver 형식으로 변환
-function convertApiDataToCaregivers(apiData: CaregiverApi[]): Caregiver[] {
-  return apiData.map(caregiver => ({
-    caregiverId: caregiver.caregiverId, // UUID 그대로 사용
-    name: caregiver.name,
-    phone: caregiver.phone,
-    status: caregiver.status === 'ACTIVE' ? '활동중' : '휴직', // API 상태를 기존 상태로 매핑
-    workTypes: caregiver.serviceTypes.map(type => {
-      // API 서비스 타입을 기존 workTypes로 매핑
-      switch (type) {
-        case 'VISITING_CARE': return '방문요양';
-        case 'DAY_NIGHT_CARE': return '주·야간보호';
-        case 'RESPITE_CARE': return '단기보호';
-        case 'VISITING_BATH': return '방문목욕';
-        case 'IN_HOME_SUPPORT': return '재가노인지원';
-        case 'VISITING_NURSING': return '방문간호';
-        default: return '방문요양';
-      }
-    }),
-    joinDate: new Date().toISOString().split('T')[0], // API에서 제공되지 않으므로 기본값 사용
-    avatar: null,
-    email: `${caregiver.name}@example.com`, // API에서 제공되지 않으므로 기본값 사용
-    birthDate: '1980-01-01', // API에서 제공되지 않으므로 기본값 사용
-    address: '기본 주소', // API에서 제공되지 않으므로 기본값 사용
-    licenseNumber: '2023-000000', // API에서 제공되지 않으므로 기본값 사용
-    licenseDate: '2023-01-01', // API에서 제공되지 않으므로 기본값 사용
-    education: '완료', // API에서 제공되지 않으므로 기본값 사용
-    hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
-    workArea: '서울시', // API에서 제공되지 않으므로 기본값 사용
-  }));
-}
+
 
 export default function CaregiverList({
   searchTerm,
@@ -85,17 +55,7 @@ export default function CaregiverList({
     fetchCaregivers();
   }, []);
 
-  // API 데이터를 기존 형식으로 변환
-  const convertedApiCaregivers = convertApiDataToCaregivers(apiCaregivers);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case '활동중': return 'green';
-      case '휴직': return 'yellow';
-      case '퇴사': return 'red';
-      default: return 'gray';
-    }
-  };
 
   return (
     <Card style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -188,7 +148,7 @@ export default function CaregiverList({
         {!loading && !error && (
           <ScrollArea type='always' scrollbars='vertical' style={{ flex: 1, minHeight: 0 }}>
             <Flex direction="column" gap="3">
-              {convertedApiCaregivers.map(caregiver => (
+              {apiCaregivers.map(caregiver => (
                 <Card
                   key={caregiver.caregiverId}
                   style={{
@@ -211,8 +171,8 @@ export default function CaregiverList({
                       <Text weight="medium" size="2">{caregiver.name}</Text>
                       <Text size="1" color="gray">{caregiver.phone}</Text>
                     </Flex>
-                    <Badge color={getStatusColor(caregiver.status)} size="1">
-                      {caregiver.status}
+                    <Badge color={(CAREGIVER_STATUS_COLORS[CAREGIVER_STATUS[caregiver.status as keyof typeof CAREGIVER_STATUS] as keyof typeof CAREGIVER_STATUS_COLORS] || 'gray') as "green" | "yellow" | "red" | "gray"} size="1">
+                      {CAREGIVER_STATUS[caregiver.status as keyof typeof CAREGIVER_STATUS] || caregiver.status}
                     </Badge>
                   </Flex>
                 </Card>
