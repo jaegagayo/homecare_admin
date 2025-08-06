@@ -1,6 +1,8 @@
 import { Flex, Text, Card, Button, Badge, ScrollArea } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
 import { getCaregivers, CaregiverApi } from '../../api';
+import { WORK_TYPES, WORK_TYPE_COLORS } from '../../constants/workTypes';
+import { CAREGIVER_STATUS, CAREGIVER_STATUS_COLORS } from '../../constants/caregiverStatus';
 
 interface CaregiverSelectionListProps {
   searchTerm: string;
@@ -9,38 +11,6 @@ interface CaregiverSelectionListProps {
   onSearchChange: (value: string) => void;
   onStatusChange: (status: string) => void;
   onCaregiverSelect: (caregiverId: string) => void;
-}
-
-// API 데이터를 기존 Caregiver 형식으로 변환
-function convertApiDataToCaregivers(apiData: CaregiverApi[]) {
-  return apiData.map(caregiver => ({
-    caregiverId: caregiver.caregiverId, // UUID 그대로 사용
-    name: caregiver.name,
-    phone: caregiver.phone,
-    status: caregiver.status === 'ACTIVE' ? '활동중' : '휴직', // API 상태를 기존 상태로 매핑
-    workTypes: caregiver.serviceTypes.map(type => {
-      // API 서비스 타입을 기존 workTypes로 매핑
-      switch (type) {
-        case 'VISITING_CARE': return '방문요양';
-        case 'DAY_NIGHT_CARE': return '주·야간보호';
-        case 'RESPITE_CARE': return '단기보호';
-        case 'VISITING_BATH': return '방문목욕';
-        case 'IN_HOME_SUPPORT': return '재가노인지원';
-        case 'VISITING_NURSING': return '방문간호';
-        default: return '방문요양';
-      }
-    }),
-    joinDate: new Date().toISOString().split('T')[0], // API에서 제공되지 않으므로 기본값 사용
-    avatar: null,
-    email: `${caregiver.name}@example.com`, // API에서 제공되지 않으므로 기본값 사용
-    birthDate: '1980-01-01', // API에서 제공되지 않으므로 기본값 사용
-    address: '기본 주소', // API에서 제공되지 않으므로 기본값 사용
-    licenseNumber: '2023-000000', // API에서 제공되지 않으므로 기본값 사용
-    licenseDate: '2023-01-01', // API에서 제공되지 않으므로 기본값 사용
-    education: '완료', // API에서 제공되지 않으므로 기본값 사용
-    hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
-    workArea: '서울시', // API에서 제공되지 않으므로 기본값 사용
-  }));
 }
 
 export default function CaregiverSelectionList({
@@ -75,24 +45,16 @@ export default function CaregiverSelectionList({
     fetchCaregivers();
   }, []);
 
-  // API 데이터를 기존 형식으로 변환
-  const convertedApiCaregivers = convertApiDataToCaregivers(apiCaregivers);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case '활동중': return 'green';
-      case '휴직': return 'yellow';
-      case '퇴사': return 'red';
-      default: return 'gray';
-    }
-  };
 
-  const filteredCaregivers = convertedApiCaregivers.filter(caregiver => {
+  // 백엔드 API 데이터를 직접 필터링
+  const filteredCaregivers = apiCaregivers.filter(caregiver => {
     const matchesSearch = caregiver.name.includes(searchTerm) || 
                          caregiver.phone.includes(searchTerm);
+    const displayStatus = CAREGIVER_STATUS[caregiver.status as keyof typeof CAREGIVER_STATUS] || caregiver.status;
     const matchesStatus = selectedStatus === '전체' || 
-                         caregiver.status === selectedStatus;
-    return matchesSearch && matchesStatus && caregiver.status !== '퇴사';
+                         displayStatus === selectedStatus;
+    return matchesSearch && matchesStatus && caregiver.status !== 'RESIGNED';
   });
 
   return (
@@ -178,10 +140,27 @@ export default function CaregiverSelectionList({
                   <Flex direction="column" gap="1">
                     <Text weight="medium">{caregiver.name}</Text>
                     <Text size="1" color="gray">{caregiver.phone}</Text>
+                    {/* 서비스 타입 표시 */}
+                    <Flex gap="1" wrap="wrap">
+                      {caregiver.serviceTypes.slice(0, 2).map((serviceType, index) => {
+                        const displayType = WORK_TYPES[serviceType as keyof typeof WORK_TYPES] || serviceType;
+                        const color = WORK_TYPE_COLORS[displayType as keyof typeof WORK_TYPE_COLORS] || 'gray';
+                        return (
+                          <Badge key={index} color={color as "blue" | "purple" | "green" | "orange" | "yellow" | "red" | "gray"} size="1">
+                            {displayType}
+                          </Badge>
+                        );
+                      })}
+                      {caregiver.serviceTypes.length > 2 && (
+                        <Badge color="gray" size="1">
+                          +{caregiver.serviceTypes.length - 2}
+                        </Badge>
+                      )}
+                    </Flex>
                   </Flex>
                   <Flex gap="2" align="center">
-                    <Badge color={getStatusColor(caregiver.status)} size="1">
-                      {caregiver.status}
+                    <Badge color={(CAREGIVER_STATUS_COLORS[CAREGIVER_STATUS[caregiver.status as keyof typeof CAREGIVER_STATUS] as keyof typeof CAREGIVER_STATUS_COLORS] || 'gray') as "green" | "yellow" | "red" | "gray"} size="1">
+                      {CAREGIVER_STATUS[caregiver.status as keyof typeof CAREGIVER_STATUS] || caregiver.status}
                     </Badge>
                   </Flex>
                 </Flex>
