@@ -6,7 +6,6 @@ import CaregiverCard from './HRCard/CaregiverCard';
 import MultiSelectPanel from './HRCard/MultiSelectPanel';
 import RegistrationPage from './Registration/RegistrationPage';
 import { getCaregivers, CaregiverApi } from '../../api';
-import { Caregiver } from '../../data/caregivers';
 
 const tabs = [
   { key: 'card', label: '인사카드' },
@@ -37,39 +36,6 @@ export default function CaregiversPage() {
     fetchCaregivers();
   }, []);
 
-  // API 데이터를 기존 형식으로 변환
-  const convertApiDataToCaregivers = (apiData: CaregiverApi[]): Caregiver[] => {
-    return apiData.map(caregiver => ({
-      caregiverId: caregiver.caregiverId,
-      name: caregiver.name,
-      phone: caregiver.phone,
-      status: caregiver.status === 'ACTIVE' ? '활동중' : '휴직',
-      workTypes: caregiver.serviceTypes.map(type => {
-        switch (type) {
-          case 'VISITING_CARE': return '방문요양';
-          case 'DAY_NIGHT_CARE': return '주·야간보호';
-          case 'RESPITE_CARE': return '단기보호';
-          case 'VISITING_BATH': return '방문목욕';
-          case 'IN_HOME_SUPPORT': return '재가노인지원';
-          case 'VISITING_NURSING': return '방문간호';
-          default: return '방문요양';
-        }
-      }),
-      joinDate: new Date().toISOString().split('T')[0],
-      avatar: null,
-      email: `${caregiver.name}@example.com`,
-      birthDate: '1980-01-01',
-      address: '기본 주소',
-      licenseNumber: '2023-000000',
-      licenseDate: '2023-01-01',
-      education: '완료',
-      hourlyWage: 12000,
-      workArea: '서울시',
-    }));
-  };
-
-  const convertedCaregivers = convertApiDataToCaregivers(apiCaregivers);
-
   const handleCaregiverSelect = (caregiverId: string) => {
     if (multiSelectMode) {
       setSelectedCaregivers(prev => 
@@ -97,7 +63,7 @@ export default function CaregiversPage() {
     setSelectedCaregivers(prev => prev.filter(id => id !== caregiverId));
   };
 
-  const selectedCaregiversData = convertedCaregivers.filter(caregiver => 
+  const selectedCaregiversData = apiCaregivers.filter(caregiver => 
     selectedCaregivers.includes(caregiver.caregiverId)
   );
 
@@ -133,7 +99,7 @@ export default function CaregiversPage() {
           ) : (
             <CaregiverCard
               selectedCaregiver={selectedCaregiver}
-              caregivers={convertedCaregivers}
+              caregivers={apiCaregivers}
             />
           )}
         </Flex>

@@ -1,7 +1,9 @@
 import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
 const { saveAs } = pkg;
-import { Caregiver } from '../data/caregivers';
+import { CaregiverApi } from '../api';
+import { WORK_TYPES } from '../constants/workTypes';
+import { CAREGIVER_STATUS } from '../constants/caregiverStatus';
 
 // 엑셀 파일 생성 및 다운로드 함수
 export const exportToExcel = (
@@ -59,22 +61,25 @@ export const formatCurrencyForExcel = (amount: number): string => {
   return new Intl.NumberFormat('ko-KR').format(amount);
 };
 
-// 요양보호사 데이터를 엑셀 형식으로 변환
-export const convertCaregiversToExcelData = (caregivers: Caregiver[]): Record<string, string>[] => {
+// CaregiverApi 데이터를 엑셀 형식으로 변환
+// 추후 수정 필요. 현재는 임시로 데이터 형식에 맞게 변환.
+export const convertCaregiverApisToExcelData = (caregivers: CaregiverApi[]): Record<string, string>[] => {
   return caregivers.map(caregiver => ({
     '이름': caregiver.name,
     '전화번호': caregiver.phone,
-    '상태': caregiver.status,
-    '근무유형': caregiver.workTypes.join(', '),
-    '등록일': formatDateForExcel(caregiver.joinDate),
-    '이메일': caregiver.email || '',
-    '생년월일': caregiver.birthDate ? formatDateForExcel(caregiver.birthDate) : '',
-    '주소': caregiver.address || '',
-    '자격증번호': caregiver.licenseNumber || '',
-    '자격증취득일': caregiver.licenseDate ? formatDateForExcel(caregiver.licenseDate) : '',
-    '교육이수': caregiver.education || '',
-    '시급': caregiver.hourlyWage ? formatCurrencyForExcel(caregiver.hourlyWage) : '',
-    '근무지역': caregiver.workArea || ''
+    '상태': CAREGIVER_STATUS[caregiver.status as keyof typeof CAREGIVER_STATUS] || caregiver.status,
+    '근무유형': caregiver.serviceTypes.map(serviceType => 
+      WORK_TYPES[serviceType as keyof typeof WORK_TYPES] || serviceType
+    ).join(', '),
+    '등록일': formatDateForExcel(new Date().toISOString().split('T')[0]),
+    '이메일': `${caregiver.name}@example.com`,
+    '생년월일': '1980-01-01',
+    '주소': '기본 주소',
+    '자격증번호': '2023-000000',
+    '자격증취득일': '2023-01-01',
+    '교육이수': '완료',
+    '시급': formatCurrencyForExcel(12000),
+    '근무지역': '서울시'
   }));
 };
 

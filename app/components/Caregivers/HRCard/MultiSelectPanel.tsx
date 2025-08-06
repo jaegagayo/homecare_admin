@@ -1,38 +1,21 @@
 import { Card, Flex, Heading, Button, Table, ScrollArea, Badge, Text } from '@radix-ui/themes';
 import { ChatBubbleIcon, EnvelopeClosedIcon, PersonIcon, DownloadIcon } from '@radix-ui/react-icons';
-import { Caregiver } from '../../../data/caregivers';
+import { CaregiverApi } from '../../../api';
+import { CAREGIVER_STATUS, CAREGIVER_STATUS_COLORS } from '../../../constants/caregiverStatus';
+import { WORK_TYPES, WORK_TYPE_COLORS } from '../../../constants/workTypes';
 import { 
   exportToExcel, 
-  convertCaregiversToExcelData, 
+  convertCaregiverApisToExcelData, 
   generateFilename 
 } from '../../../utils/excel';
 
 interface MultiSelectPanelProps {
-  selectedCaregivers: Caregiver[];
+  selectedCaregivers: CaregiverApi[];
   onClearSelection: () => void;
   onRemoveCaregiver: (caregiverId: string) => void;
 }
 
 export default function MultiSelectPanel({ selectedCaregivers, onClearSelection, onRemoveCaregiver }: MultiSelectPanelProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case '활성': return 'green';
-      case '비활성': return 'red';
-      case '대기': return 'yellow';
-      default: return 'gray';
-    }
-  };
-
-  const getWorkTypeColor = (workType: string) => {
-    switch (workType) {
-      case '방문요양': return 'blue';
-      case '방문목욕': return 'purple';
-      case '재가노인지원': return 'yellow';
-      case '방문간호': return 'red';
-      default: return 'gray';
-    }
-  };
-
   const handleExportToExcel = () => {
     if (selectedCaregivers.length === 0) {
       alert('엑셀로 출력할 요양보호사를 선택해주세요.');
@@ -41,7 +24,7 @@ export default function MultiSelectPanel({ selectedCaregivers, onClearSelection,
 
     try {
       // 요양보호사 데이터를 엑셀 형식으로 변환
-      const excelData = convertCaregiversToExcelData(selectedCaregivers);
+      const excelData = convertCaregiverApisToExcelData(selectedCaregivers);
       
       // 파일명 생성
       const filename = generateFilename('요양보호사_목록');
@@ -94,15 +77,15 @@ export default function MultiSelectPanel({ selectedCaregivers, onClearSelection,
                     <Text size="2" color="gray">{caregiver.phone}</Text>
                   </Table.Cell>
                   <Table.Cell style={{ width: '15%' }}>
-                    <Badge color={getStatusColor(caregiver.status)} size="1">
-                      {caregiver.status}
+                    <Badge color={(CAREGIVER_STATUS_COLORS[CAREGIVER_STATUS[caregiver.status as keyof typeof CAREGIVER_STATUS] as keyof typeof CAREGIVER_STATUS_COLORS] || 'gray') as "green" | "yellow" | "red" | "gray"} size="1">
+                      {CAREGIVER_STATUS[caregiver.status as keyof typeof CAREGIVER_STATUS] || caregiver.status}
                     </Badge>
                   </Table.Cell>
                   <Table.Cell style={{ width: '20%' }}>
-                    <Badge color={getWorkTypeColor(caregiver.workTypes[0])} size="1">
-                      {caregiver.workTypes.length > 1 
-                        ? `${caregiver.workTypes[0]} 외 ${caregiver.workTypes.length - 1}개`
-                        : caregiver.workTypes[0]
+                    <Badge color={(WORK_TYPE_COLORS[WORK_TYPES[caregiver.serviceTypes[0] as keyof typeof WORK_TYPES] as keyof typeof WORK_TYPE_COLORS] || 'gray') as "blue" | "purple" | "green" | "orange" | "yellow" | "red" | "gray"} size="1">
+                      {caregiver.serviceTypes.length > 1 
+                        ? `${WORK_TYPES[caregiver.serviceTypes[0] as keyof typeof WORK_TYPES] || caregiver.serviceTypes[0]} 외 ${caregiver.serviceTypes.length - 1}개`
+                        : WORK_TYPES[caregiver.serviceTypes[0] as keyof typeof WORK_TYPES] || caregiver.serviceTypes[0]
                       }
                     </Badge>
                   </Table.Cell>
