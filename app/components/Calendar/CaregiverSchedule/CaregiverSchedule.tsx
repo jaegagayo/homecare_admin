@@ -1,15 +1,14 @@
 import { Flex, Heading, Card, Tabs, Button } from '@radix-ui/themes';
 import { useState, useRef, useEffect } from 'react';
-import { Caregiver } from '../../../data/caregivers';
 import ScheduleList from './ScheduleList';
 import MonthlyStats from './MonthlyStats';
 import ScheduleGrid from './ScheduleGrid';
 import { exportAndDownloadSchedule } from '../../../utils/scheduleImageExport';
-import { getCaregiverSchedule, ServiceMatch } from '../../../api';
+import { CaregiverApi, getCaregiverSchedule, ServiceMatch } from '../../../api';
 import { WORK_TYPES, WorkType } from '../../../constants/workTypes';
 
 interface CaregiverScheduleProps {
-  caregiver: Caregiver;
+  caregiver: CaregiverApi;
 }
 
 // API 데이터를 기존 스케줄 형식으로 변환

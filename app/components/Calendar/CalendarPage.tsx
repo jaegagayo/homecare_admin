@@ -16,38 +16,6 @@ const tabs = [
   { key: 'caregiver-schedule', label: '요양보호사별 스케줄' },
 ];
 
-// API 데이터를 기존 Caregiver 형식으로 변환
-function convertApiDataToCaregivers(apiData: CaregiverApi[]) {
-  return apiData.map(caregiver => ({
-    caregiverId: caregiver.caregiverId, // UUID 그대로 사용
-    name: caregiver.name,
-    phone: caregiver.phone,
-    status: caregiver.status === 'ACTIVE' ? '활동중' : '휴직', // API 상태를 기존 상태로 매핑
-    workTypes: caregiver.serviceTypes.map(type => {
-      // API 서비스 타입을 기존 workTypes로 매핑
-      switch (type) {
-        case 'VISITING_CARE': return '방문요양';
-        case 'DAY_NIGHT_CARE': return '주·야간보호';
-        case 'RESPITE_CARE': return '단기보호';
-        case 'VISITING_BATH': return '방문목욕';
-        case 'IN_HOME_SUPPORT': return '재가노인지원';
-        case 'VISITING_NURSING': return '방문간호';
-        default: return '방문요양';
-      }
-    }),
-    joinDate: new Date().toISOString().split('T')[0], // API에서 제공되지 않으므로 기본값 사용
-    avatar: null,
-    email: `${caregiver.name}@example.com`, // API에서 제공되지 않으므로 기본값 사용
-    birthDate: '1980-01-01', // API에서 제공되지 않으므로 기본값 사용
-    address: '기본 주소', // API에서 제공되지 않으므로 기본값 사용
-    licenseNumber: '2023-000000', // API에서 제공되지 않으므로 기본값 사용
-    licenseDate: '2023-01-01', // API에서 제공되지 않으므로 기본값 사용
-    education: '완료', // API에서 제공되지 않으므로 기본값 사용
-    hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
-    workArea: '서울시', // API에서 제공되지 않으므로 기본값 사용
-  }));
-}
-
 export default function CalendarPage() {
   const [tab, setTab] = useState('calendar');
   const [selectedCaregiverId, setSelectedCaregiverId] = useState<string | null>(null);
@@ -86,9 +54,6 @@ export default function CalendarPage() {
 
     fetchCaregivers();
   }, []);
-
-  // API 데이터를 기존 형식으로 변환
-  const convertedApiCaregivers = convertApiDataToCaregivers(apiCaregivers);
 
   const handleViewCaregiverSchedule = (caregiverId: string) => {
     setSelectedCaregiverId(caregiverId);
@@ -196,7 +161,7 @@ export default function CalendarPage() {
 
           {!loading && !error && selectedCaregiverId ? (
             <CaregiverSchedule 
-              caregiver={convertedApiCaregivers.find(c => c.caregiverId === selectedCaregiverId)!} 
+              caregiver={apiCaregivers.find(c => c.caregiverId === selectedCaregiverId)!} 
             />
           ) : !loading && !error && (
             <Card style={{ flex: 3, display: 'flex', flexDirection: 'column' }}>
