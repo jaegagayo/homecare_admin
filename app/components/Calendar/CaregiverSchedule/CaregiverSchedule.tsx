@@ -5,13 +5,10 @@ import MonthlyStats from './MonthlyStats';
 import ScheduleGrid from './ScheduleGrid';
 import { exportAndDownloadSchedule } from '../../../utils/scheduleImageExport';
 import { CaregiverApi, getCaregiverSchedule, ServiceMatch } from '../../../api';
-import { WORK_TYPES, WorkType } from '../../../constants/workTypes';
 
 interface CaregiverScheduleProps {
   caregiver: CaregiverApi;
 }
-
-
 
 export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps) {
   const [selectedTab, setSelectedTab] = useState('schedule');
@@ -47,21 +44,7 @@ export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps)
     { key: 'monthly', label: '월별 통계' },
   ];
 
-  // ServiceMatch를 WorkSchedule 형식으로 변환
-  const convertedApiSchedules = apiSchedules.map(serviceMatch => ({
-    id: serviceMatch.serviceMatchId,
-    caregiverId: serviceMatch.caregiverId,
-    caregiverName: serviceMatch.caregiverName,
-    consumer: serviceMatch.consumerName,
-    date: serviceMatch.serviceDate,
-    startTime: serviceMatch.startTime.substring(0, 5),
-    endTime: serviceMatch.endTime.substring(0, 5),
-    workType: (Object.entries(WORK_TYPES).find(([key]) => key === serviceMatch.workType?.[0])?.[1] || WORK_TYPES.VISITING_CARE) as WorkType,
-    location: serviceMatch.address,
-    hourlyWage: serviceMatch.hourlyWage,
-    status: (serviceMatch.status === 'PENDING' ? '미배정' : serviceMatch.status === 'PLANNED' ? '배정됨' : '완료') as '배정됨' | '미배정' | '완료' | '취소',
-    notes: serviceMatch.notes || '',
-  }));
+
 
   // 이미지 출력 처리
   const handleExportImage = async () => {
@@ -135,15 +118,15 @@ export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps)
             
             <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
               {selectedTab === 'schedule' && (
-                <ScheduleGrid ref={scheduleGridRef} schedules={convertedApiSchedules} />
+                <ScheduleGrid ref={scheduleGridRef} schedules={apiSchedules} />
               )}
 
               {selectedTab === 'schedules' && (
-                <ScheduleList schedules={convertedApiSchedules} />
+                <ScheduleList schedules={apiSchedules} />
               )}
 
               {selectedTab === 'monthly' && (
-                <MonthlyStats schedules={convertedApiSchedules} />
+                <MonthlyStats schedules={apiSchedules} />
               )}
             </div>
           </Tabs.Root>

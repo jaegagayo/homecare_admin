@@ -1,10 +1,10 @@
 import { Text, Badge, Table, ScrollArea, Button, Flex, Popover } from '@radix-ui/themes';
 import { useState } from 'react';
-import { WorkSchedule } from '../../../data/schedules';
-import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
+import { ServiceMatch } from '../../../api';
+import { WORK_TYPE_COLORS, WORK_TYPES, WorkType } from '../../../constants/workTypes';
 
 interface ScheduleListProps {
-  schedules: WorkSchedule[];
+  schedules: ServiceMatch[];
 }
 
 export default function ScheduleList({ schedules }: ScheduleListProps) {
@@ -22,8 +22,8 @@ export default function ScheduleList({ schedules }: ScheduleListProps) {
 
   // 스케줄을 날짜순으로 정렬 (최신순)
   const sortedSchedules = [...schedules].sort((a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
+    const dateA = new Date(a.serviceDate);
+    const dateB = new Date(b.serviceDate);
     return dateB.getTime() - dateA.getTime(); // 최신 날짜가 먼저
   });
 
@@ -55,38 +55,38 @@ export default function ScheduleList({ schedules }: ScheduleListProps) {
             </Table.Row>
           ) : (
             sortedSchedules.map(schedule => (
-              <Table.Row key={schedule.id}>
+              <Table.Row key={schedule.serviceMatchId}>
                 <Table.Cell>
-                  <Text size="2">{schedule.date}</Text>
+                  <Text size="2">{schedule.serviceDate}</Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <Text size="2">{schedule.startTime} - {schedule.endTime}</Text>
+                  <Text size="2">{schedule.startTime.substring(0, 5)} - {schedule.endTime.substring(0, 5)}</Text>
                 </Table.Cell>
                 <Table.Cell>
                   <Badge 
-                    color={WORK_TYPE_COLORS[schedule.workType] as "blue" | "purple" | "green" | "orange" | "yellow" | "red"} 
+                    color={WORK_TYPE_COLORS[Object.entries(WORK_TYPES).find(([key]) => key === schedule.workType?.[0])?.[1] as WorkType] as "blue" | "purple" | "green" | "orange" | "yellow" | "red"} 
                     size="1"
                   >
-                    {schedule.workType}
+                    {Object.entries(WORK_TYPES).find(([key]) => key === schedule.workType?.[0])?.[1] || WORK_TYPES.VISITING_CARE}
                   </Badge>
                 </Table.Cell>
                 <Table.Cell>
-                  <Text size="2">{schedule.consumer}</Text>
+                  <Text size="2">{schedule.consumerName}</Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <Text size="2" color="gray">{schedule.location}</Text>
+                  <Text size="2" color="gray">{schedule.address}</Text>
                 </Table.Cell>
                 <Table.Cell>
                   <Text size="2">{schedule.hourlyWage.toLocaleString()}원</Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <Badge color={getStatusColor(schedule.status)} size="1">
-                    {schedule.status}
+                  <Badge color={getStatusColor(schedule.status === 'PENDING' ? '미배정' : schedule.status === 'PLANNED' ? '배정됨' : '완료')} size="1">
+                    {schedule.status === 'PENDING' ? '미배정' : schedule.status === 'PLANNED' ? '배정됨' : '완료'}
                   </Badge>
                 </Table.Cell>
                 <Table.Cell>
                   {schedule.notes ? (
-                    <Popover.Root open={openPopover === schedule.id} onOpenChange={(open) => setOpenPopover(open ? schedule.id : null)}>
+                    <Popover.Root open={openPopover === schedule.serviceMatchId} onOpenChange={(open) => setOpenPopover(open ? schedule.serviceMatchId : null)}>
                       <Popover.Trigger>
                         <Button 
                           variant="soft" 

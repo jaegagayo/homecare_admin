@@ -1,11 +1,11 @@
 import { Flex, Text, Button } from '@radix-ui/themes';
 import { useState, useEffect, useRef, forwardRef } from 'react';
-import { WorkSchedule } from '../../../data/schedules';
+import { ServiceMatch } from '../../../api';
 import { ClockIcon, HomeIcon, PersonIcon } from '@radix-ui/react-icons';
-import { WORK_TYPE_COLORS } from '../../../constants/workTypes';
+import { WORK_TYPE_COLORS, WORK_TYPES } from '../../../constants/workTypes';
 
 interface ScheduleGridProps {
-  schedules: WorkSchedule[];
+  schedules: ServiceMatch[];
 }
 
 const HOUR_HEIGHT = 100; // px, 1시간당 높이
@@ -44,7 +44,7 @@ const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(({ schedules 
       // 오늘 날짜의 스케줄들 중 가장 이른 시작 시간 찾기
       const today = new Date();
       const todaySchedules = schedules.filter(schedule => {
-        const scheduleDate = new Date(schedule.date);
+        const scheduleDate = new Date(schedule.serviceDate);
         return scheduleDate.toDateString() === today.toDateString();
       });
 
@@ -102,7 +102,7 @@ const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(({ schedules 
 
   const getSchedulesForDate = (date: Date) => {
     return schedules.filter(schedule => {
-      const scheduleDate = new Date(schedule.date);
+      const scheduleDate = new Date(schedule.serviceDate);
       return scheduleDate.toDateString() === date.toDateString();
     });
   };
@@ -261,7 +261,8 @@ const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(({ schedules 
                 {/* 스케줄 블록 오버레이 */}
                 {getSchedulesForDate(date).map((schedule, idx) => {
                   const { top, height } = calculateSchedulePosition(schedule.startTime, schedule.endTime);
-                  const workTypeColor = WORK_TYPE_COLORS[schedule.workType] || '#38bdf8'; // 기본값 설정
+                  const workTypeValue = Object.entries(WORK_TYPES).find(([key]) => key === schedule.workType?.[0])?.[1] || WORK_TYPES.VISITING_CARE;
+                  const workTypeColor = WORK_TYPE_COLORS[workTypeValue] || '#38bdf8'; // 기본값 설정
                   return (
                     <div key={idx} style={{
                       position: 'absolute',
@@ -285,7 +286,7 @@ const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(({ schedules 
                       boxShadow: '0 1px 4px 0 rgba(56,189,248,0.08)'
                     }}>
                       <div style={{ fontWeight: 600, fontSize: 13, lineHeight: 1.2, marginTop: 4 }}>
-                        {schedule.workType}
+                        {workTypeValue}
                       </div>
                       <div style={{ 
                         display: 'flex', 
@@ -296,10 +297,10 @@ const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(({ schedules 
                         color: 'var(--gray-12)',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, opacity: 0.9, lineHeight: 1 }}>
-                          <PersonIcon /> {schedule.consumer}
+                          <PersonIcon /> {schedule.consumerName}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, opacity: 0.8, lineHeight: 1 }}>
-                          <HomeIcon /> {schedule.location}
+                          <HomeIcon /> {schedule.address}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, opacity: 0.7, lineHeight: 1 }}>
                           <ClockIcon /> {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}

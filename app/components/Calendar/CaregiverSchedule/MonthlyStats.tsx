@@ -1,9 +1,9 @@
 import { Flex, Text } from '@radix-ui/themes';
 import { useState } from 'react';
-import { WorkSchedule } from '../../../data/schedules';
+import { ServiceMatch } from '../../../api';
 
 interface MonthlyStatsProps {
-  schedules: WorkSchedule[];
+  schedules: ServiceMatch[];
 }
 
 export default function MonthlyStats({ schedules }: MonthlyStatsProps) {
@@ -12,7 +12,7 @@ export default function MonthlyStats({ schedules }: MonthlyStatsProps) {
 
   // 선택된 월의 스케줄
   const monthlySchedules = schedules.filter(schedule => {
-    const scheduleDate = new Date(schedule.date);
+    const scheduleDate = new Date(schedule.serviceDate);
     return scheduleDate.getMonth() === selectedMonth && 
            scheduleDate.getFullYear() === selectedYear;
   });
