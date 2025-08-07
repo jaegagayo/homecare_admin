@@ -1,7 +1,6 @@
 import { Card, Text, Checkbox, Flex, Heading, Badge } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
-import { groupSchedulesByDate } from '../../../utils/scheduleUtils';
-import { getScheduleByDay, WorkMatch, getCaregivers, CaregiverApi } from '../../../api';
+import { getScheduleByDay, WorkMatch } from '../../../api';
 import { WORK_TYPES, WORK_TYPE_COLORS, WorkType } from '../../../constants/workTypes';
 
 function getDaysArray(year: number, month: number) {
@@ -21,50 +20,6 @@ function formatDate(year: number, month: number, day: number): string {
   return `${year}-${monthStr}-${dayStr}`;
 }
 
-// API 데이터를 기존 스케줄 형식으로 변환
-function convertApiDataToSchedules(apiData: WorkMatch[], caregivers: CaregiverApi[]) {
-  return apiData.map(workMatch => {
-    // 해당 보호사의 실제 서비스 타입 찾기
-    const caregiver = caregivers.find(c => c.caregiverId === workMatch.caregiverId);
-    let workType: WorkType = WORK_TYPES.VISITING_CARE;
-    
-    if (workMatch.serviceType && workMatch.serviceType.length > 0) {
-      workType = mapServiceTypeToWorkType(workMatch.serviceType[0]);
-    } else if (caregiver && caregiver.serviceTypes.length > 0) {
-      // 보호사의 기본 서비스 타입 사용
-      workType = mapServiceTypeToWorkType(caregiver.serviceTypes[0]);
-    }
-    
-    return {
-      id: workMatch.workMatchId,
-      caregiverId: workMatch.caregiverId,
-      caregiverName: workMatch.caregiverName,
-      consumer: '기본 수급자', // API에서 제공되지 않으므로 기본값 사용
-      date: workMatch.workDate,
-      startTime: workMatch.startTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-      endTime: workMatch.endTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-      workType: workType,
-      location: workMatch.address,
-      hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
-      status: (workMatch.status === 'PLANNED' ? '배정됨' : '미배정') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
-      notes: '', // API에서 제공되지 않으므로 기본값 사용
-    };
-  });
-}
-
-// API 서비스 타입을 기존 workType으로 매핑
-function mapServiceTypeToWorkType(serviceType: string): WorkType {
-  switch (serviceType) {
-    case 'VISITING_CARE': return WORK_TYPES.VISITING_CARE;
-    case 'DAY_NIGHT_CARE': return WORK_TYPES.DAY_NIGHT_CARE;
-    case 'RESPITE_CARE': return WORK_TYPES.RESPITE_CARE;
-    case 'VISITING_BATH': return WORK_TYPES.VISITING_BATH;
-    case 'IN_HOME_SUPPORT': return WORK_TYPES.IN_HOME_SUPPORT;
-    case 'VISITING_NURSING': return WORK_TYPES.VISITING_NURSING;
-    default: return WORK_TYPES.VISITING_CARE;
-  }
-}
-
 interface CalendarSidebarProps {
   selectedDate: Date;
   onWorkTypeFilterChange?: (filters: Record<WorkType, boolean>) => void;
@@ -78,7 +33,6 @@ export default function CalendarSidebar({ selectedDate, onWorkTypeFilterChange }
   const todayMonth = today.getMonth();
   const todayDays = getDaysArray(todayYear, todayMonth);
   const [apiSchedules, setApiSchedules] = useState<WorkMatch[]>([]);
-  const [apiCaregivers, setApiCaregivers] = useState<CaregiverApi[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -91,20 +45,6 @@ export default function CalendarSidebar({ selectedDate, onWorkTypeFilterChange }
     [WORK_TYPES.IN_HOME_SUPPORT]: true,
     [WORK_TYPES.VISITING_NURSING]: true
   });
-
-  // API에서 보호사 데이터 가져오기
-  useEffect(() => {
-    const fetchCaregivers = async () => {
-      try {
-        const data = await getCaregivers();
-        setApiCaregivers(data);
-      } catch (err) {
-        console.error('보호사 데이터 로드 실패:', err);
-      }
-    };
-
-    fetchCaregivers();
-  }, []);
 
   // API에서 해당 월의 스케줄 데이터 가져오기
   useEffect(() => {
@@ -138,29 +78,36 @@ export default function CalendarSidebar({ selectedDate, onWorkTypeFilterChange }
     fetchMonthSchedules();
   }, [year, month]);
   
-  // API 데이터를 기존 형식으로 변환
-  const convertedApiSchedules = convertApiDataToSchedules(apiSchedules, apiCaregivers);
-  
   // 해당 월의 스케줄만 필터링
-  const monthSchedules = convertedApiSchedules.filter(schedule => {
-    const scheduleDate = new Date(schedule.date);
+  const monthSchedules = apiSchedules.filter(schedule => {
+    const scheduleDate = new Date(schedule.workDate);
     return scheduleDate.getFullYear() === year && scheduleDate.getMonth() === month;
   });
   
-  // 날짜별로 스케줄 그룹화
-  const schedulesByDate = groupSchedulesByDate(monthSchedules);
+  // 날짜별로 스케줄 그룹화 (WorkMatch 형식에 맞춰 수정)
+  const schedulesByDate = monthSchedules.reduce((acc, schedule) => {
+    const dateKey = schedule.workDate;
+    if (!acc[dateKey]) {
+      acc[dateKey] = [];
+    }
+    acc[dateKey].push(schedule);
+    return acc;
+  }, {} as Record<string, WorkMatch[]>);
   
-  // 근무 유형별 통계
-  const workTypeStats = Object.values(WORK_TYPES).reduce((acc, workType) => {
-    acc[workType] = monthSchedules.filter(s => s.workType === workType).length;
+  // 근무 유형별 통계 (WORK_TYPES 키-값 형태 사용)
+  const workTypeStats = Object.entries(WORK_TYPES).reduce((acc, [key, value]) => {
+    acc[value] = monthSchedules.filter(s => {
+      const serviceType = s.serviceType && s.serviceType.length > 0 ? s.serviceType[0] : '';
+      return serviceType === key;
+    }).length;
     return acc;
   }, {} as Record<string, number>);
   
   // 상태별 통계
   const statusStats = {
-    '배정됨': monthSchedules.filter(s => s.status === '배정됨').length,
-    '미배정': monthSchedules.filter(s => s.status === '미배정').length,
-    '완료': monthSchedules.filter(s => s.status === '완료').length,
+    '배정됨': monthSchedules.filter(s => s.status === 'PLANNED').length,
+    '미배정': monthSchedules.filter(s => s.status === 'UNASSIGNED').length,
+    '완료': monthSchedules.filter(s => s.status === 'COMPLETED').length,
   };
 
   const handleWorkTypeFilterChange = (workType: WorkType, checked: boolean) => {

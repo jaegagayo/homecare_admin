@@ -1,8 +1,7 @@
 import { Card, Flex, Text } from '@radix-ui/themes';
 import { useState, useEffect } from 'react';
-import { groupSchedulesByDate } from '../../../utils/scheduleUtils';
 import { WORK_TYPES, WorkType } from '../../../constants/workTypes';
-import { getScheduleByDate, WorkMatch, getCaregivers, CaregiverApi } from '../../../api';
+import { getScheduleByDate, WorkMatch } from '../../../api';
 
 function getDaysArray(year: number, month: number) {
   const firstDay = new Date(year, month, 1).getDay();
@@ -34,49 +33,7 @@ function getWorkTypeColor(workType: WorkType) {
   return colorMap[workType] || 'var(--gray-9)';
 }
 
-// API 데이터를 기존 스케줄 형식으로 변환
-function convertApiDataToSchedules(apiData: WorkMatch[], caregivers: CaregiverApi[]) {
-  return apiData.map(workMatch => {
-    // 해당 보호사의 실제 서비스 타입 찾기
-    const caregiver = caregivers.find(c => c.caregiverId === workMatch.caregiverId);
-    let workType: WorkType = WORK_TYPES.VISITING_CARE;
-    
-    if (workMatch.serviceType && workMatch.serviceType.length > 0) {
-      workType = mapServiceTypeToWorkType(workMatch.serviceType[0]);
-    } else if (caregiver && caregiver.serviceTypes.length > 0) {
-      // 보호사의 기본 서비스 타입 사용
-      workType = mapServiceTypeToWorkType(caregiver.serviceTypes[0]);
-    }
-    
-    return {
-      id: workMatch.workMatchId,
-      caregiverId: workMatch.caregiverId,
-      caregiverName: workMatch.caregiverName,
-      consumer: '기본 수급자', // API에서 제공되지 않으므로 기본값 사용
-      date: workMatch.workDate,
-      startTime: workMatch.startTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-      endTime: workMatch.endTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-      workType: workType,
-      location: workMatch.address,
-      hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
-      status: (workMatch.status === 'PLANNED' ? '배정됨' : '미배정') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
-      notes: '', // API에서 제공되지 않으므로 기본값 사용
-    };
-  });
-}
 
-// API 서비스 타입을 기존 workType으로 매핑
-function mapServiceTypeToWorkType(serviceType: string): WorkType {
-  switch (serviceType) {
-    case 'VISITING_CARE': return WORK_TYPES.VISITING_CARE;
-    case 'DAY_NIGHT_CARE': return WORK_TYPES.DAY_NIGHT_CARE;
-    case 'RESPITE_CARE': return WORK_TYPES.RESPITE_CARE;
-    case 'VISITING_BATH': return WORK_TYPES.VISITING_BATH;
-    case 'IN_HOME_SUPPORT': return WORK_TYPES.IN_HOME_SUPPORT;
-    case 'VISITING_NURSING': return WORK_TYPES.VISITING_NURSING;
-    default: return WORK_TYPES.VISITING_CARE;
-  }
-}
 
 export default function CalendarGrid({ 
   year, 
@@ -97,23 +54,8 @@ export default function CalendarGrid({
   onDateClick?: (date: string) => void;
 }) {
   const [apiSchedules, setApiSchedules] = useState<WorkMatch[]>([]);
-  const [apiCaregivers, setApiCaregivers] = useState<CaregiverApi[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // API에서 보호사 데이터 가져오기
-  useEffect(() => {
-    const fetchCaregivers = async () => {
-      try {
-        const data = await getCaregivers();
-        setApiCaregivers(data);
-      } catch (err) {
-        console.error('보호사 데이터 로드 실패:', err);
-      }
-    };
-
-    fetchCaregivers();
-  }, []);
 
   // API에서 스케줄 데이터 가져오기
   useEffect(() => {
@@ -142,22 +84,29 @@ export default function CalendarGrid({
   const today = new Date();
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
   
-  // API 데이터를 기존 형식으로 변환
-  const convertedApiSchedules = convertApiDataToSchedules(apiSchedules, apiCaregivers);
-  
   // 해당 월의 스케줄만 필터링
-  const monthSchedules = convertedApiSchedules.filter(schedule => {
-    const scheduleDate = new Date(schedule.date);
+  const monthSchedules = apiSchedules.filter(schedule => {
+    const scheduleDate = new Date(schedule.workDate);
     return scheduleDate.getFullYear() === year && scheduleDate.getMonth() === month;
   });
 
-  // 근무 유형별 필터링
+  // 근무 유형별 필터링 (WORK_TYPES 키-값 형태 사용)
   const filteredSchedules = monthSchedules.filter(schedule => {
-    return workTypeFilters[schedule.workType] || false;
+    const serviceType = schedule.serviceType && schedule.serviceType.length > 0 ? schedule.serviceType[0] : '';
+    // API의 서비스 타입 키를 WORK_TYPES의 값으로 변환
+    const workTypeValue = Object.entries(WORK_TYPES).find(([key, ]) => key === serviceType)?.[1];
+    return workTypeValue && workTypeFilters[workTypeValue as WorkType] || false;
   });
 
-  // 날짜별로 스케줄 그룹화
-  const schedulesByDate = groupSchedulesByDate(filteredSchedules);
+  // 날짜별로 스케줄 그룹화 (WorkMatch 형식에 맞춰 수정)
+  const schedulesByDate = filteredSchedules.reduce((acc, schedule) => {
+    const dateKey = schedule.workDate;
+    if (!acc[dateKey]) {
+      acc[dateKey] = [];
+    }
+    acc[dateKey].push(schedule);
+    return acc;
+  }, {} as Record<string, WorkMatch[]>);
 
   return (
     <Card style={{ background: 'var(--gray-2)', flex: 1, height: '100%', padding: 0, overflow: 'hidden' }}>
@@ -273,13 +222,18 @@ export default function CalendarGrid({
                       {daySchedules.length > 0 && (
                         <Flex direction="column" gap="1" style={{ width: '100%' }}>
                           <Text size="1" color="gray" style={{ marginBottom: 2 }}>
-                            근무: {daySchedules.length}명
+                            근무: {daySchedules.length}건
                           </Text>
                           
                           {/* 근무 유형별 인원수 계산 */}
                           {(() => {
                             const workTypeCounts = daySchedules.reduce((acc, schedule) => {
-                              acc[schedule.workType] = (acc[schedule.workType] || 0) + 1;
+                              const serviceType = schedule.serviceType && schedule.serviceType.length > 0 ? schedule.serviceType[0] : '';
+                              // API의 서비스 타입 키를 WORK_TYPES의 값으로 변환
+                              const workTypeValue = Object.entries(WORK_TYPES).find(([key, ]) => key === serviceType)?.[1];
+                              if (workTypeValue) {
+                                acc[workTypeValue] = (acc[workTypeValue] || 0) + 1;
+                              }
                               return acc;
                             }, {} as Record<string, number>);
                             

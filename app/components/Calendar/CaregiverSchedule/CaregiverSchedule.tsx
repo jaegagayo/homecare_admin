@@ -11,44 +11,7 @@ interface CaregiverScheduleProps {
   caregiver: CaregiverApi;
 }
 
-// API 데이터를 기존 스케줄 형식으로 변환
-function convertApiDataToSchedules(apiData: ServiceMatch[]) {
-  return apiData.map(serviceMatch => {
-    // workType이 비어있으면 기본값 사용
-    let workType: WorkType = WORK_TYPES.VISITING_CARE;
-    if (serviceMatch.workType && serviceMatch.workType.length > 0) {
-      workType = mapServiceTypeToWorkType(serviceMatch.workType[0]);
-    }
-    
-    return {
-      id: serviceMatch.serviceMatchId,
-      caregiverId: serviceMatch.caregiverId,
-      caregiverName: serviceMatch.caregiverName,
-      consumer: serviceMatch.consumerName,
-      date: serviceMatch.serviceDate,
-      startTime: serviceMatch.startTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-      endTime: serviceMatch.endTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-      workType: workType,
-      location: serviceMatch.address,
-      hourlyWage: serviceMatch.hourlyWage,
-      status: (serviceMatch.status === 'PENDING' ? '미배정' : serviceMatch.status === 'PLANNED' ? '배정됨' : '완료') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
-      notes: serviceMatch.notes || '', // API에서 제공되지 않으므로 기본값 사용
-    };
-  });
-}
 
-// API 서비스 타입을 기존 workType으로 매핑
-function mapServiceTypeToWorkType(serviceType: string): WorkType {
-  switch (serviceType) {
-    case 'VISITING_CARE': return WORK_TYPES.VISITING_CARE;
-    case 'DAY_NIGHT_CARE': return WORK_TYPES.DAY_NIGHT_CARE;
-    case 'RESPITE_CARE': return WORK_TYPES.RESPITE_CARE;
-    case 'VISITING_BATH': return WORK_TYPES.VISITING_BATH;
-    case 'IN_HOME_SUPPORT': return WORK_TYPES.IN_HOME_SUPPORT;
-    case 'VISITING_NURSING': return WORK_TYPES.VISITING_NURSING;
-    default: return WORK_TYPES.VISITING_CARE;
-  }
-}
 
 export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps) {
   const [selectedTab, setSelectedTab] = useState('schedule');
@@ -84,8 +47,21 @@ export default function CaregiverSchedule({ caregiver }: CaregiverScheduleProps)
     { key: 'monthly', label: '월별 통계' },
   ];
 
-  // API 데이터를 기존 형식으로 변환
-  const convertedApiSchedules = convertApiDataToSchedules(apiSchedules);
+  // ServiceMatch를 WorkSchedule 형식으로 변환
+  const convertedApiSchedules = apiSchedules.map(serviceMatch => ({
+    id: serviceMatch.serviceMatchId,
+    caregiverId: serviceMatch.caregiverId,
+    caregiverName: serviceMatch.caregiverName,
+    consumer: serviceMatch.consumerName,
+    date: serviceMatch.serviceDate,
+    startTime: serviceMatch.startTime.substring(0, 5),
+    endTime: serviceMatch.endTime.substring(0, 5),
+    workType: (Object.entries(WORK_TYPES).find(([key]) => key === serviceMatch.workType?.[0])?.[1] || WORK_TYPES.VISITING_CARE) as WorkType,
+    location: serviceMatch.address,
+    hourlyWage: serviceMatch.hourlyWage,
+    status: (serviceMatch.status === 'PENDING' ? '미배정' : serviceMatch.status === 'PLANNED' ? '배정됨' : '완료') as '배정됨' | '미배정' | '완료' | '취소',
+    notes: serviceMatch.notes || '',
+  }));
 
   // 이미지 출력 처리
   const handleExportImage = async () => {

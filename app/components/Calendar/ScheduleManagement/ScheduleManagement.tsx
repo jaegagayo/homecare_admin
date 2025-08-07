@@ -9,49 +9,7 @@ interface ScheduleManagementProps {
   selectedDate?: string;
 }
 
-// API 데이터를 기존 스케줄 형식으로 변환
-function convertApiDataToSchedules(apiData: WorkMatch[], caregivers: CaregiverApi[]) {
-  return apiData.map(workMatch => {
-    // 해당 보호사의 실제 서비스 타입 찾기
-    const caregiver = caregivers.find(c => c.caregiverId === workMatch.caregiverId);
-    let workType: WorkType = WORK_TYPES.VISITING_CARE;
-    
-    if (workMatch.serviceType && workMatch.serviceType.length > 0) {
-      workType = mapServiceTypeToWorkType(workMatch.serviceType[0]);
-    } else if (caregiver && caregiver.serviceTypes.length > 0) {
-      // 보호사의 기본 서비스 타입 사용
-      workType = mapServiceTypeToWorkType(caregiver.serviceTypes[0]);
-    }
-    
-    return {
-      id: workMatch.workMatchId,
-      caregiverId: workMatch.caregiverId,
-      caregiverName: workMatch.caregiverName,
-      consumer: '기본 수급자', // API에서 제공되지 않으므로 기본값 사용
-      date: workMatch.workDate,
-      startTime: workMatch.startTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-      endTime: workMatch.endTime.substring(0, 5), // HH:MM:SS -> HH:MM 형식으로 변환
-      workType: workType,
-      location: workMatch.address,
-      hourlyWage: 12000, // API에서 제공되지 않으므로 기본값 사용
-      status: (workMatch.status === 'PLANNED' ? '배정됨' : '미배정') as '배정됨' | '미배정' | '완료' | '취소', // API 상태를 기존 상태로 매핑
-      notes: '', // API에서 제공되지 않으므로 기본값 사용
-    };
-  });
-}
 
-// API 서비스 타입을 기존 workType으로 매핑
-function mapServiceTypeToWorkType(serviceType: string): WorkType {
-  switch (serviceType) {
-    case 'VISITING_CARE': return WORK_TYPES.VISITING_CARE;
-    case 'DAY_NIGHT_CARE': return WORK_TYPES.DAY_NIGHT_CARE;
-    case 'RESPITE_CARE': return WORK_TYPES.RESPITE_CARE;
-    case 'VISITING_BATH': return WORK_TYPES.VISITING_BATH;
-    case 'IN_HOME_SUPPORT': return WORK_TYPES.IN_HOME_SUPPORT;
-    case 'VISITING_NURSING': return WORK_TYPES.VISITING_NURSING;
-    default: return WORK_TYPES.VISITING_CARE;
-  }
-}
 
 export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDate: initialSelectedDate }: ScheduleManagementProps) {
   const [selectedTab, setSelectedTab] = useState('list');
@@ -137,14 +95,15 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
     }
   };
 
-  // API 데이터를 기존 형식으로 변환
-  const convertedApiSchedules = convertApiDataToSchedules(apiSchedules, apiCaregivers);
-
-  const filteredSchedules = convertedApiSchedules.filter(schedule => {
-    const matchesDate = selectedDate === '' || schedule.date === selectedDate;
+  const filteredSchedules = apiSchedules.filter(schedule => {
+    const matchesDate = selectedDate === '' || schedule.workDate === selectedDate;
     const matchesCaregiver = selectedCaregiver === 'all' || 
                             schedule.caregiverId === selectedCaregiver;
-    const matchesStatus = selectedStatus === 'all' || schedule.status === selectedStatus;
+    const matchesStatus = selectedStatus === 'all' || 
+                         (selectedStatus === '배정됨' && schedule.status === 'PLANNED') ||
+                         (selectedStatus === '미배정' && schedule.status === 'UNASSIGNED') ||
+                         (selectedStatus === '완료' && schedule.status === 'COMPLETED') ||
+                         (selectedStatus === '취소' && schedule.status === 'CANCELLED');
     return matchesDate && matchesCaregiver && matchesStatus;
   });
 
@@ -281,33 +240,33 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
                       </Table.Row>
                     ) : (
                       filteredSchedules.map(schedule => (
-                        <Table.Row key={schedule.id}>
+                        <Table.Row key={schedule.workMatchId}>
                           <Table.Cell>
                               <Text weight="medium">{schedule.caregiverName}</Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text size="2">{schedule.date}</Text>
+                            <Text size="2">{schedule.workDate}</Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text size="2">{schedule.startTime} - {schedule.endTime}</Text>
+                            <Text size="2">{schedule.startTime.substring(0, 5)} - {schedule.endTime.substring(0, 5)}</Text>
                           </Table.Cell>
                           <Table.Cell>
                             <Badge 
-                              color={WORK_TYPE_COLORS[schedule.workType] as "blue" | "purple" | "green" | "orange" | "yellow" | "red"} 
+                              color={WORK_TYPE_COLORS[Object.entries(WORK_TYPES).find(([key]) => key === schedule.serviceType?.[0])?.[1] as WorkType] as "blue" | "purple" | "green" | "orange" | "yellow" | "red"} 
                               size="1"
                             >
-                              {schedule.workType}
+                              {Object.entries(WORK_TYPES).find(([key]) => key === schedule.serviceType?.[0])?.[1] || WORK_TYPES.VISITING_CARE}
                             </Badge>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text size="2" color="gray">{schedule.location}</Text>
+                            <Text size="2" color="gray">{schedule.address}</Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text size="2">{schedule.hourlyWage.toLocaleString()}원</Text>
+                            <Text size="2">12,000원</Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Badge color={getStatusColor(schedule.status)} size="1">
-                              {getStatusText(schedule.status)}
+                            <Badge color={getStatusColor(schedule.status === 'PLANNED' ? '배정됨' : '미배정')} size="1">
+                              {getStatusText(schedule.status === 'PLANNED' ? '배정됨' : '미배정')}
                             </Badge>
                           </Table.Cell>
                           <Table.Cell>
@@ -320,13 +279,13 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
                               >
                                 조회
                               </Button>
-                              {schedule.status === '미배정' && (
+                              {schedule.status === 'UNASSIGNED' && (
                                 <>
                                 <Button 
                                   variant="soft" 
                                   size="1" 
                                   color="green"
-                                  onClick={() => handleApprove(schedule.id)}
+                                  onClick={() => handleApprove(schedule.workMatchId)}
                                 >
                                   배정
                                 </Button>
@@ -334,7 +293,7 @@ export default function ScheduleManagement({ onViewCaregiverSchedule, selectedDa
                                   variant="soft" 
                                   size="1" 
                                   color="red"
-                                  onClick={() => handleReject(schedule.id)}
+                                  onClick={() => handleReject(schedule.workMatchId)}
                                 >
                                   취소
                                 </Button>
