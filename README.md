@@ -6,7 +6,7 @@
 
 - **Framework**: [Remix](https://remix.run/) (React 기반 풀스택 프레임워크)
 - **UI Library**: [Radix UI](https://www.radix-ui.com/) (접근성 중심 컴포넌트)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) (유틸리티 퍼스트 CSS)
+- **Styling**: 인라인 스타일 + 공통 CSS
 - **Language**: [TypeScript](https://www.typescriptlang.org/) (타입 안전성)
 - **Build Tool**: [Vite](https://vitejs.dev/) (빠른 개발 환경)
 - **Package Manager**: npm
@@ -148,7 +148,7 @@ enum ScheduleStatus {
 
 - **반응형 디자인**: 다양한 화면 크기에 대응
 - **접근성**: Radix UI를 통한 WCAG 준수
-- **다크 모드 지원**: 시스템 설정에 따른 자동 전환
+- **인라인 스타일링**: React의 style prop을 활용한 동적 스타일링
 - **로딩 상태**: 사용자 경험을 위한 로딩 인디케이터
 - **에러 처리**: 친화적인 에러 메시지 표시
 
@@ -172,4 +172,3 @@ enum ScheduleStatus {
 ### 개발 도구
 - `@typescript-eslint/eslint-plugin`: TypeScript 린트
 - `eslint-plugin-react`: React 린트
-- `tailwindcss`: 유틸리티 퍼스트 CSS
